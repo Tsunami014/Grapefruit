@@ -10,3 +10,5 @@ qt_policy(SET QTP0002 NEW) # Shushes a warning
 
 qt_add_executable(${APP_NAME} main.cpp)
 target_link_libraries(${APP_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
+
+set_property(TARGET ${APP_NAME} PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")

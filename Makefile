@@ -27,7 +27,7 @@ setup-qt:
 	fi
 
 debug: setup-qt
-	$(QT_ANDROID_DIR)/bin/qt-cmake -B build -S . $(COMMON_FLAGS) -DCMAKE_BUILD_TYPE=Debug
+	$(QT_ANDROID_DIR)/bin/qt-cmake -B build -S . $(COMMON_FLAGS) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug
 	cmake --build build --target apk --parallel
 
 all: release
@@ -36,4 +36,4 @@ release: setup-qt
 	cmake --build build --target apk --parallel
 
 clean:
-	rm -rf ./build ./CMakeFiles
+	rm -rf ./build

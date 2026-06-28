@@ -1,3 +1,5 @@
+.cache/*
 build/*
 .qt/*
 *.log
+compile_commands.json

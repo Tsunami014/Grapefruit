@@ -10,10 +10,11 @@ for arg in "$@"; do
             adb install -r $APK
             ;;
         u|uninstall) any=true
-            echo "Installing built apk..."
+            echo "Uninstalling application..."
             adb uninstall $PKG
             ;;
         r|run) any=true
+            echo "Running application..."
             adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1
             ;;
         -h|--help|-help) ;;

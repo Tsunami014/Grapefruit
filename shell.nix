@@ -9,6 +9,7 @@ pkgs.mkShell {
     openjdk17
     python3
     androidenv.androidPkgs.androidsdk
+    glib glibc_multi
   ];
 
   shellHook = ''
