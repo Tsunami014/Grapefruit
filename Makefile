@@ -35,5 +35,10 @@ release: setup-qt
 	$(QT_ANDROID_DIR)/bin/qt-cmake -B release -S . $(COMMON_FLAGS) -DCMAKE_BUILD_TYPE=Release
 	cmake --build release --target apk --parallel
 
+# Use regular cmake
+desktop:
+	cmake -B build-desktop -S . -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug
+	cmake --build build-desktop --parallel
+
 clean:
 	rm -rf ./build ./release

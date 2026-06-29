@@ -10,5 +10,5 @@ The building should result in an apk file being created. For quick testing, ensu
 
 A convenient command that does everything is
 ```
-make debug && ./run.sh i r
+make debug && ./run.sh i r l
 ```
