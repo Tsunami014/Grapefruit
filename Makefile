@@ -32,8 +32,8 @@ debug: setup-qt
 
 all: release
 release: setup-qt
-	$(QT_ANDROID_DIR)/bin/qt-cmake -B build -S . $(COMMON_FLAGS) -DCMAKE_BUILD_TYPE=Release
-	cmake --build build --target apk --parallel
+	$(QT_ANDROID_DIR)/bin/qt-cmake -B release -S . $(COMMON_FLAGS) -DCMAKE_BUILD_TYPE=Release
+	cmake --build release --target apk --parallel
 
 clean:
-	rm -rf ./build
+	rm -rf ./build ./release

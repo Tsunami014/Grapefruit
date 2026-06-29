@@ -1,4 +1,5 @@
 .cache/*
+release/*
 build/*
 .qt/*
 *.log
