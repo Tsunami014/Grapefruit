@@ -12,15 +12,15 @@ MainGame::MainGame() {
     stack->addWidget(main);
     auto mlay = new QVBoxLayout(main);
 
-    auto labl = new QLabel("Hello from Qt on Android!");
+    {auto labl = new QLabel("Hello from Qt on Android!");
     labl->setStyleSheet("background-color: #3399DD;");
-    mlay->addWidget(labl, 2);
+    mlay->addWidget(labl, 2);}
 
     auto botsect = new QHBoxLayout();
-        auto labl2 = new QLabel("Option section!");
-        labl2->setStyleSheet("background-color: #33DD99;");
-        labl2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        botsect->addWidget(labl2);
+        {auto labl = new QLabel("Option section!");
+        labl->setStyleSheet("background-color: #33DD99;");
+        labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        botsect->addWidget(labl);}
 
         auto quickbtns = new QVBoxLayout();
             auto at = new QPushButton("All tasks");
@@ -41,9 +41,20 @@ MainGame::MainGame() {
     stack->addWidget(setts);
     auto slay = new QVBoxLayout(setts);
 
-    auto bk = new QPushButton("Back");
-    connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
-    slay->addWidget(bk);
+    auto topsect = new QHBoxLayout();
+        auto bk = new QPushButton("Back");
+        connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
+        topsect->addWidget(bk);
+        {auto labl = new QLabel("Settings");
+        labl->setAlignment(Qt::AlignCenter);
+        labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        topsect->addWidget(labl);}
+    slay->addLayout(topsect);
+
+    {auto labl = new QLabel("Bottom section");
+    labl->setStyleSheet("background-color: #33DD99;");
+    labl->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    slay->addWidget(labl);}
 
 
     // Initialise things!
