@@ -10,8 +10,6 @@ pkgs.mkShell {
     python3
     androidenv.androidPkgs.androidsdk
     glib glibc_multi
-    # For desktop building
-    qt6.qtbase qt6.qtbase.dev
     libGL.dev libGL
   ];
 
@@ -23,6 +21,10 @@ pkgs.mkShell {
       pkgs.stdenv.cc.cc.lib
       pkgs.libGL
       pkgs.libxkbcommon
+      pkgs.fontconfig
+      pkgs.freetype
+      pkgs.xorg.libX11
+      pkgs.dbus
     ]}"
 
     export NIX_LD="${pkgs.stdenv.cc.libc}/lib/ld-linux-x86-64.so.2"
