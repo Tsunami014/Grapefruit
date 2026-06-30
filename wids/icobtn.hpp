@@ -2,8 +2,9 @@
 #include <QToolButton>
 
 class IcoButton : public QToolButton {
+    Q_OBJECT
 public:
-    IcoButton(const QString& text, const QString& asset, QWidget* parent = nullptr)
+    explicit IcoButton(const QString& text, const QString& asset, QWidget* parent = nullptr)
         : QToolButton(parent) {
             setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
             setText(text);

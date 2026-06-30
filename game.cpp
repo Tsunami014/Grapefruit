@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "wids/icobtn.hpp"
+#include "wids/secret.hpp"
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
@@ -26,25 +27,20 @@ MainGame::MainGame() {
         auto quickbtns = new QVBoxLayout();
             auto at = new IcoButton("All Tasks", ":/assets/tasks.svg");
             connect(at, &QPushButton::clicked, this, &MainGame::allTasks);
-            quickbtns->addWidget(at);
             auto nt = new IcoButton("New topic", ":/assets/new.svg");
             connect(nt, &QPushButton::clicked, this, &MainGame::newTopic);
-            quickbtns->addWidget(nt);
             auto st = new IcoButton("Settings", ":/assets/settings.svg");
             connect(st, &QPushButton::clicked, this, [=](){ stack->setCurrentWidget(setts); });
-            quickbtns->addWidget(st);
             int w = std::max({
-                at->sizeHint().width(),
-                nt->sizeHint().width(),
-                st->sizeHint().width()
+                at->sizeHint().width(), nt->sizeHint().width(), st->sizeHint().width()
             });
-            QSize sze(w-16, w-16);
-            at->setMinimumWidth(w);
-            at->setIconSize(sze);
-            nt->setMinimumWidth(w);
-            nt->setIconSize(sze);
-            st->setMinimumWidth(w);
-            st->setIconSize(sze);
+            QSize sze(w-16, w-16); // Also used elsewhere so all icons can be the same size
+            auto fixBtn = [&](IcoButton* btn) {
+                quickbtns->addWidget(btn);
+                btn->setMinimumWidth(w);
+                btn->setIconSize(sze);
+            };
+            fixBtn(at); fixBtn(nt); fixBtn(st);
         botsect->addLayout(quickbtns);
     mlay->addLayout(botsect, 1);
 
@@ -55,7 +51,10 @@ MainGame::MainGame() {
     auto slay = new QVBoxLayout(setts);
 
     auto topsect = new QHBoxLayout();
-        auto bk = new QPushButton("Back");
+        auto bk = new QPushButton();
+        bk->setProperty("isbtn", true);
+        bk->setIcon(QIcon(":/assets/back.svg"));
+        bk->setIconSize(sze);
         connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
         topsect->addWidget(bk);
         {auto labl = new QLabel("Settings");
@@ -64,16 +63,22 @@ MainGame::MainGame() {
         topsect->addWidget(labl);}
     slay->addLayout(topsect);
 
-    {auto labl = new QLabel("Bottom section");
-    labl->setStyleSheet("background-color: #AA55AA;");
-    labl->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    slay->addWidget(labl);}
+    {auto opts = new QVBoxLayout();
+        {auto labl = new QLabel("Bottom section");
+        labl->setStyleSheet("background-color: #AA55AA;");
+        labl->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        opts->addWidget(labl);}
+    auto sp = new Spoiler("Title");
+    sp->setContentLayout(*opts);
+    slay->addWidget(sp);}
+
+    slay->addStretch();
 
 
     // Initialise things!
     setStyleSheet(
-        "QMainWindow { background-color: #333333; }"
-        "QToolButton {"
+        "QMainWindow { background-color: #DDD; }"
+        "IcoButton, *[isbtn=true] {"
             "background-color: #CCAA55;"
             "color: white;"
             "border-radius: 4px;"
@@ -83,7 +88,7 @@ MainGame::MainGame() {
             "border-radius: 6px;"
             "border-color: #887755;"
         "}"
-        "QToolButton:pressed {"
+        "IcoButton:pressed, *[isbtn=true]:pressed {"
             "background-color: #997744;"
             "border-style: inset;"
         "}"

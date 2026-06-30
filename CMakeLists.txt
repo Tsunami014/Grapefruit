@@ -5,6 +5,9 @@ project(${APP_NAME} LANGUAGES CXX)
 set(CORE
     main.cpp game.cpp
     resources.qrc
+
+    wids/icobtn.hpp
+    wids/secret.cpp
 )
 
 set(CMAKE_AUTOMOC ON)
