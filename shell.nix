@@ -23,16 +23,18 @@ pkgs.mkShell {
       pkgs.libxkbcommon
       pkgs.fontconfig
       pkgs.freetype
-      pkgs.xorg.libX11
       pkgs.dbus
+
+      pkgs.xorg.libX11
+      pkgs.wayland
     ]}"
 
     export NIX_LD="${pkgs.stdenv.cc.libc}/lib/ld-linux-x86-64.so.2"
     export ANDROID_SDK_ROOT=$(nix-build '<nixpkgs>' -A androidenv.androidPkgs.androidsdk --no-out-link)/libexec/android-sdk
 
-    export LD_LIBRARY_PATH="/run/opengl-driver/lib:${pkgs.libGL}/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="/run/opengl-driver/lib:$NIX_LD_LIBRARY_PATH:$LD_LIBRARY_PATH"
 
-    python3 -m venv .venv
+    [ ! -d ".venv" ] && python3 -m venv .venv
     . ./.venv/bin/activate
     pip install aqtinstall
   '';

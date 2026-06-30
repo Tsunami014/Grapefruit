@@ -8,15 +8,15 @@ for arg in "$@"; do
         i|install) any=true
             echo "Installing built apk..."
             adb install -r $APK
-            ;;
+            sleep 1 ;;
         u|uninstall) any=true
             echo "Uninstalling application..."
             adb uninstall $PKG
-            ;;
+            sleep 1 ;;
         r|run) any=true
             echo "Running application..."
             adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1
-            ;;
+            sleep 1 ;;
         l|log) any=true
             PID=$(adb shell pidof $PKG | tr -d '\r')
             if [ -z $PID ]; then
