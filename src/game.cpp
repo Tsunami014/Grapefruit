@@ -19,6 +19,7 @@ MainGame::MainGame() {
     auto botsect = new QHBoxLayout();
         auto labl2 = new QLabel("Option section!");
         labl2->setStyleSheet("background-color: #33DD99;");
+        labl2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         botsect->addWidget(labl2);
 
         auto quickbtns = new QVBoxLayout();
@@ -47,12 +48,20 @@ MainGame::MainGame() {
 
     // Initialise things!
     setStyleSheet(
+        "QMainWindow { background-color: #333333; }"
         "QPushButton {"
             "background-color: #CCAA55;"
             "color: white;"
             "border-radius: 4px;"
             "padding: 6px 12px;"
-            "border: none;"
+            "border-style: outset;"
+            "border-width: 2px;"
+            "border-radius: 6px;"
+            "border-color: #887755;"
+        "}"
+        "QPushButton:pressed {"
+            "background-color: #997744;"
+            "border-style: inset;"
         "}"
     );
     stack->setCurrentWidget(main);
