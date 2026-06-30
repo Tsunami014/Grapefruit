@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "wids/icobtn.hpp"
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
@@ -23,15 +24,27 @@ MainGame::MainGame() {
         botsect->addWidget(labl);}
 
         auto quickbtns = new QVBoxLayout();
-            auto at = new QPushButton("All tasks");
+            auto at = new IcoButton("All Tasks", ":/assets/tasks.svg");
             connect(at, &QPushButton::clicked, this, &MainGame::allTasks);
             quickbtns->addWidget(at);
-            auto nt = new QPushButton("New topic");
+            auto nt = new IcoButton("New topic", ":/assets/new.svg");
             connect(nt, &QPushButton::clicked, this, &MainGame::newTopic);
             quickbtns->addWidget(nt);
-            auto st = new QPushButton("Settings");
+            auto st = new IcoButton("Settings", ":/assets/settings.svg");
             connect(st, &QPushButton::clicked, this, [=](){ stack->setCurrentWidget(setts); });
             quickbtns->addWidget(st);
+            int w = std::max({
+                at->sizeHint().width(),
+                nt->sizeHint().width(),
+                st->sizeHint().width()
+            });
+            QSize sze(w-16, w-16);
+            at->setMinimumWidth(w);
+            at->setIconSize(sze);
+            nt->setMinimumWidth(w);
+            nt->setIconSize(sze);
+            st->setMinimumWidth(w);
+            st->setIconSize(sze);
         botsect->addLayout(quickbtns);
     mlay->addLayout(botsect, 1);
 
@@ -52,7 +65,7 @@ MainGame::MainGame() {
     slay->addLayout(topsect);
 
     {auto labl = new QLabel("Bottom section");
-    labl->setStyleSheet("background-color: #33DD99;");
+    labl->setStyleSheet("background-color: #AA55AA;");
     labl->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     slay->addWidget(labl);}
 
@@ -60,7 +73,7 @@ MainGame::MainGame() {
     // Initialise things!
     setStyleSheet(
         "QMainWindow { background-color: #333333; }"
-        "QPushButton {"
+        "QToolButton {"
             "background-color: #CCAA55;"
             "color: white;"
             "border-radius: 4px;"
@@ -70,7 +83,7 @@ MainGame::MainGame() {
             "border-radius: 6px;"
             "border-color: #887755;"
         "}"
-        "QPushButton:pressed {"
+        "QToolButton:pressed {"
             "background-color: #997744;"
             "border-style: inset;"
         "}"
