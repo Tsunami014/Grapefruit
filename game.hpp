@@ -1,8 +1,6 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <QGridLayout>
-#include <memory>
-#include "base/tasks.hpp"
 
 class MainGame : public QMainWindow {
     Q_OBJECT
@@ -21,5 +19,4 @@ private:
     void generateSettings();
     void generateTasks();
     void initstyle();
-    void taskOverlay(std::shared_ptr<Task> task);
 };

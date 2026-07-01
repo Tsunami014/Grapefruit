@@ -1,16 +1,16 @@
 #include "game.hpp"
 #include "base/taskload.hpp"
 #include "wids/taskbbl.hpp"
+#include "wids/taskOverlay.hpp"
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
 
-void MainGame::taskOverlay(std::shared_ptr<Task> t) {
-}
-
 void MainGame::generateTasks() {
     tlay = new QGridLayout(tasks);
+    tlay->setContentsMargins(0, 0, 0, 0);
     auto mtlay = new QVBoxLayout();
+    mtlay->setContentsMargins(9, 9, 9, 9);
     tlay->addLayout(mtlay, 0, 0);
 
     auto topsect = new QHBoxLayout();
@@ -39,7 +39,9 @@ void MainGame::generateTasks() {
 
     for (const auto& t : taskslist) {
         auto bub = new TaskBubble(t, this);
-        connect(bub, &TaskBubble::clicked, this, [=](){ taskOverlay(t); });
+        connect(bub, &TaskBubble::clicked, this, [=](){
+            tlay->addWidget(new TaskOverlay(t, this), 0, 0);
+        });
         mtlay->addWidget(bub);
     }
 

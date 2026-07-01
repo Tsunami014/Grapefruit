@@ -8,7 +8,7 @@ MainGame::MainGame() {
     stack = new QStackedWidget(this);
     setCentralWidget(stack);
 
-    // Create the main window
+    // Create the main screen
     main = new QWidget();
     stack->addWidget(main);
     auto mlay = new QVBoxLayout(main);
@@ -47,20 +47,19 @@ MainGame::MainGame() {
     mlay->addLayout(botsect, 1);
 
 
-    // Create the settings window
+    // Create the settings screen
     setts = new QWidget();
     stack->addWidget(setts);
     generateSettings();
 
+    // Create the tasks screen
     tasks = new QWidget();
     stack->addWidget(tasks);
     generateTasks();
 
-    // Initialise things!
+    // Last initialisation!
     initstyle();
     stack->setCurrentWidget(main);
-    setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint);
-    show();
 }
 
 void MainGame::newTopic() {
