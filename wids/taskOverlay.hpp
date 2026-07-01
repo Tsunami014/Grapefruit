@@ -7,10 +7,13 @@ public:
     explicit TaskOverlay(std::shared_ptr<Task> task, QWidget* parent = nullptr);
 
 protected:
+    void resizeEvent(QResizeEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    const QMargins innerMarg();
+    QWidget* main;
+    QWidget* bottom;
+    QWidget* bbar;
 };
