@@ -19,13 +19,13 @@ TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(paren
     main->addWidget(labl);}
 }
 
-void TaskBubble::mousePressEvent(QMouseEvent *event) {
+void TaskBubble::mousePressEvent(QMouseEvent* event) {
     event->accept();
     pressed = true;
     QTimer::singleShot(0, this, &TaskBubble::refreshStyle);
     QWidget::mousePressEvent(event);
 }
-void TaskBubble::mouseReleaseEvent(QMouseEvent *event) {
+void TaskBubble::mouseReleaseEvent(QMouseEvent* event) {
     if (!pressed) return;
     event->accept();
     pressed = false;
@@ -33,7 +33,7 @@ void TaskBubble::mouseReleaseEvent(QMouseEvent *event) {
     QWidget::mouseReleaseEvent(event);
     emit clicked();
 }
-void TaskBubble::mouseMoveEvent(QMouseEvent *event) {
+void TaskBubble::mouseMoveEvent(QMouseEvent* event) {
     if (pressed && !rect().contains(event->pos())) {
         event->accept();
         pressed = false;

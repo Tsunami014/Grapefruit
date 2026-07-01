@@ -20,7 +20,7 @@ void TxtEdit::init() {
     verticalScrollBar()->setFocusPolicy(Qt::NoFocus);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    // Enable scrolling!
+    // Enable drag to scroll
     QScroller::grabGesture(viewport(), QScroller::TouchGesture);
     auto* scroller = QScroller::scroller(viewport());
     // Do not scroll outside the boundary

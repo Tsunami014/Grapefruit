@@ -7,38 +7,27 @@
 #include <QApplication>
 #include <QGuiApplication>
 
-const QMargins innerMarg{64, 96, 64, 64};
+const QMargins innerMarg{64, 96, 64, 48};
 
 
 TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(parent) {
-    main = new QWidget(this);
-    main->setGeometry(rect());
-    auto* mlay = new QVBoxLayout(main);
+    auto* lay = new QVBoxLayout(this);
+    lay->setContentsMargins(0,0,0,0);
+
+    auto* mlay = new QVBoxLayout();
     mlay->setContentsMargins(innerMarg + QMargins(12, 12, 12, 12));
-
-    auto titl = new QLabel(task->name, this);
-    mlay->addWidget(titl);
-
-    auto* edit = new TxtEdit(this);
-    mlay->addWidget(edit);
-
-    bottom = new QWidget(this);
-    bottom->setGeometry(rect());
-    auto* blay = new QVBoxLayout(bottom);
-    blay->setContentsMargins(QMargins(0,0,0,0));
-    blay->addStretch();
+        auto titl = new QLabel(task->name, this);
+        mlay->addWidget(titl);
+        auto* edit = new TxtEdit(this);
+        mlay->addWidget(edit);
+    lay->addLayout(mlay);
 
     auto* bbarr = new QLabel("Hello", this);
     bbarr->setStyleSheet("background-color: white;");
     bbarr->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
-    blay->addWidget(bbarr);
+    lay->addWidget(bbarr);
     bbar = bbarr;
-}
-void TaskOverlay::resizeEvent(QResizeEvent *event) {
-    QWidget::resizeEvent(event);
-    main->setGeometry(rect());
-    bottom->setGeometry(rect());
 }
 
 void TaskOverlay::keyPressEvent(QKeyEvent* event) {
@@ -52,7 +41,7 @@ void TaskOverlay::keyPressEvent(QKeyEvent* event) {
     QWidget::keyPressEvent(event);
 }
 void TaskOverlay::mousePressEvent(QMouseEvent* event) {
-    auto point = event->position().toPoint();
+    auto point = mapToGlobal(event->position().toPoint());
     auto r = rect();
     if (point.y() > r.bottom() - bbar->rect().height()) { event->ignore(); return; }
 
@@ -75,5 +64,5 @@ void TaskOverlay::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     auto r = rect();
     painter.fillRect(r, QColor(125, 125, 125, 125));
-    painter.fillRect(r.marginsRemoved(innerMarg), QColor(255, 255, 255));
+    painter.fillRect(r.marginsRemoved(innerMarg + QMargins(0,0,0,bbar->rect().height())), QColor(255, 255, 255));
 }
