@@ -9,5 +9,6 @@ public:
             setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
             setText(text);
             setIcon(QIcon(asset));
+            setAccessibleDescription(text);
         }
 };

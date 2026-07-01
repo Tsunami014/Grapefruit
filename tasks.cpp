@@ -1,11 +1,17 @@
 #include "game.hpp"
+#include "base/taskload.hpp"
 #include "wids/taskbbl.hpp"
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
 
+void MainGame::taskOverlay(std::shared_ptr<Task> t) {
+}
+
 void MainGame::generateTasks() {
-    auto tlay = new QVBoxLayout(tasks);
+    tlay = new QGridLayout(tasks);
+    auto mtlay = new QVBoxLayout();
+    tlay->addLayout(mtlay, 0, 0);
 
     auto topsect = new QHBoxLayout();
     topsect->setSpacing(16);
@@ -25,16 +31,17 @@ void MainGame::generateTasks() {
         line->setFrameShadow(QFrame::Plain);
         topsect->addWidget(line);}
         topsect->addStretch();
-    tlay->addLayout(topsect);
+    mtlay->addLayout(topsect);
     {QFrame* line = new QFrame();
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Raised);
-    tlay->addWidget(line);}
+    mtlay->addWidget(line);}
 
-    {auto bub = new TaskBubble("Hi", "bye", this);
-    tlay->addWidget(bub);}
-    {auto bub2 = new TaskBubble("Hi2", "bye2", this);
-    tlay->addWidget(bub2);}
+    for (const auto& t : taskslist) {
+        auto bub = new TaskBubble(t, this);
+        connect(bub, &TaskBubble::clicked, this, [=](){ taskOverlay(t); });
+        mtlay->addWidget(bub);
+    }
 
-    tlay->addStretch();
+    mtlay->addStretch();
 }

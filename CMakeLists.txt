@@ -7,6 +7,9 @@ set(CORE
     resources.qrc
     settings.cpp tasks.cpp style.cpp
 
+    base/tasks.cpp
+    base/taskload.cpp
+
     wids/icobtn.hpp
     wids/secret.cpp
     wids/taskbbl.cpp
@@ -22,5 +25,7 @@ qt_policy(SET QTP0002 NEW) # Shushes a warning
 
 qt_add_executable(${APP_NAME} ${CORE})
 target_link_libraries(${APP_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Svg Qt6::Widgets)
+
+target_include_directories(${APP_NAME} PUBLIC ${CMAKE_SOURCE_DIR})
 
 set_property(TARGET ${APP_NAME} PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")

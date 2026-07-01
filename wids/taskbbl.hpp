@@ -2,11 +2,12 @@
 #include <QWidget>
 #include <QBoxLayout>
 #include <QMouseEvent>
+#include "base/tasks.hpp"
 
 class TaskBubble : public QWidget {
     Q_OBJECT
 public:
-    explicit TaskBubble(const QString& top, const QString& bot, QWidget* parent = nullptr);
+    explicit TaskBubble(std::shared_ptr<Task> t, QWidget* parent = nullptr);
 
 signals:
     void clicked();

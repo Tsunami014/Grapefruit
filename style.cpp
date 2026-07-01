@@ -2,6 +2,7 @@
 
 void MainGame::initstyle() {
     setStyleSheet(
+        "* { color: black; }"
         "QMainWindow { background-color: #DDD; }"
 
         "IcoButton, *[isbtn=true] {"

@@ -3,16 +3,16 @@
 #include <QStyleOption>
 #include <QPainter>
 
-TaskBubble::TaskBubble(const QString& top, const QString& bot, QWidget* parent) : QWidget(parent) {
+TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(parent) {
     main = new QVBoxLayout(this);
     main->setSpacing(0);
 
-    {auto labl = new QLabel(top, this);
+    {auto labl = new QLabel(t->name, this);
     labl->setAlignment(Qt::AlignCenter);
     labl->setProperty("bubble", "top");
     main->addWidget(labl);}
 
-    {auto labl = new QLabel(bot, this);
+    {auto labl = new QLabel("Bottom task info will go here!", this);
     labl->setAlignment(Qt::AlignCenter);
     labl->setProperty("bubble", "bot");
     main->addWidget(labl);}
