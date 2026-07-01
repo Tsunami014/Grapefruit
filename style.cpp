@@ -37,13 +37,13 @@ void MainGame::initstyle() {
             "border-style: inset;"
         "}"
 
+        "TaskBubble { background: transparent; }"
         "TaskBubble QLabel {"
             "border-style: outset;"
             "border-width: 2px;"
             "border-color: #666;"
         "}"
         "TaskBubble[pressed=true] QLabel { border-style: inset; }"
-
         "TaskBubble QLabel[bubble=top] {"
             "background-color: #DD8866;"
             "border-top-left-radius: 12px;"

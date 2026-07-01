@@ -7,7 +7,7 @@
 #include <QGuiApplication>
 
 
-TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) {
+TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(parent) {
     auto* lay = new QVBoxLayout(this);
     lay->setContentsMargins(innerMarg() + QMargins(12, 12, 12, 12));
 

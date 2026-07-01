@@ -2,6 +2,7 @@
 #include <QLabel>
 #include <QStyleOption>
 #include <QPainter>
+#include <QTimer>
 
 TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(parent) {
     main = new QVBoxLayout(this);
@@ -21,14 +22,14 @@ TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(paren
 void TaskBubble::mousePressEvent(QMouseEvent *event) {
     event->accept();
     pressed = true;
-    refreshStyle();
+    QTimer::singleShot(0, this, &TaskBubble::refreshStyle);
     QWidget::mousePressEvent(event);
 }
 void TaskBubble::mouseReleaseEvent(QMouseEvent *event) {
     if (!pressed) return;
     event->accept();
     pressed = false;
-    refreshStyle();
+    QTimer::singleShot(0, this, &TaskBubble::refreshStyle);
     QWidget::mouseReleaseEvent(event);
     emit clicked();
 }
@@ -36,16 +37,14 @@ void TaskBubble::mouseMoveEvent(QMouseEvent *event) {
     if (pressed && !rect().contains(event->pos())) {
         event->accept();
         pressed = false;
-        refreshStyle();
+        QTimer::singleShot(0, this, &TaskBubble::refreshStyle);
     }
     QWidget::mouseMoveEvent(event);
 }
 void TaskBubble::refreshStyle() {
     setProperty("pressed", pressed);
-    style()->unpolish(this);
     style()->polish(this);
     for (QLabel* labl : findChildren<QLabel*>()) {
-        style()->unpolish(labl);
         style()->polish(labl);
         labl->update();
     }
