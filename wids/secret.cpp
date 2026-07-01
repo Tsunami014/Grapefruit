@@ -5,7 +5,7 @@
 #include <QStyle>
 #include "secret.hpp"
 
-const int animationDuration = 250;
+const int animationDuration = 200;
 
 HeaderButton::HeaderButton(QWidget* parent) : QToolButton(parent) {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -16,17 +16,20 @@ void HeaderButton::paintEvent(QPaintEvent* event) {
 
     QStyleOptionToolButton opt;
     initStyleOption(&opt);
-    int x = fm.horizontalAdvance(opt.text) + 24;
+    int x = fm.horizontalAdvance(opt.text) + 28;
     if (!opt.icon.isNull()) {
         x += style()->pixelMetric(QStyle::PM_SmallIconSize, &opt, this) + 4;
     }
 
     QPainter p(this);
-    int y = height() / 2;
     int from = x + 8;
-    int to = width() - 8;
+    int to = width() - 12;
     if (to > from) {
-        p.setPen(palette().mid().color());
+        QColor col = lcol.isValid()? lcol : palette().mid().color();
+        QPen pen(col, lwid, Qt::SolidLine, Qt::FlatCap);
+        p.setPen(pen);
+
+        int y = height() / 2;
         p.drawLine(from, y, to, y);
     }
 }
@@ -43,12 +46,10 @@ Spoiler::Spoiler(const QString& title, QWidget* parent) : QWidget(parent) {
     // start out collapsed
     contentArea.setMaximumHeight(0);
     contentArea.setMinimumHeight(0);
-    // let the entire widget grow and shrink with its content
-    toggleAnimation.addAnimation(new QPropertyAnimation(this, "minimumHeight"));
-    toggleAnimation.addAnimation(new QPropertyAnimation(this, "maximumHeight"));
     toggleAnimation.addAnimation(new QPropertyAnimation(&contentArea, "maximumHeight"));
     // don't waste space
     mainLayout.setContentsMargins(0, 0, 0, 0);
+    mainLayout.setSpacing(0);
     int row = 0;
     mainLayout.addWidget(&toggleButton);
     mainLayout.addWidget(&contentArea);

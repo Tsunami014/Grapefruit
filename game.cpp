@@ -52,6 +52,7 @@ MainGame::MainGame() {
     setts = new QWidget();
     stack->addWidget(setts);
     auto slay = new QVBoxLayout(setts);
+    slay->setSpacing(16);
 
     auto topsect = new QHBoxLayout();
         auto bk = new QPushButton();
@@ -69,10 +70,15 @@ MainGame::MainGame() {
 
     {auto opts = new QVBoxLayout();
         {auto labl = new QLabel("Bottom section");
-        labl->setStyleSheet("background-color: #AA55AA;");
-        labl->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         opts->addWidget(labl);}
     auto sp = new Spoiler("Title");
+    sp->setContentLayout(*opts);
+    slay->addWidget(sp);}
+
+    {auto opts = new QVBoxLayout();
+        {auto labl = new QLabel("Bottom section2");
+        opts->addWidget(labl);}
+    auto sp = new Spoiler("Title2");
     sp->setContentLayout(*opts);
     slay->addWidget(sp);}
 
@@ -93,6 +99,22 @@ MainGame::MainGame() {
             "border-color: #887755;"
         "}"
         "IcoButton:pressed, *[isbtn=true]:pressed {"
+            "background-color: #997744;"
+            "border-style: inset;"
+        "}"
+        "Spoiler QToolButton {"
+            "background-color: #CCAA55;"
+            "color: white;"
+            "border-radius: 4px;"
+            "padding: 5px;"
+            "border-style: outset;"
+            "border-width: 2px;"
+            "border-radius: 6px;"
+            "border-color: #887755;"
+            "qproperty-lineColour: #555;"
+            "qproperty-lineWidth: 3px;"
+        "}"
+        "Spoiler QToolButton:pressed {"
             "background-color: #997744;"
             "border-style: inset;"
         "}"
