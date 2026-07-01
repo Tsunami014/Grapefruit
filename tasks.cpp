@@ -17,7 +17,7 @@ void MainGame::generateTasks() {
     topsect->setSpacing(16);
         auto left = new QVBoxLayout();
             auto bk = new QPushButton();
-            bk->setProperty("isbtn", true);
+            bk->setProperty("backbtn", true);
             bk->setIcon(QIcon(":/assets/back.svg"));
             bk->setIconSize(QSize(48, 48));
             connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });

@@ -22,12 +22,20 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
         mlay->addWidget(edit);
     lay->addLayout(mlay);
 
-    auto* bbarr = new QLabel("Hello", this);
-    bbarr->setStyleSheet("background-color: white;");
-    bbarr->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    bbar = new QWidget(this);
+    bbar->setStyleSheet("background-color: white;");
+    bbar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    lay->addWidget(bbar);
 
-    lay->addWidget(bbarr);
-    bbar = bbarr;
+    auto* blay = new QHBoxLayout(bbar);
+    blay->setContentsMargins(16,8,16,8);
+    auto* labl = new QLabel("Hello!", bbar);
+    blay->addWidget(labl);
+    blay->addStretch();
+}
+
+inline QMargins TaskOverlay::totMargin() {
+    return innerMarg + QMargins(0,0,0,bbar->rect().height());
 }
 
 void TaskOverlay::keyPressEvent(QKeyEvent* event) {
@@ -45,7 +53,7 @@ void TaskOverlay::mousePressEvent(QMouseEvent* event) {
     auto r = rect();
     if (point.y() > r.bottom() - bbar->rect().height()) { event->ignore(); return; }
 
-    if (!r.marginsRemoved(innerMarg).contains(point)) {
+    if (!r.marginsRemoved(totMargin()).contains(point)) {
         if (QGuiApplication::inputMethod()->isVisible()) {
             QGuiApplication::inputMethod()->hide();
             if (QWidget* focus = QApplication::focusWidget()) { focus->clearFocus(); }
@@ -64,5 +72,5 @@ void TaskOverlay::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     auto r = rect();
     painter.fillRect(r, QColor(125, 125, 125, 125));
-    painter.fillRect(r.marginsRemoved(innerMarg + QMargins(0,0,0,bbar->rect().height())), QColor(255, 255, 255));
+    painter.fillRect(r.marginsRemoved(totMargin()), QColor(255, 255, 255));
 }

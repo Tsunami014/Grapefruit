@@ -13,4 +13,5 @@ protected:
 
 private:
     QWidget* bbar;
+    inline QMargins totMargin();
 };
