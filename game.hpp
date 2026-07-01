@@ -16,4 +16,5 @@ private:
 
     void generateSettings();
     void generateTasks();
+    void initstyle();
 };

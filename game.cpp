@@ -57,39 +57,7 @@ MainGame::MainGame() {
     generateTasks();
 
     // Initialise things!
-    setStyleSheet(
-        "QMainWindow { background-color: #DDD; }"
-        "IcoButton, *[isbtn=true] {"
-            "background-color: #CCAA55;"
-            "color: white;"
-            "border-radius: 4px;"
-            "padding: 4px;"
-            "border-style: outset;"
-            "border-width: 2px;"
-            "border-radius: 6px;"
-            "border-color: #887755;"
-        "}"
-        "IcoButton:pressed, *[isbtn=true]:pressed {"
-            "background-color: #997744;"
-            "border-style: inset;"
-        "}"
-        "Spoiler QToolButton {"
-            "background-color: #55CCBB;"
-            "color: white;"
-            "border-radius: 4px;"
-            "padding: 5px;"
-            "border-style: outset;"
-            "border-width: 2px;"
-            "border-radius: 6px;"
-            "border-color: #448877;"
-            "qproperty-lineColour: #555;"
-            "qproperty-lineWidth: 3px;"
-        "}"
-        "Spoiler QToolButton:pressed {"
-            "background-color: #339988;"
-            "border-style: inset;"
-        "}"
-    );
+    initstyle();
     stack->setCurrentWidget(main);
     setWindowFlags(windowFlags() | Qt::ExpandedClientAreaHint);
     show();

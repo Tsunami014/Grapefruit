@@ -5,10 +5,11 @@ project(${APP_NAME} LANGUAGES CXX)
 set(CORE
     main.cpp game.cpp
     resources.qrc
-    settings.cpp tasks.cpp
+    settings.cpp tasks.cpp style.cpp
 
     wids/icobtn.hpp
     wids/secret.cpp
+    wids/taskbbl.cpp
 )
 
 set(CMAKE_AUTOMOC ON)
