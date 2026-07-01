@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QGuiApplication>
 
-const QMargins innerMarg{64, 96, 64, 48};
+const QMargins innerMarg{64, 72, 64, 56};
 
 
 TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(parent) {
@@ -15,7 +15,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
     lay->setContentsMargins(0,0,0,0);
 
     auto* mlay = new QVBoxLayout();
-    mlay->setContentsMargins(innerMarg + QMargins(12, 12, 12, 12));
+    mlay->setContentsMargins(innerMarg + QMargins(16, 16, 16, 16));
         auto titl = new QLabel(task->name, this);
         mlay->addWidget(titl);
         auto* edit = new TxtEdit(this);
@@ -71,6 +71,9 @@ void TaskOverlay::mousePressEvent(QMouseEvent* event) {
 void TaskOverlay::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     auto r = rect();
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(r, QColor(125, 125, 125, 125));
-    painter.fillRect(r.marginsRemoved(totMargin()), QColor(255, 255, 255));
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(QColor(255, 255, 255));
+    painter.drawRoundedRect(r.marginsRemoved(totMargin()), 16, 16);
 }
