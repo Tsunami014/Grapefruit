@@ -25,19 +25,22 @@ MainGame::MainGame() {
         botsect->addWidget(labl);}
 
         auto quickbtns = new QVBoxLayout();
-            auto at = new IcoButton("All Tasks", ":/assets/tasks.svg");
-            connect(at, &QPushButton::clicked, this, &MainGame::allTasks);
-            auto nt = new IcoButton("New topic", ":/assets/new.svg");
-            connect(nt, &QPushButton::clicked, this, &MainGame::newTopic);
-            auto st = new IcoButton("Settings", ":/assets/settings.svg");
-            connect(st, &QPushButton::clicked, this, [=](){ stack->setCurrentWidget(setts); });
+            auto addBtn = [&](const QString& labl, const QString& asset, auto slot) {
+                auto btn = new IcoButton(labl, asset);
+                btn->setIconSize(QSize(0,0));
+                connect(btn, &QPushButton::clicked, this, slot);
+                return btn;
+            };
+            auto at = addBtn("All Tasks", ":/assets/tasks.svg", &MainGame::allTasks);
+            auto nt = addBtn("New topic", ":/assets/new.svg", &MainGame::newTopic);
+            auto st = addBtn("Settings", ":/assets/settings.svg", [=](){ stack->setCurrentWidget(setts); });
             int w = std::max({
                 at->sizeHint().width(), nt->sizeHint().width(), st->sizeHint().width()
             });
-            QSize sze(w-16, w-16); // Also used elsewhere so all icons can be the same size
+            QSize sze(w*0.6, w*0.6);
             auto fixBtn = [&](IcoButton* btn) {
                 quickbtns->addWidget(btn);
-                btn->setMinimumWidth(w);
+                btn->setMinimumWidth(w+6);
                 btn->setIconSize(sze);
             };
             fixBtn(at); fixBtn(nt); fixBtn(st);
@@ -54,7 +57,8 @@ MainGame::MainGame() {
         auto bk = new QPushButton();
         bk->setProperty("isbtn", true);
         bk->setIcon(QIcon(":/assets/back.svg"));
-        bk->setIconSize(sze);
+        bk->setIconSize(QSize(48, 48));
+        bk->
         connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
         topsect->addWidget(bk);
         {auto labl = new QLabel("Settings");
@@ -82,7 +86,7 @@ MainGame::MainGame() {
             "background-color: #CCAA55;"
             "color: white;"
             "border-radius: 4px;"
-            "padding: 6px 12px;"
+            "padding: 4px;"
             "border-style: outset;"
             "border-width: 2px;"
             "border-radius: 6px;"
