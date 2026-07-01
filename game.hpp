@@ -13,4 +13,6 @@ private:
     QStackedWidget* stack;
     QWidget* main;
     QWidget* setts;
+
+    void generateSettings();
 };

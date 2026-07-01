@@ -1,6 +1,5 @@
 #include "game.hpp"
 #include "wids/icobtn.hpp"
-#include "wids/secret.hpp"
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
@@ -15,7 +14,7 @@ MainGame::MainGame() {
     auto mlay = new QVBoxLayout(main);
 
     {auto labl = new QLabel("Hello from Qt on Android!");
-    labl->setStyleSheet("background-color: #3399DD;");
+    labl->setStyleSheet("background-color: #4488CC;");
     mlay->addWidget(labl, 2);}
 
     auto botsect = new QHBoxLayout();
@@ -51,39 +50,7 @@ MainGame::MainGame() {
     // Create the settings window
     setts = new QWidget();
     stack->addWidget(setts);
-    auto slay = new QVBoxLayout(setts);
-    slay->setSpacing(16);
-
-    auto topsect = new QHBoxLayout();
-        auto bk = new QPushButton();
-        bk->setProperty("isbtn", true);
-        bk->setIcon(QIcon(":/assets/back.svg"));
-        bk->setIconSize(QSize(48, 48));
-        bk->
-        connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
-        topsect->addWidget(bk);
-        {auto labl = new QLabel("Settings");
-        labl->setAlignment(Qt::AlignCenter);
-        labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        topsect->addWidget(labl);}
-    slay->addLayout(topsect);
-
-    {auto opts = new QVBoxLayout();
-        {auto labl = new QLabel("Bottom section");
-        opts->addWidget(labl);}
-    auto sp = new Spoiler("Title");
-    sp->setContentLayout(*opts);
-    slay->addWidget(sp);}
-
-    {auto opts = new QVBoxLayout();
-        {auto labl = new QLabel("Bottom section2");
-        opts->addWidget(labl);}
-    auto sp = new Spoiler("Title2");
-    sp->setContentLayout(*opts);
-    slay->addWidget(sp);}
-
-    slay->addStretch();
-
+    generateSettings();
 
     // Initialise things!
     setStyleSheet(
@@ -103,19 +70,19 @@ MainGame::MainGame() {
             "border-style: inset;"
         "}"
         "Spoiler QToolButton {"
-            "background-color: #CCAA55;"
+            "background-color: #55CCBB;"
             "color: white;"
             "border-radius: 4px;"
             "padding: 5px;"
             "border-style: outset;"
             "border-width: 2px;"
             "border-radius: 6px;"
-            "border-color: #887755;"
+            "border-color: #448877;"
             "qproperty-lineColour: #555;"
             "qproperty-lineWidth: 3px;"
         "}"
         "Spoiler QToolButton:pressed {"
-            "background-color: #997744;"
+            "background-color: #339988;"
             "border-style: inset;"
         "}"
     );

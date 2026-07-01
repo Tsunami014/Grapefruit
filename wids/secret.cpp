@@ -1,9 +1,9 @@
 // Thanks in part to https://stackoverflow.com/a/37119983 !
+#include "secret.hpp"
 #include <QPropertyAnimation>
 #include <QPainter>
 #include <QStyleOptionToolButton>
 #include <QStyle>
-#include "secret.hpp"
 
 const int animationDuration = 200;
 
