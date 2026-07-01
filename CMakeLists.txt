@@ -13,6 +13,7 @@ set(CORE
     wids/icobtn.hpp
     wids/secret.cpp
     wids/taskbbl.cpp
+    wids/txtedit.cpp
     wids/taskOverlay.cpp
 )
 
