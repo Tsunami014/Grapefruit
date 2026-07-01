@@ -16,6 +16,8 @@ private:
     QWidget* tasks;
     QGridLayout* tlay;
 
+    void keyPressEvent(QKeyEvent* event) override;
+
     void generateSettings();
     void generateTasks();
     void initstyle();

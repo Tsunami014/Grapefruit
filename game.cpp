@@ -3,6 +3,7 @@
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
+#include <QKeyEvent>
 
 MainGame::MainGame() {
     stack = new QStackedWidget(this);
@@ -60,6 +61,15 @@ MainGame::MainGame() {
     // Last initialisation!
     initstyle();
     stack->setCurrentWidget(main);
+}
+
+void MainGame::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Back) {
+        stack->setCurrentWidget(main);
+        event->accept();
+        return;
+    }
+    QWidget::keyPressEvent(event);
 }
 
 void MainGame::newTopic() {

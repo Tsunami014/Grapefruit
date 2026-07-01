@@ -4,6 +4,7 @@
 #include <QMouseEvent>
 #include <QBoxLayout>
 #include <QLabel>
+#include <QApplication>
 #include <QGuiApplication>
 
 
@@ -22,15 +23,31 @@ const QMargins TaskOverlay::innerMarg() {
     return {64, 96, 64, 48};
 }
 
-void TaskOverlay::mousePressEvent(QMouseEvent* event) {
-    if (!rect().marginsRemoved(innerMarg()).contains(event->position().toPoint())) {
+void TaskOverlay::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Back) {
         if (QGuiApplication::inputMethod()->isVisible()) {
             QGuiApplication::inputMethod()->hide();
+        } else { deleteLater(); }
+        event->accept();
+        return;
+    }
+    QWidget::keyPressEvent(event);
+}
+void TaskOverlay::mousePressEvent(QMouseEvent* event) {
+    auto point = event->position().toPoint();
+    if (!rect().marginsRemoved(innerMarg()).contains(point)) {
+        if (QGuiApplication::inputMethod()->isVisible()) {
+            QGuiApplication::inputMethod()->hide();
+            if (QWidget* focus = QApplication::focusWidget()) { focus->clearFocus(); }
         } else {
             deleteLater();
         }
         event->accept();
-    } else { event->ignore(); }
+        return;
+    }
+    QWidget* wid = QApplication::widgetAt(point);
+    if (qobject_cast<QTextEdit*>(wid)) { event->ignore(); }
+    else if (QWidget* focus = QApplication::focusWidget()) { focus->clearFocus(); }
 }
 
 void TaskOverlay::paintEvent(QPaintEvent* event) {
