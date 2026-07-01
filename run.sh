@@ -15,7 +15,8 @@ for arg in "$@"; do
             sleep 1 ;;
         r|run) any=true
             echo "Running application..."
-            adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1
+            COMPONENT=$(adb shell cmd package resolve-activity --brief "$PKG" | tail -n 1 | tr -d '\r')
+            adb shell am start -n "$COMPONENT"
             sleep 1 ;;
         l|log) any=true
             PID=$(adb shell pidof $PKG | tr -d '\r')
