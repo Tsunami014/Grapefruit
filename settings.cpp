@@ -13,7 +13,6 @@ void MainGame::generateSettings() {
         bk->setProperty("isbtn", true);
         bk->setIcon(QIcon(":/assets/back.svg"));
         bk->setIconSize(QSize(48, 48));
-        bk->
         connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
         topsect->addWidget(bk);
         {auto labl = new QLabel("Settings");

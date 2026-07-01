@@ -30,11 +30,11 @@ MainGame::MainGame() {
                 connect(btn, &QPushButton::clicked, this, slot);
                 return btn;
             };
-            auto at = addBtn("All Tasks", ":/assets/tasks.svg", &MainGame::allTasks);
             auto nt = addBtn("New topic", ":/assets/new.svg", &MainGame::newTopic);
+            auto at = addBtn("All Tasks", ":/assets/tasks.svg", [=](){ stack->setCurrentWidget(tasks); });
             auto st = addBtn("Settings", ":/assets/settings.svg", [=](){ stack->setCurrentWidget(setts); });
             int w = std::max({
-                at->sizeHint().width(), nt->sizeHint().width(), st->sizeHint().width()
+                nt->sizeHint().width(), at->sizeHint().width(), st->sizeHint().width()
             });
             QSize sze(w*0.6, w*0.6);
             auto fixBtn = [&](IcoButton* btn) {
@@ -42,7 +42,7 @@ MainGame::MainGame() {
                 btn->setMinimumWidth(w+6);
                 btn->setIconSize(sze);
             };
-            fixBtn(at); fixBtn(nt); fixBtn(st);
+            fixBtn(nt); fixBtn(at); fixBtn(st);
         botsect->addLayout(quickbtns);
     mlay->addLayout(botsect, 1);
 
@@ -51,6 +51,10 @@ MainGame::MainGame() {
     setts = new QWidget();
     stack->addWidget(setts);
     generateSettings();
+
+    tasks = new QWidget();
+    stack->addWidget(tasks);
+    generateTasks();
 
     // Initialise things!
     setStyleSheet(
@@ -92,7 +96,4 @@ MainGame::MainGame() {
 }
 
 void MainGame::newTopic() {
-}
-
-void MainGame::allTasks() {
 }

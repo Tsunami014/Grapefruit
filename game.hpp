@@ -7,12 +7,13 @@ public:
     MainGame();
 public slots:
     void newTopic();
-    void allTasks();
 
 private:
     QStackedWidget* stack;
     QWidget* main;
     QWidget* setts;
+    QWidget* tasks;
 
     void generateSettings();
+    void generateTasks();
 };

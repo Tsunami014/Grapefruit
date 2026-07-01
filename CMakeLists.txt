@@ -5,7 +5,7 @@ project(${APP_NAME} LANGUAGES CXX)
 set(CORE
     main.cpp game.cpp
     resources.qrc
-    settings.cpp
+    settings.cpp tasks.cpp
 
     wids/icobtn.hpp
     wids/secret.cpp
