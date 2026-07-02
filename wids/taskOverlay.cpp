@@ -8,8 +8,35 @@
 #include <QApplication>
 #include <QGuiApplication>
 #include <QPushButton>
+#include <QRegularExpression>
 
 const QMargins innerMarg{64, 72, 64, 56};
+
+
+const QRegularExpression re(R"((?<=^|[ \n<>])(![0-9]+)(?=[ \n<>]|$))");
+void highlight(QTextEdit* edit) {
+    QSignalBlocker block(edit);
+    int pos = edit->textCursor().position();
+
+    QString conts = edit->toPlainText().toHtmlEscaped();
+    QString nxt = conts;auto it = re.globalMatch(nxt);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString g = m.captured(1);
+        QString repl = "<b>"+g+"</b>";
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        conts.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    edit->setHtml("<span style='white-space: pre-wrap;'>"+conts+"</span>");
+
+    QTextCursor ncur = edit->textCursor();
+    ncur.setPosition(pos);
+    edit->setTextCursor(ncur);
+}
 
 
 TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(parent) {
@@ -39,7 +66,10 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
     bbar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     connect(edit, &TxtEdit::focusChange, bbar, [=](bool focus){ GenerateOpts(bbar, blay, edit, focus); });
-    connect(edit, &QTextEdit::textChanged, [=](){ task->items = edit->toPlainText(); });
+    connect(edit, &QTextEdit::textChanged, [=](){
+        task->items = edit->toPlainText();
+        highlight(edit);
+    });
 }
 
 inline QMargins TaskOverlay::totMargin() {
