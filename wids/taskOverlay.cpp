@@ -20,7 +20,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
     mlay->setContentsMargins(innerMarg + QMargins(16, 16, 16, 16));
         auto titl = new QLabel(task->name, this);
         mlay->addWidget(titl);
-        auto* edit = new TxtEdit(this);
+        auto* edit = new TxtEdit(task->items, this);
         mlay->addWidget(edit);
     lay->addLayout(mlay);
 
@@ -39,6 +39,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
     bbar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     connect(edit, &TxtEdit::focusChange, bbar, [=](bool focus){ GenerateOpts(bbar, blay, edit, focus); });
+    connect(edit, &QTextEdit::textChanged, [=](){ task->items = edit->toPlainText(); });
 }
 
 inline QMargins TaskOverlay::totMargin() {

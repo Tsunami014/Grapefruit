@@ -6,4 +6,5 @@ public:
     Task(const QString& name);
 
     QString name;
+    QString items;
 };
