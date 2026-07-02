@@ -1,4 +1,5 @@
 #include "txtedit.hpp"
+#include "extra/drag.hpp"
 #include <QScrollBar>
 #include <QScroller>
 #include <QKeyEvent>
@@ -21,14 +22,8 @@ void TxtEdit::init() {
     verticalScrollBar()->setFocusPolicy(Qt::NoFocus);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    // Enable drag to scroll
-    QScroller::grabGesture(viewport(), QScroller::TouchGesture);
-    auto* scroller = QScroller::scroller(viewport());
-    // Do not scroll outside the boundary
-    QScrollerProperties props = scroller->scrollerProperties();
-    props.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    props.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    scroller->setScrollerProperties(props);
+    auto* drag = new DragScroll(viewport(), verticalScrollBar());
+    drag->installOn(this);
 }
 
 void TxtEdit::focusInEvent(QFocusEvent *e) {

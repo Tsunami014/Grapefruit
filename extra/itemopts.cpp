@@ -5,7 +5,7 @@
 #include <QTextCursor>
 #include <QTextBlock>
 
-void swapBlocks(QTextCursor& cur, QTextBlock block, QTextBlock next) {
+void swapBlocks(QTextCursor& cur, const QTextBlock& block, const QTextBlock& next) {
     if (!next.isValid()) return;
     int column = cur.position() - cur.block().position();
 
@@ -25,17 +25,19 @@ void swapBlocks(QTextCursor& cur, QTextBlock block, QTextBlock next) {
     cur.setPosition(next.position() + qBound(0, column, next.length() - 1));
 }
 
-void setBlockText(QTextCursor& cur, QTextBlock block, QString text, int coloffs = 0) {
+void setBlockText(QTextCursor& cur, const QTextBlock& block, const QString& text, int coloffs = 0) {
     if (!block.isValid()) return;
-    int column = cur.position() - cur.block().position() + coloffs;
+
+    const int blockPos = block.position();
+    const int column = cur.position() - cur.block().position() + coloffs;
 
     cur.beginEditBlock();
-        cur.setPosition(block.position());
+        cur.setPosition(blockPos);
         cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
         cur.insertText(text);
     cur.endEditBlock();
 
-    cur.setPosition(cur.block().position() + qBound(0, column, block.length() - 1));
+    cur.setPosition(blockPos + qBound(0, column, text.size()));
 }
 
 void addTime(QTextEdit* edit, int diff) {

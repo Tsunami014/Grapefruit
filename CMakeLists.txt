@@ -9,7 +9,9 @@ set(CORE
 
     base/tasks.cpp
     base/taskload.cpp
-    base/itemopts.cpp
+
+    extra/itemopts.cpp
+    extra/drag.cpp
 
     wids/icobtn.hpp
     wids/secret.cpp

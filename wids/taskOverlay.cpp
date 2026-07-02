@@ -1,5 +1,6 @@
 #include "taskOverlay.hpp"
-#include "base/itemopts.hpp"
+#include "extra/itemopts.hpp"
+#include "extra/drag.hpp"
 #include "wids/txtedit.hpp"
 #include <QPainter>
 #include <QMouseEvent>
@@ -49,6 +50,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
         auto titl = new QLabel(task->name, this);
         mlay->addWidget(titl);
         auto* edit = new TxtEdit(task->items, this);
+        highlight(edit);
         mlay->addWidget(edit);
     lay->addLayout(mlay);
 
@@ -56,20 +58,12 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
     scrl->setFrameShape(QFrame::NoFrame);
     scrl->setFocusPolicy(Qt::NoFocus);
     scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    scrl->setProperty("bg", true);
 
     scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
-
-    // Enable drag to scroll
-    QScroller::grabGesture(scrl->viewport(), QScroller::TouchGesture);
-    auto* scroller = QScroller::scroller(scrl->viewport());
-    // Do not scroll outside the boundary
-    QScrollerProperties props = scroller->scrollerProperties();
-    props.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    props.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    scroller->setScrollerProperties(props);
 
     lay->addWidget(scrl);
     bbar = new QWidget;
@@ -83,11 +77,16 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
 
     GenerateOpts(bbar, blay, edit, true);
     bbar->adjustSize();
+    auto* drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
+
     int sb = scrl->horizontalScrollBar()->sizeHint().height();
     scrl->setFixedHeight(bbar->rect().height() + sb);
     GenerateOpts(bbar, blay, edit, false);
 
-    connect(edit, &TxtEdit::focusChange, bbar, [=](bool focus){ GenerateOpts(bbar, blay, edit, focus); });
+    connect(edit, &TxtEdit::focusChange, bbar, [=](bool focus){
+        GenerateOpts(bbar, blay, edit, focus);
+        drag->installOn(bbar);
+    });
     connect(edit, &QTextEdit::textChanged, [=](){
         task->items = edit->toPlainText();
         highlight(edit);
