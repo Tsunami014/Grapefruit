@@ -1,9 +1,14 @@
 <RCC>
     <qresource prefix="/">
         <file>assets/back.svg</file>
+
         <file>assets/new.svg</file>
         <file>assets/tasks.svg</file>
         <file>assets/settings.svg</file>
+
+        <file>assets/up.svg</file>
+        <file>assets/down.svg</file>
+        <file>assets/erase.svg</file>
     </qresource>
 </RCC>
 

@@ -1,5 +1,6 @@
 #pragma once
-#include <QBoxLayout>
 #include <QWidget>
+#include <QBoxLayout>
+#include <QTextEdit>
 
-void GenerateOpts(QWidget* parent, QBoxLayout* lay, bool focus);
+void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus);

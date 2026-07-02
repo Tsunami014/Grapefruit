@@ -31,13 +31,14 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
 
     auto* blay = new QHBoxLayout(bbar);
     blay->setContentsMargins(12,6,12,6);
+    blay->setSpacing(12);
 
     int hei = 40+8+12; // Base hei + padding + margin
     bbar->setMaximumHeight(hei); bbar->setMinimumHeight(hei);
-    GenerateOpts(bbar, blay, false);
+    GenerateOpts(bbar, blay, edit, false);
     bbar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    connect(edit, &TxtEdit::focusChange, bbar, [=](bool focus){ GenerateOpts(bbar, blay, focus); });
+    connect(edit, &TxtEdit::focusChange, bbar, [=](bool focus){ GenerateOpts(bbar, blay, edit, focus); });
 }
 
 inline QMargins TaskOverlay::totMargin() {
