@@ -12,6 +12,7 @@ signals:
 protected:
     void focusInEvent(QFocusEvent *e) override;
     void focusOutEvent(QFocusEvent *e) override;
+    void keyPressEvent(QKeyEvent *e) override;
 
 private:
     void init();

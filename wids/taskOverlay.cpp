@@ -13,7 +13,7 @@
 const QMargins innerMarg{64, 72, 64, 56};
 
 
-const QRegularExpression re(R"((?<=^|[ \n<>])(![0-9]+)(?=[ \n<>]|$))");
+const QRegularExpression re(R"((?<=^|[ \n<>])(#[a-zA-Z])(?=[ \n<>]|$))");
 void highlight(QTextEdit* edit) {
     QSignalBlocker block(edit);
     int pos = edit->textCursor().position();
@@ -24,7 +24,7 @@ void highlight(QTextEdit* edit) {
     while (it.hasNext()) {
         auto m = it.next();
         QString g = m.captured(1);
-        QString repl = "<b>"+g+"</b>";
+        QString repl = "<span style='background:#EAE; color:#222;'>" + g + "</span>";
 
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
