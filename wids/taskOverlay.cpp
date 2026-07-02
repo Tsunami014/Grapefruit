@@ -8,30 +8,28 @@
 #include <QApplication>
 #include <QGuiApplication>
 #include <QPushButton>
-#include <QRegularExpression>
 
 const QMargins innerMarg{64, 72, 64, 56};
 
 
-const QRegularExpression re(R"((?<=^|[ \n<>])(#[a-zA-Z])(?=[ \n<>]|$))");
 void highlight(QTextEdit* edit) {
     QSignalBlocker block(edit);
     int pos = edit->textCursor().position();
 
     QString conts = edit->toPlainText().toHtmlEscaped();
-    QString nxt = conts;auto it = re.globalMatch(nxt);
-    int offs = 0;
-    while (it.hasNext()) {
-        auto m = it.next();
-        QString g = m.captured(1);
-        QString repl = "<span style='background:#EAE; color:#222;'>" + g + "</span>";
+    QStringList out;
+    for (QString line : conts.split('\n')) {
+        auto m = timeRe.match(line);
+        if (m.hasMatch()) {
+            QString g = m.captured(1);
+            QString repl = "<span style='background:#EAE; color:#222;'>#" + g + "</span>";
 
-        int start = m.capturedStart(0) + offs;
-        int end = m.capturedEnd(0) + offs;
-        conts.replace(start, end - start, repl);
-        offs += repl.length() - (end - start);
+            int start = m.capturedStart(0);
+            line.replace(start, m.capturedEnd(0) - start, repl);
+        }
+        out += line;
     }
-    edit->setHtml("<span style='white-space: pre-wrap;'>"+conts+"</span>");
+    edit->setHtml("<span style='white-space: pre-wrap;'>"+out.join('\n')+"</span>");
 
     QTextCursor ncur = edit->textCursor();
     ncur.setPosition(pos);
