@@ -29,3 +29,12 @@ void TxtEdit::init() {
     props.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
     scroller->setScrollerProperties(props);
 }
+
+void TxtEdit::focusInEvent(QFocusEvent *e) {
+    QTextEdit::focusInEvent(e);
+    emit focusChange(true);
+}
+void TxtEdit::focusOutEvent(QFocusEvent *e) {
+    QTextEdit::focusOutEvent(e);
+    emit focusChange(false);
+}

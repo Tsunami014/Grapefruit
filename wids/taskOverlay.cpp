@@ -1,4 +1,5 @@
 #include "taskOverlay.hpp"
+#include "base/itemopts.hpp"
 #include "wids/txtedit.hpp"
 #include <QPainter>
 #include <QMouseEvent>
@@ -6,6 +7,7 @@
 #include <QLabel>
 #include <QApplication>
 #include <QGuiApplication>
+#include <QPushButton>
 
 const QMargins innerMarg{64, 72, 64, 56};
 
@@ -23,15 +25,19 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
     lay->addLayout(mlay);
 
     bbar = new QWidget(this);
-    bbar->setStyleSheet("background-color: white;");
-    bbar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    bbar->setObjectName("bottom");
+    bbar->setStyleSheet("QWidget#bottom { background-color: white; }");
     lay->addWidget(bbar);
 
     auto* blay = new QHBoxLayout(bbar);
-    blay->setContentsMargins(16,8,16,8);
-    auto* labl = new QLabel("Hello!", bbar);
-    blay->addWidget(labl);
-    blay->addStretch();
+    blay->setContentsMargins(12,6,12,6);
+
+    int hei = 40+8+12; // Base hei + padding + margin
+    bbar->setMaximumHeight(hei); bbar->setMinimumHeight(hei);
+    GenerateOpts(bbar, blay, false);
+    bbar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    connect(edit, &TxtEdit::focusChange, bbar, [=](bool focus){ GenerateOpts(bbar, blay, focus); });
 }
 
 inline QMargins TaskOverlay::totMargin() {
