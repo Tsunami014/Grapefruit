@@ -3,7 +3,7 @@
 void MainGame::initstyle() {
     setStyleSheet(
         "* { color: black; }"
-        "QMainWindow { background-color: #DDD; }"
+        "QMainWindow, *[bg=true] { background-color: #DDD; }"
 
         "IcoButton, QPushButton[fancy=true] {"
             "background-color: #CCAA55;"
@@ -79,10 +79,16 @@ void MainGame::initstyle() {
         "}"
 
         "QScrollBar {"
-            "width: 6px;"
             "background: transparent;"
             "border: none;"
+        "}"
+        "QScrollBar:vertical {"
+            "width: 6px;"
             "margin: 2px 0px 2px 0px;"
+        "}"
+        "QScrollBar:horizontal {"
+            "height: 6px;"
+            "margin: 0px 2px 0px 2px;"
         "}"
         "QScrollBar::handle {"
             "background: rgba(0, 0, 0, 90);"
@@ -90,7 +96,7 @@ void MainGame::initstyle() {
             "min-height: 24px;"
         "}"
         "QScrollBar::add-line, QScrollBar::sub-line {"
-            "height: 0px;"
+            "width: 0px; height: 0px;"
             "background: none;"
         "}"
     );

@@ -8,6 +8,9 @@
 #include <QApplication>
 #include <QGuiApplication>
 #include <QPushButton>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QScroller>
 
 const QMargins innerMarg{64, 72, 64, 56};
 
@@ -49,19 +52,40 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
         mlay->addWidget(edit);
     lay->addLayout(mlay);
 
-    bbar = new QWidget(this);
-    bbar->setObjectName("bottom");
-    bbar->setStyleSheet("QWidget#bottom { background-color: white; }");
-    lay->addWidget(bbar);
+    auto* scrl = new QScrollArea(this);
+    scrl->setFrameShape(QFrame::NoFrame);
+    scrl->setFocusPolicy(Qt::NoFocus);
+    scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+    scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
+
+    // Enable drag to scroll
+    QScroller::grabGesture(scrl->viewport(), QScroller::TouchGesture);
+    auto* scroller = QScroller::scroller(scrl->viewport());
+    // Do not scroll outside the boundary
+    QScrollerProperties props = scroller->scrollerProperties();
+    props.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+    props.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+    scroller->setScrollerProperties(props);
+
+    lay->addWidget(scrl);
+    bbar = new QWidget;
+    bbar->setProperty("bg", true);
+    scrl->setWidget(bbar);
 
     auto* blay = new QHBoxLayout(bbar);
     blay->setContentsMargins(12,6,12,6);
     blay->setSpacing(12);
+    blay->setSizeConstraint(QLayout::SetMinimumSize);
 
-    int hei = 40+8+12; // Base hei + padding + margin
-    bbar->setMaximumHeight(hei); bbar->setMinimumHeight(hei);
+    GenerateOpts(bbar, blay, edit, true);
+    bbar->adjustSize();
+    int sb = scrl->horizontalScrollBar()->sizeHint().height();
+    scrl->setFixedHeight(bbar->rect().height() + sb);
     GenerateOpts(bbar, blay, edit, false);
-    bbar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     connect(edit, &TxtEdit::focusChange, bbar, [=](bool focus){ GenerateOpts(bbar, blay, edit, focus); });
     connect(edit, &QTextEdit::textChanged, [=](){

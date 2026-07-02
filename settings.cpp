@@ -11,7 +11,7 @@ void MainGame::generateSettings() {
     auto topsect = new QHBoxLayout();
         auto bk = new QPushButton();
         bk->setProperty("fancy", true);
-        bk->setProperty("tinybtn", true);
+        bk->setProperty("backbtn", true);
         bk->setIcon(QIcon(":/assets/back.svg"));
         bk->setIconSize(QSize(48, 48));
         connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
