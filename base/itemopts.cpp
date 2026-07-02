@@ -38,8 +38,28 @@ void setBlockText(QTextCursor& cur, QTextBlock block, QString text, int coloffs 
     cur.setPosition(cur.block().position() + qBound(0, column, block.length() - 1));
 }
 
+void addTime(QTextEdit* edit, int diff) {
+    QTextCursor cur = edit->textCursor();
+    QTextBlock block = cur.block();
+    QString line = block.text();
+
+    auto m = timeRe.match(line);
+    if (m.hasMatch()) {
+        char nc = m.captured(1)[0].unicode() + diff;
+        if (!(nc >= 'a' && nc <= 'z') && !(nc >= 'A' && nc <= 'Z')) return;
+        QString repl = QString("#") + QChar::fromLatin1(nc);
+
+        int start = m.capturedStart(0);
+        line.replace(start, m.capturedEnd(0) - start, repl);
+        setBlockText(cur, block, line);
+    } else {
+        setBlockText(cur, block, "#A "+line, 3);
+    }
+    edit->setTextCursor(cur);
+}
+
 void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus) {
-    QLayoutItem *item;
+    QLayoutItem* item;
     while ((item = lay->takeAt(0)) != nullptr) {
         if (auto* wid = item->widget()) wid->deleteLater();
         delete item;
@@ -73,26 +93,8 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus)
         edit->setTextCursor(cur);
     });
     lay->addSpacing(16);
-    mkbtn(":/assets/addtime.svg", [=](){
-        QTextCursor cur = edit->textCursor();
-        QTextBlock block = cur.block();
-        QString line = block.text();
-
-        auto m = timeRe.match(line);
-        if (m.hasMatch()) {
-            QChar oc = m.captured(1)[0];
-            if (oc == 'z' || oc == 'Z') return;
-            QChar nc = QChar::fromLatin1(oc.unicode()+1);
-            QString repl = QString("#") + nc;
-
-            int start = m.capturedStart(0);
-            line.replace(start, m.capturedEnd(0) - start, repl);
-            setBlockText(cur, block, line);
-        } else {
-            setBlockText(cur, block, "#A "+line, 3);
-        }
-        edit->setTextCursor(cur);
-    });
+    mkbtn(":/assets/addtime.svg", [=](){ addTime(edit, 1); });
+    mkbtn(":/assets/subtime.svg", [=](){ addTime(edit, -1); });
     mkbtn(":/assets/clock.svg", [=](){
         QTextCursor cur = edit->textCursor();
         QTextBlock block = cur.block();

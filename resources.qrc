@@ -11,6 +11,7 @@
         <file>assets/erase.svg</file>
 
         <file>assets/addtime.svg</file>
+        <file>assets/subtime.svg</file>
         <file>assets/clock.svg</file>
         <file>assets/calendar.svg</file>
     </qresource>
