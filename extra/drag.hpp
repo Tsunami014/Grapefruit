@@ -12,7 +12,6 @@ protected:
     bool eventFilter(QObject* obj, QEvent* ev) override;
 
 private:
-    void beginDrag();
     void ontick();
 
     QWidget* viewp;

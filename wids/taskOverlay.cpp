@@ -49,7 +49,8 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
     mlay->setContentsMargins(innerMarg + QMargins(16, 16, 16, 16));
         auto titl = new QLabel(task->name, this);
         mlay->addWidget(titl);
-        auto* edit = new TxtEdit(task->items, this);
+        auto* edit = new TxtEdit(this);
+        edit->setPlainText(task->items);
         highlight(edit);
         mlay->addWidget(edit);
     lay->addLayout(mlay);
@@ -88,8 +89,10 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
         drag->installOn(bbar);
     });
     connect(edit, &QTextEdit::textChanged, [=](){
-        task->items = edit->toPlainText();
-        highlight(edit);
+        QTimer::singleShot(0, this, [=]() {
+            task->items = edit->toPlainText();
+            highlight(edit);
+        });
     });
 }
 

@@ -12,6 +12,7 @@ DragScroll::DragScroll(QWidget* viewp, QScrollBar* scrollb)
         : QObject(viewp), viewp(viewp), scrollb(scrollb) {
     timer.start();
     connect(&tick, &QTimer::timeout, this, &DragScroll::ontick);
+    viewp->installEventFilter(this);
 }
 
 void DragScroll::installOn(QWidget* w) {
@@ -40,7 +41,15 @@ bool DragScroll::eventFilter(QObject* obj, QEvent* ev) {
 
             if (!dragging) {
                 if ((gpos - startPos).manhattanLength() <= THRESHOLD) return false;
-                beginDrag();
+                dragging = true;
+                if (auto* btn = qobject_cast<QAbstractButton*>(pressedChild)) {
+                    btn->setDown(false);
+                }
+                if (pressedChild) {
+                    QEvent leave(QEvent::Leave);
+                    QApplication::sendEvent(pressedChild, &leave);
+                }
+                viewp->grabMouse();
             }
 
             int d;
@@ -66,24 +75,13 @@ bool DragScroll::eventFilter(QObject* obj, QEvent* ev) {
             pressed = false;
             bool drag = dragging;
             if (drag) viewp->releaseMouse();
-            if (std::abs(velocity) > 0.05) tick.start(16);
+            if (std::abs(velocity) > 0.03) tick.start(16);
             return drag; // Swallow release only if it was a drag
         }
 
         default:
             return false;
     }
-}
-
-void DragScroll::DragScroll::beginDrag() {
-    dragging = true;
-    if (auto* btn = qobject_cast<QAbstractButton*>(pressedChild))
-        btn->setDown(false);
-    if (pressedChild) {
-        QEvent leave(QEvent::Leave);
-        QApplication::sendEvent(pressedChild, &leave);
-    }
-    viewp->grabMouse();
 }
 
 void DragScroll::DragScroll::ontick() {
