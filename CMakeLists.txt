@@ -10,6 +10,7 @@ set(CORE
     base/tasks.cpp
     base/taskload.cpp
     base/options.cpp
+    base/converse.cpp
 
     extra/itemopts.cpp
     extra/drag.cpp

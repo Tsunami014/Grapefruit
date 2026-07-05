@@ -2,14 +2,12 @@
 #include <QStackedWidget>
 #include <QGridLayout>
 #include <QLabel>
-#include "wids/flow.hpp"
+#include "base/converse.hpp"
 
 class MainGame : public QMainWindow {
     Q_OBJECT
 public:
     MainGame();
-public slots:
-    void newTopic();
 
 private:
     QStackedWidget* stack;
@@ -18,8 +16,7 @@ private:
     QWidget* tasks;
     QGridLayout* tlay;
 
-    FlowLayout* olay;
-    QLabel* curtxt;
+    Conversation* conv;
 
     void keyPressEvent(QKeyEvent* event) override;
 

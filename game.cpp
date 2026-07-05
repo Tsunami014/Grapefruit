@@ -2,6 +2,7 @@
 #include "font.hpp"
 #include "base/options.hpp"
 #include "wids/icobtn.hpp"
+#include "wids/flow.hpp"
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QKeyEvent>
@@ -19,7 +20,7 @@ MainGame::MainGame() {
     labl->setStyleSheet("background-color: #4488CC;");
     mlay->addWidget(labl, 2);}
 
-    curtxt = new QLabel("Text here!", main);
+    auto* curtxt = new QLabel("Text here!", main);
     curtxt->setWordWrap(true);
     curtxt->setStyleSheet("background-color: #CC88CC;");
     curtxt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -32,9 +33,11 @@ MainGame::MainGame() {
     auto botsect = new QHBoxLayout();
         auto optcontnr = new QWidget(main);
         optcontnr->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-            olay = new FlowLayout(optcontnr, 8, 16, 24);
+            auto* olay = new FlowLayout(optcontnr, 8, 16, 24);
             setOpts(olay, { {"Hi"}, {"Bye"} });
         botsect->addWidget(optcontnr);
+
+        conv = new Conversation(olay, curtxt);
 
         auto quickbtns = new QVBoxLayout();
             auto addBtn = [&](const QString& labl, const QString& asset, auto slot) {
@@ -43,7 +46,7 @@ MainGame::MainGame() {
                 connect(btn, &QPushButton::clicked, this, slot);
                 return btn;
             };
-            auto nt = addBtn("New topic", ":/assets/new.svg", &MainGame::newTopic);
+            auto nt = addBtn("New topic", ":/assets/new.svg", [=](){ conv->newTopic(); });
             auto at = addBtn("All Tasks", ":/assets/tasks.svg", [=](){ stack->setCurrentWidget(tasks); });
             auto st = addBtn("Settings", ":/assets/settings.svg", [=](){ stack->setCurrentWidget(setts); });
             int w = std::max({
@@ -82,7 +85,4 @@ void MainGame::keyPressEvent(QKeyEvent* event) {
         return;
     }
     QWidget::keyPressEvent(event);
-}
-
-void MainGame::newTopic() {
 }
