@@ -14,7 +14,7 @@ void TxtEdit::init() {
 
     // Bigger font
     QFont f = font();
-    f.setPointSize(f.pointSize() + 4);
+    f.setPointSize(f.pointSize() * 1.2);
     setFont(f);
 
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -26,16 +26,16 @@ void TxtEdit::init() {
     drag->installOn(this);
 }
 
-void TxtEdit::focusInEvent(QFocusEvent *e) {
+void TxtEdit::focusInEvent(QFocusEvent* e) {
     QTextEdit::focusInEvent(e);
     emit focusChange(true);
 }
-void TxtEdit::focusOutEvent(QFocusEvent *e) {
+void TxtEdit::focusOutEvent(QFocusEvent* e) {
     QTextEdit::focusOutEvent(e);
     emit focusChange(false);
 }
 
-void TxtEdit::keyPressEvent(QKeyEvent *e) {
+void TxtEdit::keyPressEvent(QKeyEvent* e) {
     if (e->key() == Qt::Key_Up) {
         if (textCursor().blockNumber() == 0) {
             moveCursor(QTextCursor::Start);

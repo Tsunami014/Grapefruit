@@ -1,5 +1,7 @@
 #include "game.hpp"
+#include "base/options.hpp"
 #include "wids/icobtn.hpp"
+#include "wids/flow.hpp"
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
@@ -14,15 +16,16 @@ MainGame::MainGame() {
     stack->addWidget(main);
     auto mlay = new QVBoxLayout(main);
 
-    {auto labl = new QLabel("Hello from Qt on Android!");
+    {auto labl = new QLabel("Hello from Qt on Android!", main);
     labl->setStyleSheet("background-color: #4488CC;");
     mlay->addWidget(labl, 2);}
 
     auto botsect = new QHBoxLayout();
-        {auto labl = new QLabel("Option section!");
-        labl->setStyleSheet("background-color: #33DD99;");
-        labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        botsect->addWidget(labl);}
+        auto optcontnr = new QWidget(main);
+        optcontnr->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+            auto olay = new FlowLayout(optcontnr, 8, 16, 24);
+            setOpts(olay, { {"Hi"}, {"Bye"} }, optcontnr);
+        botsect->addWidget(optcontnr);
 
         auto quickbtns = new QVBoxLayout();
             auto addBtn = [&](const QString& labl, const QString& asset, auto slot) {

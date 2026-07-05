@@ -25,6 +25,13 @@ void MainGame::initstyle() {
             "padding: 4px;"
         "}"
         "QPushButton[tinybtn=true]:pressed { background-color: #888; }"
+        "QPushButton[optbtn=true] {"
+            "background-color: #55CC66;"
+            "border-color: #448844;"
+            "padding: 10px 14px;"
+            "border-radius: 16px;"
+        "}"
+        "QPushButton[optbtn=true]:pressed { background-color: #339944; }"
 
         "Spoiler QToolButton {"
             "background-color: #55CCBB;"

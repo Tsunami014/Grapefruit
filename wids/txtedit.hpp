@@ -10,9 +10,9 @@ public:
 signals:
     void focusChange(bool focus);
 protected:
-    void focusInEvent(QFocusEvent *e) override;
-    void focusOutEvent(QFocusEvent *e) override;
-    void keyPressEvent(QKeyEvent *e) override;
+    void focusInEvent(QFocusEvent* e) override;
+    void focusOutEvent(QFocusEvent* e) override;
+    void keyPressEvent(QKeyEvent* e) override;
 
 private:
     void init();

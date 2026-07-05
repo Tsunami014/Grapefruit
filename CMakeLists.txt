@@ -9,10 +9,12 @@ set(CORE
 
     base/tasks.cpp
     base/taskload.cpp
+    base/options.cpp
 
     extra/itemopts.cpp
     extra/drag.cpp
 
+    wids/flow.cpp
     wids/icobtn.hpp
     wids/secret.cpp
     wids/taskbbl.cpp
