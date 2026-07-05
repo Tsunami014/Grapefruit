@@ -1,8 +1,7 @@
 #include "game.hpp"
+#include "font.hpp"
 #include "base/options.hpp"
 #include "wids/icobtn.hpp"
-#include "wids/flow.hpp"
-#include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QKeyEvent>
@@ -16,15 +15,22 @@ MainGame::MainGame() {
     stack->addWidget(main);
     auto mlay = new QVBoxLayout(main);
 
-    {auto labl = new QLabel("Hello from Qt on Android!", main);
+    {auto labl = new QLabel("Main area!", main);
     labl->setStyleSheet("background-color: #4488CC;");
     mlay->addWidget(labl, 2);}
+
+    curtxt = new QLabel("Text!", main);
+    curtxt->setStyleSheet("background-color: #CC88CC;");
+    curtxt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    curtxt->setObjectName("curtxt");
+    resizeFont(curtxt, 1.25);
+    mlay->addWidget(curtxt);
 
     auto botsect = new QHBoxLayout();
         auto optcontnr = new QWidget(main);
         optcontnr->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-            auto olay = new FlowLayout(optcontnr, 8, 16, 24);
-            setOpts(olay, { {"Hi"}, {"Bye"} }, optcontnr);
+            olay = new FlowLayout(optcontnr, 8, 16, 24);
+            setOpts(olay, { {"Hi"}, {"Bye"} });
         botsect->addWidget(optcontnr);
 
         auto quickbtns = new QVBoxLayout();

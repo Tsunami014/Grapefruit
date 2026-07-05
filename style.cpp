@@ -5,6 +5,8 @@ void MainGame::initstyle() {
         "* { color: black; }"
         "QMainWindow, *[bg=true] { background-color: #DDD; }"
 
+        "#curtxt { padding: 8px; }"
+
         "IcoButton, QPushButton[fancy=true] {"
             "background-color: #CCAA55;"
             "color: white;"

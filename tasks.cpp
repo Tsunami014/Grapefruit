@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "font.hpp"
 #include "base/taskload.hpp"
 #include "wids/taskbbl.hpp"
 #include "wids/taskOverlay.hpp"
@@ -16,14 +17,16 @@ void MainGame::generateTasks() {
     auto topsect = new QHBoxLayout();
     topsect->setSpacing(16);
         auto left = new QVBoxLayout();
+        left->setSpacing(8);
             auto bk = new QPushButton();
             bk->setProperty("fancy", true);
             bk->setProperty("backbtn", true);
             bk->setIcon(QIcon(":/assets/back.svg"));
-            bk->setIconSize(QSize(48, 48));
+            bk->setIconSize(QSize(48, 40));
             connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
-            left->addWidget(bk);
+            left->addWidget(bk, 0, Qt::AlignHCenter);
             {auto labl = new QLabel("All\ntasks");
+            resizeFont(labl, 1.25);
             labl->setAlignment(Qt::AlignCenter);
             left->addWidget(labl);}
         topsect->addLayout(left);

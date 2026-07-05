@@ -1,4 +1,5 @@
 #include "options.hpp"
+#include "font.hpp"
 #include <QPushButton>
 
 void setOpts(QLayout* lay, std::vector<Option> opts, QWidget* parent) {
@@ -12,9 +13,7 @@ void setOpts(QLayout* lay, std::vector<Option> opts, QWidget* parent) {
         auto* btn = new QPushButton(o.title, parent);
         btn->setProperty("fancy", true);
         btn->setProperty("optbtn", true);
-        QFont f = btn->font();
-        f.setPointSize(f.pointSize() * 1.5);
-        btn->setFont(f);
+        resizeFont(btn, 1.5);
         // lay->connect(btn, &QPushButton::clicked, lay, [=](){  });
         lay->addWidget(btn);
     }

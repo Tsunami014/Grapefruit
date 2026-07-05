@@ -1,4 +1,5 @@
 #include "txtedit.hpp"
+#include "font.hpp"
 #include "extra/drag.hpp"
 #include <QScrollBar>
 #include <QScroller>
@@ -11,11 +12,7 @@ void TxtEdit::init() {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     viewport()->setAutoFillBackground(false);
     setFrameStyle(QFrame::NoFrame);
-
-    // Bigger font
-    QFont f = font();
-    f.setPointSize(f.pointSize() * 1.2);
-    setFont(f);
+    resizeFont(this, 1.2);
 
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     verticalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
