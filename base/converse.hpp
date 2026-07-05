@@ -10,6 +10,7 @@ public:
 
 protected:
     std::string purpose = "^";
+    std::vector<std::string> context = {};
 
     FlowLayout* olay;
     QLabel* curtxt;
