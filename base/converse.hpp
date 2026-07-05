@@ -11,8 +11,8 @@ public:
 protected:
     FlowLayout* olay;
     QLabel* curtxt;
-    std::vector<Option> opts;
 
     void refresh();
+    void display(QString txt, std::vector<Option> opts);
     virtual void onclick(Option o);
 };

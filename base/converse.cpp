@@ -2,18 +2,22 @@
 
 Conversation::Conversation(FlowLayout* olay, QLabel* curtxt)
     : olay(olay), curtxt(curtxt) {
-        opts = {{"Hi"}, {"Bye"}};
-        curtxt->setText("Hello!");
         refresh();
     }
 
 void Conversation::newTopic() {
-    curtxt->setText("What would you like to talk about?");
     refresh();
 }
 
-void Conversation::onclick(Option o) {
-    curtxt->setText(o.title);
+void Conversation::refresh() {
+    display("Hello!", {{"One"}, {"Two"}});
 }
 
-void Conversation::refresh() { setOpts(olay, opts, [=](Option o){ onclick(o); }); }
+void Conversation::onclick(Option o) {
+    display(o.title, {{"Hi"}, {"Bye"}});
+}
+
+void Conversation::display(QString title, std::vector<Option> opts) {
+    curtxt->setText(title);
+    setOpts(olay, opts, [=](Option o){ onclick(o); });
+}
