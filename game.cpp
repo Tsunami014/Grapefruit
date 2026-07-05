@@ -19,11 +19,14 @@ MainGame::MainGame() {
     labl->setStyleSheet("background-color: #4488CC;");
     mlay->addWidget(labl, 2);}
 
-    curtxt = new QLabel("Text!", main);
+    curtxt = new QLabel("Text here!", main);
+    curtxt->setWordWrap(true);
     curtxt->setStyleSheet("background-color: #CC88CC;");
     curtxt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     curtxt->setObjectName("curtxt");
     resizeFont(curtxt, 1.25);
+    QFontMetrics fm(curtxt->font());
+    curtxt->setFixedHeight(fm.lineSpacing() * 3.6); // 3 lines plus extra space
     mlay->addWidget(curtxt);
 
     auto botsect = new QHBoxLayout();
