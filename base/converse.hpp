@@ -13,5 +13,6 @@ protected:
     QLabel* curtxt;
     std::vector<Option> opts;
 
-    void refreshOpts();
+    void refresh();
+    virtual void onclick(Option o);
 };

@@ -6,4 +6,4 @@ struct Option {
     QString title;
 };
 
-void setOpts(QLayout* lay, std::vector<Option> opts, QWidget* parent = nullptr);
+void setOpts(QLayout* lay, std::vector<Option> opts, std::function<void(Option)> func, QWidget* parent = nullptr);

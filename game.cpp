@@ -20,7 +20,7 @@ MainGame::MainGame() {
     labl->setStyleSheet("background-color: #4488CC;");
     mlay->addWidget(labl, 2);}
 
-    auto* curtxt = new QLabel("Text here!", main);
+    auto* curtxt = new QLabel(main);
     curtxt->setWordWrap(true);
     curtxt->setStyleSheet("background-color: #CC88CC;");
     curtxt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -33,8 +33,7 @@ MainGame::MainGame() {
     auto botsect = new QHBoxLayout();
         auto optcontnr = new QWidget(main);
         optcontnr->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-            auto* olay = new FlowLayout(optcontnr, 8, 16, 24);
-            setOpts(olay, { {"Hi"}, {"Bye"} });
+        auto* olay = new FlowLayout(optcontnr, 8, 16, 24);
         botsect->addWidget(optcontnr);
 
         conv = new Conversation(olay, curtxt);
