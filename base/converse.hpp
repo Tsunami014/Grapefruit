@@ -9,10 +9,12 @@ public:
     void newTopic();
 
 protected:
+    std::string purpose = "^";
+
     FlowLayout* olay;
     QLabel* curtxt;
 
     void refresh();
-    void display(QString txt, std::vector<Option> opts);
+    void display(QString txt, optList opts = {});
     virtual void onclick(Option o);
 };

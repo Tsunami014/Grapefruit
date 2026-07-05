@@ -31,8 +31,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Svg Widgets)
 qt_policy(SET QTP0002 NEW) # Shushes a warning
 
+include(FetchContent)
+FetchContent_Declare(
+  yaml-cpp
+  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+  GIT_TAG master
+)
+FetchContent_MakeAvailable(yaml-cpp)
+
 qt_add_executable(${APP_NAME} ${CORE})
-target_link_libraries(${APP_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Svg Qt6::Widgets)
+target_link_libraries(${APP_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Svg Qt6::Widgets yaml-cpp::yaml-cpp)
 
 target_include_directories(${APP_NAME} PUBLIC ${CMAKE_SOURCE_DIR})
 

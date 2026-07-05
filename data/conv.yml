@@ -1,0 +1,17 @@
+groups:
+  mood: [sad, okay, happy]
+  =project: "recomm_project"
+
+purposes:
+  ^:
+    templates:
+      mood:
+        sad:
+          - "I hope you {feel/start feeling} better soon."
+          - "That sounds really tough."
+        ~:
+          - "How are you doing today?"
+    options:
+      - - ["A bit sad", [sad], comfort]
+        - ["Pretty good", [okay]]
+
