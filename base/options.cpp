@@ -13,7 +13,7 @@ void setOpts(QLayout* lay, std::vector<Option> opts, QWidget* parent) {
         btn->setProperty("fancy", true);
         btn->setProperty("optbtn", true);
         QFont f = btn->font();
-        f.setPointSize(f.pointSize() * 1.4);
+        f.setPointSize(f.pointSize() * 1.5);
         btn->setFont(f);
         // lay->connect(btn, &QPushButton::clicked, lay, [=](){  });
         lay->addWidget(btn);

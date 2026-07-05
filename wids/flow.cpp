@@ -67,6 +67,11 @@ QSize FlowLayout::minimumSize() const {
     return size;
 }
 
+struct layoutPart {
+    QWidget* wid;
+    int basex;
+    int right;
+};
 int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
     int left, top, right, bottom;
     getContentsMargins(&left, &top, &right, &bottom);
@@ -75,8 +80,19 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
     int y = effectiveRect.y();
     int lineHeight = 0;
 
+    std::vector<layoutPart> row;
+    auto finishRow = [&]() {
+        if (testOnly || row.empty()) return;
+        int rowwid = row.back().right - effectiveRect.x();
+        int ladj = qMax((effectiveRect.width() - rowwid)/int(row.size()+1), 0);
+        uint i = 0;
+        for (auto& it : row) {
+            it.wid->setGeometry(QRect(QPoint(it.basex+ladj*(++i), y), it.wid->sizeHint()));
+        }
+    };
+
     for (QLayoutItem* item : std::as_const(itemList)) {
-        const QWidget* wid = item->widget();
+        QWidget* wid = item->widget();
         int spaceX = horizontalSpacing();
         if (spaceX == -1)
             spaceX = wid->style()->layoutSpacing(
@@ -86,20 +102,21 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
             spaceY = wid->style()->layoutSpacing(
                 QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
 
-    int nextX = x + item->sizeHint().width() + spaceX;
-        if (nextX - spaceX > effectiveRect.right() && lineHeight > 0) {
+        int right = x + item->sizeHint().width();
+        int nextX = right + spaceX;
+        if (right > effectiveRect.right() && lineHeight > 0) {
+            finishRow();
+            row.clear();
             x = effectiveRect.x();
-            y = y + lineHeight + spaceY;
+            y = y + lineHeight;
             nextX = x + item->sizeHint().width() + spaceX;
             lineHeight = 0;
         }
-
-        if (!testOnly)
-            item->setGeometry(QRect(QPoint(x, y), item->sizeHint()));
-
+        row.push_back({wid, x, right});
         x = nextX;
-        lineHeight = qMax(lineHeight, item->sizeHint().height());
+        lineHeight = qMax(lineHeight, item->sizeHint().height() + spaceY);
     }
+    finishRow();
     return y + lineHeight - rect.y() + bottom;
 }
 

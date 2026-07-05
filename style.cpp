@@ -28,7 +28,7 @@ void MainGame::initstyle() {
         "QPushButton[optbtn=true] {"
             "background-color: #55CC66;"
             "border-color: #448844;"
-            "padding: 10px 14px;"
+            "padding: 10px 18px;"
             "border-radius: 16px;"
         "}"
         "QPushButton[optbtn=true]:pressed { background-color: #339944; }"
