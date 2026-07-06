@@ -46,12 +46,12 @@ const std::unordered_map<std::string, std::string>& getgroup() {
     });
 }
 /// A list of external groups
-const std::unordered_set<std::string>& externs() {
+const std::unordered_map<std::string, std::string>& externs() {
     return cached([]{
-        std::unordered_set<std::string> gs;
+        std::unordered_map<std::string, std::string> gs;
         for (const auto& entry : config()["groups"]) {
             if (!entry.second.IsSequence()) {
-                gs.insert(entry.first.as<std::string>());
+                gs.insert({entry.first.as<std::string>(), entry.second.as<std::string>()});
             }
         }
         return gs;
@@ -161,8 +161,9 @@ QString Conversation::polishSentence(QString sent) {
         auto m = it.next();
         std::string group = m.captured(1).toStdString();
         QString repl;
-        if (exts.find(group) != exts.end()) {
-            repl = runExtern(group);
+        auto it = exts.find(group);
+        if (it != exts.end()) {
+            repl = runExtern(it->second);
         } else {
             // Find first context tag applied in the group
             repl = m.captured(0);

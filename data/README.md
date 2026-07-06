@@ -60,4 +60,4 @@ purposes:
 
 # Auto generated context groups
 These are used as strings instead of lists of tags under a group name.
-- `"time_of_day"` - either "morning", "afternoon", "evening", or "night"
+- `"time_of_day"` - either "morning", "afternoon", or "evening"
