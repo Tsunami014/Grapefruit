@@ -116,7 +116,7 @@ void Conversation::onclick(Option o) {
 }
 
 
-const std::regex chooseReStd(R"(^((\d+) ?\* *).+)");
+const std::regex chooseReStd(R"(^((\d+) ?\* *).*)");
 std::pair<std::string, int> choose(const std::vector<std::string>& opts) {
     std::vector<std::pair<int, int>> choices; // idx, prefix len
     int idx = 0;
@@ -136,7 +136,7 @@ std::pair<std::string, int> choose(const std::vector<std::string>& opts) {
     int out = QRandomGenerator::global()->bounded(ln);
     return {opts[out].substr(choices[out].second), choices[out].first};
 }
-const QRegularExpression chooseReQ(R"(^((\d+) ?\* *).+)");
+const QRegularExpression chooseReQ(R"(^((\d+) ?\* *).*)");
 std::pair<QString, int> choose(const std::vector<QString>& opts) {
     std::vector<std::pair<int, int>> choices; // idx, prefix len
     int idx = 0;
@@ -162,12 +162,24 @@ std::pair<QString, int> choose(const QStringList& opts) {
 }
 
 const QRegularExpression groupsRe("%([a-zA-Z_]+)%?");
+const QRegularExpression dictRe("\\$([a-zA-Z0-9_]+)\\$?");
 
 const QRegularExpression polishRe("{([^}]+)}");
 QString Conversation::polishSentence(QString sent) {
     // Replace synonym choices in {brackets/braces}
-    auto it = polishRe.globalMatch(sent);
+    auto it = dictRe.globalMatch(sent);
     int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString repl = QString::fromStdString(config()["dictionary"][m.captured(1).toStdString()].as<std::string>());
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        sent.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    it = polishRe.globalMatch(sent);
+    offs = 0;
     while (it.hasNext()) {
         auto m = it.next();
         auto opts = m.captured(1).split('/');

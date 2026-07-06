@@ -12,8 +12,8 @@ purposes:
     # How is it going?
     - templates:
         "*":
-          - "2* {Hiya/Heya/Hi/Hello/2*Good %time}! How are you{ going/}?"
-          - "2* {Hiya/Heya/Hi/Hello/Good %time}! How{'s/ is} it going?"
+          - "2* {$Hi/2*Good %time}! How are you{ going/}?"
+          - "2* {$Hi/Good %time}! How{'s/ is} it going?"
           - "2* How{ are you/ is it/'s it} going?"
           - "How is your {3*%time/day}{ going/ been/}?"
       opts:
@@ -24,7 +24,7 @@ purposes:
     # What's up?
     - templates:
         "*":
-          - "3* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! What's up?"
+          - "3* {$Hi/2*Good %time}! What's up?"
           - "What's up?"
       opts:
         - ["I'm going well", [happy], banter]
@@ -40,22 +40,23 @@ purposes:
           - "What's {wrong/up}?"
           - "What's {troubling/bothering} you?"
           - "What's on your mind?"
-          - "What's going on?"
       shuffle: true
       opts:
         - ["{I'm tired/Everything's tiring}", [tired], comfort]
         - ["I'm stressed", [stressed], comfort]
-        - ["{I'm bored/Nothing to do/Bored}", [bored]]
-        - ["{I'm unsure what to do/I don't know what to do/I'm lost}", [unsure]]
-        - ["{I'm stuck/I need help}", [stuck]]
+        - ["{I'm bored/Nothing to do/Bored}", [bored], suggest]
+        - ["{I'm unsure what to do/I don't know what to do/I'm lost}", [unsure], suggest]
+        - ["{I'm stuck/I need help}", [stuck], suggest]
     # How are you going?
     - templates:
         "=":
           - "How {are you going/is it going/are things}?"
       shuffle: true
       opts:
-        - ["I'm not going well", [sad]]
-        - ["I'm stuck", [stuck]]
-        - ["I'm unsure", [unsure]]
-        - ["I'm doing well!", [happy]]
-        - ["I've got this!", [motivated]]
+        - ["{I'm/It's} not going well", [sad]]
+        - ["{I'm stuck/I need help}", [stuck], encourage]
+        - ["{I'm unsure what to do/I don't know what to do/I'm lost}", [unsure], suggest]
+        - ["{I'm doing well/I've got this}!", [happy, motivated, -problem], banter]
+
+dictionary:
+  Hi: "Hiya/Heya/Hi/Hello"

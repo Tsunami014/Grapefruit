@@ -37,6 +37,9 @@
 - A 'new topic' option is always included (no need to specify) that resets the conversation
 - If 'shuffle' is true then will shuffle the options. If false or omitted, will keep in order.
 
+### The dictionary
+- In most string values (not keys) '$word' can be used to reference something from the dictionary, which will be substituted in-place.
+
 # Format example
 I do not recommend to use the contents of this example, it only exists to demonstrate good formatting and that is it, not sample contents.
 ```yaml
@@ -51,7 +54,7 @@ purposes:
   checkup_mood:
     - templates:
         "sad":
-          - "2* I hope you {feel/start feeling} better soon."
+          - "2* I hope you $feel better soon."
           - "That sounds really tough."
         "=, +mood":
           - "You seem to be doing well!"
@@ -64,6 +67,9 @@ purposes:
         - ["A bit sad", [sad], comfort]
         - ["Pretty good", [okay]]
         - ["Don't know", [-mood]]
+
+dictionary:
+  feel: "{feel/start feeling}"
 ```
 
 # Auto generated context groups
