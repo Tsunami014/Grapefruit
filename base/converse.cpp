@@ -1,6 +1,7 @@
 #include "converse.hpp"
 #include <yaml-cpp/yaml.h>
 #include <QRandomGenerator>
+#include <QRegularExpression>
 #include <QFile>
 
 template<typename F>
@@ -97,6 +98,25 @@ void Conversation::onclick(Option o) {
     refresh();
 }
 
+const QRegularExpression polishSynonymRe("{([^}]+)}");
+const QRegularExpression polishSplRe(R"((?<!\\)(?:\\\\)*\/)");
+QString polishSentence(QString sent) {
+    // Replace synonym choices in {brackets/braces}
+    auto it = polishSynonymRe.globalMatch(sent);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        QStringList opts = m.captured(1).split(polishSplRe);
+        QString repl = opts[QRandomGenerator::global()->bounded(opts.length())];
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        sent.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    return sent;
+}
+
 void Conversation::refresh() {
     auto ppse = config()["purposes"][purpose];
     if (!ppse) {
@@ -148,7 +168,7 @@ void Conversation::refresh() {
         return;
     }
     uint sidx = QRandomGenerator::global()->bounded(uint(sents.size()));
-    QString sent = QString::fromStdString(sents[sidx]);
+    QString sent = polishSentence(QString::fromStdString(sents[sidx]));
 
     auto allopts = ppse["options"];
     if (!allopts || allopts.size() == 0) {
