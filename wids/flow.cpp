@@ -85,7 +85,6 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
         if (testOnly || row.empty()) return;
         int rowwid = row.back().right - row.front().basex;
         int ladj = qMax((effectiveRect.width() - rowwid)/int(row.size()+1), 0);
-        qDebug() << row.size() << ladj << rowwid << row.back().right << row.front().basex << effectiveRect.width();
         uint i = 0;
         for (auto& it : row) {
             it.wid->setGeometry(QRect(QPoint(it.basex+ladj*(++i), y), it.wid->sizeHint()));
