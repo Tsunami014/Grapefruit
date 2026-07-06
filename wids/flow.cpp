@@ -83,8 +83,9 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
     std::vector<layoutPart> row;
     auto finishRow = [&]() {
         if (testOnly || row.empty()) return;
-        int rowwid = row.back().right - effectiveRect.x();
+        int rowwid = row.back().right - row.front().basex;
         int ladj = qMax((effectiveRect.width() - rowwid)/int(row.size()+1), 0);
+        qDebug() << row.size() << ladj << rowwid << row.back().right << row.front().basex << effectiveRect.width();
         uint i = 0;
         for (auto& it : row) {
             it.wid->setGeometry(QRect(QPoint(it.basex+ladj*(++i), y), it.wid->sizeHint()));
@@ -109,7 +110,8 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
             row.clear();
             x = effectiveRect.x();
             y = y + lineHeight;
-            nextX = x + item->sizeHint().width() + spaceX;
+            right = x + item->sizeHint().width();
+            nextX = right + spaceX;
             lineHeight = 0;
         }
         row.push_back({wid, x, right});
