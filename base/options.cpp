@@ -13,7 +13,7 @@ void setOpts(QLayout* lay, std::vector<Option> opts, std::function<void(Option)>
         auto* btn = new QPushButton(o.title, parent);
         btn->setProperty("fancy", true);
         btn->setProperty("optbtn", true);
-        resizeFont(btn, 1.5);
+        resizeFont(btn, 1.25);
         lay->connect(btn, &QPushButton::clicked, lay, [=](){ func(o); });
         lay->addWidget(btn);
     }

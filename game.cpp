@@ -33,7 +33,7 @@ MainGame::MainGame() {
     auto botsect = new QHBoxLayout();
         auto optcontnr = new QWidget(main);
         optcontnr->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        auto* olay = new FlowLayout(optcontnr, 8, 16, 24);
+        auto* olay = new FlowLayout(optcontnr, 8, 8, 16);
         botsect->addWidget(optcontnr);
 
         conv = new Conversation(olay, curtxt);
@@ -42,6 +42,7 @@ MainGame::MainGame() {
             auto addBtn = [&](const QString& labl, const QString& asset, auto slot) {
                 auto btn = new IcoButton(labl, asset);
                 btn->setIconSize(QSize(0,0));
+                resizeFont(btn, 0.9);
                 connect(btn, &QPushButton::clicked, this, slot);
                 return btn;
             };
