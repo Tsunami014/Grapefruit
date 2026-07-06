@@ -11,6 +11,7 @@ set(CORE
     base/taskload.cpp
     base/options.cpp
     base/converse.cpp
+    base/externs.cpp
 
     extra/itemopts.cpp
     extra/drag.cpp

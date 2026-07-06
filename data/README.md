@@ -16,7 +16,7 @@
 - Purposes have a list of templates grouped based on context tag (e.g. 'comfort' may contain 'sad' which may have things like "I hope you feel better")
     - `~` is used when there is no tag, `+` or `=` is used for any tag that isn't already used but `+` requires there to be a tag from the group.
     - Only applicable templates are chosen from (e.g. if one group doesn't have the active tag it isn't avaliable)
-    - Each template can also define synonyms (e.g. "I hope you {feel/get} better") or use context groups (e.g. $mood or $project)
+    - Each template can also define synonyms (e.g. "I hope you {feel/get} better") or use context groups (e.g. %mood or %time)
         - But adding a context group to a template also adds the requirement that that group must have a tag active to that template
     - Starting a sentence with `x*` (optional space after) where x is a number 'repeats' the sentence x times, making it x times more likely to appear.
 - One avaliable template is chosen at random from all avaliable in the current purpose
@@ -34,7 +34,7 @@ I do not recommend to use the contents of this example, it only exists to demons
 ```yaml
 groups:
   mood: [sad, okay, happy]
-  =project: "recomm_project"
+  time: "time_of_day"
 
 initial: [checkup_mood]
 reset: [checkup_mood, checkup_progress]
@@ -43,10 +43,10 @@ purposes:
   checkup_mood:
     templates:
       $:
-        - "Are you going well?"
+        - "2* How's your $time{ going/}?"
       mood:
         sad:
-          - "I hope you {feel/start feeling} better soon.*2"
+          - "2* I hope you {feel/start feeling} better soon."
           - "That sounds really tough."
         +:
           - "You seem to be doing well!"

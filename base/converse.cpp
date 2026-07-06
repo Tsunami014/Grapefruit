@@ -1,4 +1,5 @@
 #include "converse.hpp"
+#include "externs.hpp"
 #include <yaml-cpp/yaml.h>
 #include <QRandomGenerator>
 #include <QRegularExpression>
@@ -17,9 +18,9 @@ const YAML::Node& config() {
     });
 }
 /// A mapping of groups to their contents
-const std::map<std::string, std::unordered_set<std::string>>& groups() {
+const std::unordered_map<std::string, std::unordered_set<std::string>>& groups() {
     return cached([]{
-        std::map<std::string, std::unordered_set<std::string>> gs;
+        std::unordered_map<std::string, std::unordered_set<std::string>> gs;
         for (const auto& entry : config()["groups"]) {
             std::unordered_set<std::string> conts;
             if (entry.second.IsSequence()) {
@@ -33,15 +34,27 @@ const std::map<std::string, std::unordered_set<std::string>>& groups() {
     });
 }
 /// A mapping from items to their groups
-const std::map<std::string, std::string>& getgroup() {
+const std::unordered_map<std::string, std::string>& getgroup() {
     return cached([]{
-        std::map<std::string, std::string> ggp;
+        std::unordered_map<std::string, std::string> ggp;
         for (const auto& [grp, conts] : groups()) {
             for (const auto& item : conts) {
                 ggp.insert({item, grp});
             }
         }
         return ggp;
+    });
+}
+/// A list of external groups
+const std::unordered_set<std::string>& externs() {
+    return cached([]{
+        std::unordered_set<std::string> gs;
+        for (const auto& entry : config()["groups"]) {
+            if (!entry.second.IsSequence()) {
+                gs.insert(entry.first.as<std::string>());
+            }
+        }
+        return gs;
     });
 }
 /// A list of all tags to keep on reset
@@ -102,7 +115,7 @@ void Conversation::onclick(Option o) {
 }
 
 const QRegularExpression getRe(R"(^(\d+) ?\* *(.+))");
-QString getSentence(std::vector<std::string> sents) {
+QString Conversation::getSentence(std::vector<std::string> sents) {
     QStringList choices;
     for (const auto& str : sents) {
         auto qstr = QString::fromStdString(str);
@@ -126,7 +139,8 @@ QString getSentence(std::vector<std::string> sents) {
 
 const QRegularExpression polishSynonymRe("{([^}]+)}");
 const QRegularExpression polishSplRe(R"((?<!\\)(?:\\\\)*\/)");
-QString polishSentence(QString sent) {
+const QRegularExpression polishGroupsRe("%([a-zA-Z_]+)");
+QString Conversation::polishSentence(QString sent) {
     // Replace synonym choices in {brackets/braces}
     auto it = polishSynonymRe.globalMatch(sent);
     int offs = 0;
@@ -134,6 +148,30 @@ QString polishSentence(QString sent) {
         auto m = it.next();
         QStringList opts = m.captured(1).split(polishSplRe);
         QString repl = opts[QRandomGenerator::global()->bounded(opts.length())];
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        sent.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+    it = polishGroupsRe.globalMatch(sent);
+    offs = 0;
+    auto exts = externs();
+    while (it.hasNext()) {
+        auto m = it.next();
+        std::string group = m.captured(1).toStdString();
+        QString repl;
+        if (exts.find(group) != exts.end()) {
+            repl = runExtern(group);
+        } else {
+            // Find first context tag applied in the group
+            repl = m.captured(0);
+            for (const auto& it : groups().at(group)) {
+                if (context.find(it) != context.end()) {
+                    repl = QString::fromStdString(it); break;
+                }
+            }
+        }
 
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;

@@ -2,6 +2,7 @@ groups:
   mood: [sad, happy]
   energy: [tired, stressed, bored, excited]
   uncertainty: [unsure, stuck, motivated]
+  time: "time_of_day"
 
 initial: [sayhi]
 reset: [sayhi]
@@ -13,6 +14,7 @@ purposes:
         - "3* {Hiya/Heya/Hi/Hello}! How are you{ going/}?"
         - "3* {Hiya/Heya/Hi/Hello}! How{'s/ is} it going?"
         - "2* How{ are you/ is it/'s it}{ going/}?"
+        - "100*Good %time!"
     options:
       - - ["Not the best", [sad], comfort]
         - ["Kinda stressed", [sad, stressed], comfort]

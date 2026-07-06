@@ -15,6 +15,9 @@ protected:
     FlowLayout* olay;
     QLabel* curtxt;
 
+    QString getSentence(std::vector<std::string> sents);
+    QString polishSentence(QString sent);
+
     void refresh();
     void display(QString txt, optList opts = {});
     virtual void onclick(Option o);
