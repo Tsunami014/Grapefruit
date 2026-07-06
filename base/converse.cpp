@@ -114,11 +114,32 @@ void Conversation::onclick(Option o) {
     refresh();
 }
 
+const QRegularExpression groupsRe("%([a-zA-Z_]+)%?");
+
 const QRegularExpression getRe(R"(^(\d+) ?\* *(.+))");
 QString Conversation::getSentence(std::vector<std::string> sents) {
     QStringList choices;
+    auto exts = externs();
     for (const auto& str : sents) {
         auto qstr = QString::fromStdString(str);
+        // Check all context group tags exist
+        auto it = groupsRe.globalMatch(qstr);
+        bool good = true;
+        while (it.hasNext() && good) {
+            auto m = it.next();
+            std::string group = m.captured(1).toStdString();
+            if (exts.find(group) == exts.end()) {
+                good = false;
+                auto grps = groups();
+                auto it2 = grps.find(group);
+                if (it2 == grps.end()) break;
+                for (const auto& val : it2->second) {
+                    if (context.find(val) != context.end()) good = true; break;
+                }
+            }
+        }
+        if (!good) continue;
+        // Duplicate the sentence if specified
         auto m = getRe.match(qstr);
         if (m.hasMatch()) {
             bool ok;
@@ -133,13 +154,14 @@ QString Conversation::getSentence(std::vector<std::string> sents) {
             choices << qstr;
         }
     }
-    uint sidx = QRandomGenerator::global()->bounded(uint(choices.size()));
+    uint ln = choices.size();
+    if (ln == 0) return {};
+    uint sidx = QRandomGenerator::global()->bounded(ln);
     return choices[sidx];
 }
 
 const QRegularExpression polishSynonymRe("{([^}]+)}");
 const QRegularExpression polishSplRe(R"((?<!\\)(?:\\\\)*\/)");
-const QRegularExpression polishGroupsRe("%([a-zA-Z_]+)");
 QString Conversation::polishSentence(QString sent) {
     // Replace synonym choices in {brackets/braces}
     auto it = polishSynonymRe.globalMatch(sent);
@@ -154,7 +176,7 @@ QString Conversation::polishSentence(QString sent) {
         sent.replace(start, end - start, repl);
         offs += repl.length() - (end - start);
     }
-    it = polishGroupsRe.globalMatch(sent);
+    it = groupsRe.globalMatch(sent);
     offs = 0;
     auto exts = externs();
     while (it.hasNext()) {
@@ -233,11 +255,12 @@ void Conversation::refresh() {
             }
         }
     }
-    if (sents.size() == 0) {
+    QString sent = getSentence(sents);
+    if (sent.isNull()) {
         display("No sentence options avaliable!");
         return;
     }
-    QString sent = polishSentence(getSentence(sents));
+    sent = polishSentence(sent);
 
     auto allopts = ppse["options"];
     if (!allopts || allopts.size() == 0) {
