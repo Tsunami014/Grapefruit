@@ -26,7 +26,6 @@
     - But adding a context group to a template also adds the requirement that that group must have a tag active to that template
   - Starting a sentence with `x*` (optional space after) where x is a number 'repeats' the sentence x times, making it x times more likely to appear.
 - One avaliable template is chosen at random from all avaliable in the current purpose
-- If a sentence is in the format `> purpose` then it will set the purpose to the one specified and use a sentence from that instead.
 
 ### The options
 - The purpose templates are grouped together by the list of user options provided
@@ -47,18 +46,18 @@ reset: [checkup_mood, checkup_progress]
 
 purposes:
   checkup_mood:
-    templates:
-      "sad":
-        - "2* I hope you {feel/start feeling} better soon."
-        - "That sounds really tough."
-      "=, +mood":
-        - "You seem to be doing well!"
-      "-mood":
-        - "How are you doing today?"
-      "*":
-        - "2* How's your %time{ going/}?"
-    options:
-      - - ["A bit sad", [sad], comfort]
+    - templates:
+        "sad":
+          - "2* I hope you {feel/start feeling} better soon."
+          - "That sounds really tough."
+        "=, +mood":
+          - "You seem to be doing well!"
+        "-mood":
+          - "How are you doing today?"
+        "*":
+          - "2* How's your %time{ going/}?"
+      opts:
+        - ["A bit sad", [sad], comfort]
         - ["Pretty good", [okay]]
         - ["Don't know", [-mood]]
 ```

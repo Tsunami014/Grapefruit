@@ -117,11 +117,13 @@ void Conversation::onclick(Option o) {
 const QRegularExpression groupsRe("%([a-zA-Z_]+)%?");
 
 const QRegularExpression getRe(R"(^(\d+) ?\* *(.+))");
-QString Conversation::getSentence(std::vector<std::string> sents) {
-    QStringList choices;
+std::pair<QString, uint> Conversation::getSentence(const _sentList& sents) {
+    /// [(idx of sentence, sentence), ...]
+    std::vector<std::pair<uint, QString>> choices;
     auto exts = externs();
+    uint idx = 0;
     for (const auto& str : sents) {
-        auto qstr = QString::fromStdString(str);
+        auto qstr = QString::fromStdString(str.first);
         // Check all context group tags exist
         auto it = groupsRe.globalMatch(qstr);
         bool good = true;
@@ -138,26 +140,28 @@ QString Conversation::getSentence(std::vector<std::string> sents) {
                 }
             }
         }
-        if (!good) continue;
+        if (!good) { idx++; continue; }
         // Duplicate the sentence if specified
         auto m = getRe.match(qstr);
         if (m.hasMatch()) {
             bool ok;
             uint amnt = m.captured(1).toUInt(&ok);
             if (!ok) {
-                choices << qstr;
+                choices.push_back({idx, qstr});
             } else {
                 QString add = m.captured(2);
-                for (uint i = 0; i < amnt; i++) choices << add;
+                for (uint i = 0; i < amnt; i++) choices.push_back({idx, add});
             }
         } else {
-            choices << qstr;
+            choices.push_back({idx, qstr});
         }
+        idx++;
     }
     uint ln = choices.size();
     if (ln == 0) return {};
     uint sidx = QRandomGenerator::global()->bounded(ln);
-    return choices[sidx];
+    // Return the text and the idx of the choice provided by the sentence
+    return {choices[sidx].second, sents[choices[sidx].first].second};
 }
 
 const QRegularExpression polishSynonymRe("{([^}]+)}");
@@ -210,92 +214,89 @@ void Conversation::refresh() {
         display("Purpose '"+QString::fromStdString(purpose)+"' does not exist!");
         return;
     }
-    std::vector<std::string> sents;
-    for (const auto& tmpl : ppse["templates"]) {
-        auto match = tmpl.first.as<std::string>();
-        bool good = true;
-        size_t last = 0; size_t next = 0;
-        while (good) {
-            size_t next = match.find(", ", last);
-            std::string req;
-            if (next == std::string::npos) {
-                req = match.substr(last);
-            } else {
-                req = match.substr(last, next - last);
-            }
-
-            if (req == "=") {
-                if (!sents.empty()) {
-                    good = false; break;
+    _sentList sents;
+    std::vector<optList> opts;
+    uint idx = 0;
+    for (const auto& opt : ppse) {
+        // Compile the options into a list
+        optList outopts;
+        for (const auto& item : opt["opts"]) {
+            std::string npurp = "";
+            if (item.size() > 2) npurp = item[2].as<std::string>();
+            outopts.push_back({
+                polishSentence(QString::fromStdString(item[0].as<std::string>())),
+                item[1].as<std::unordered_set<std::string>>(),
+                npurp
+            });
+        }
+        opts.push_back(outopts);
+        // Get all the templates
+        for (const auto& tmpl : opt["templates"]) {
+            auto match = tmpl.first.as<std::string>();
+            bool good = true;
+            size_t last = 0; size_t next = 0;
+            while (good) {
+                size_t next = match.find(", ", last);
+                std::string req;
+                if (next == std::string::npos) {
+                    req = match.substr(last);
+                } else {
+                    req = match.substr(last, next - last);
                 }
-            } else if (req != "*" && req != "") { switch (req[0]) {
-                case '+':
-                    // Only match if any key from this group is present
-                    good = false;
-                    for (const auto& val : groups().at(req.substr(1))) {
-                        if (context.find(val) != context.end()) {
-                            good = true; break;
-                        }
+
+                if (req == "=") {
+                    if (!sents.empty()) {
+                        good = false; break;
                     }
-                    break;
-                case '-':
-                    // Only match if no key from this group is present
-                    for (const auto& val : groups().at(req.substr(1))) {
-                        if (context.find(val) != context.end()) {
-                            good = false; break;
+                } else if (req != "*" && req != "") { switch (req[0]) {
+                    case '+':
+                        // Only match if any key from this group is present
+                        good = false;
+                        for (const auto& val : groups().at(req.substr(1))) {
+                            if (context.find(val) != context.end()) {
+                                good = true; break;
+                            }
                         }
+                        break;
+                    case '-':
+                        // Only match if no key from this group is present
+                        for (const auto& val : groups().at(req.substr(1))) {
+                            if (context.find(val) != context.end()) {
+                                good = false; break;
+                            }
+                        }
+                        break;
+                    case '!':
+                        // Only match if the key is not present
+                        good = context.find(req.substr(1)) == context.end();
+                        break;
+                    default:
+                        // Only match if the key is present
+                        good = context.find(req) != context.end();
+                        break;
+                }}
+                if (next == std::string::npos) break;
+                last = next + 2;
+            }
+            if (good) {
+                if (tmpl.second.IsScalar()) {
+                    sents.push_back({tmpl.second.as<std::string>(), idx});
+                } else {
+                    for (const auto& it : tmpl.second) {
+                        sents.push_back({it.as<std::string>(), idx});
                     }
-                    break;
-                case '!':
-                    // Only match if the key is not present
-                    good = context.find(req.substr(1)) == context.end();
-                    break;
-                default:
-                    // Only match if the key is present
-                    good = context.find(req) != context.end();
-                    break;
-            }}
-            if (next == std::string::npos) break;
-            last = next + 2;
-        }
-        if (good) {
-            if (tmpl.second.IsScalar()) {
-                sents.push_back(tmpl.second.as<std::string>());
-            } else {
-                auto moresents = tmpl.second.as<std::vector<std::string>>();
-                sents.insert(sents.end(), moresents.begin(), moresents.end());
+                }
             }
         }
+        idx++;
     }
-    QString sent = getSentence(sents);
-    if (sent.isNull()) {
-        display("No sentence options avaliable!");
+    auto out = getSentence(sents);
+    if (out.first.isNull()) {
+        display("No sentences avaliable!");
         return;
     }
-    if (sent.startsWith("> ")) {
-        purpose = polishSentence(sent.sliced(2)).toStdString();
-        return refresh();
-    }
-    sent = polishSentence(sent);
-
-    auto allopts = ppse["options"];
-    if (!allopts || allopts.size() == 0) {
-        display(sent);
-        return;
-    }
-    uint oidx = QRandomGenerator::global()->bounded(uint(allopts.size()));
-
-    optList outopts;
-    for (const auto& item : allopts[oidx]) {
-        std::string npurp = "";
-        if (item.size() > 2) npurp = item[2].as<std::string>();
-        outopts.push_back({
-            polishSentence(QString::fromStdString(item[0].as<std::string>())),
-            item[1].as<std::unordered_set<std::string>>(),
-            npurp
-        });
-    }
-    display(sent, outopts);
+    auto sent = polishSentence(out.first);
+    display(sent, opts.at(out.second));
 }
 
 void Conversation::display(QString title, optList opts) {

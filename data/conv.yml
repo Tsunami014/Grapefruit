@@ -9,48 +9,40 @@ reset: [sayhi]
 
 purposes:
   sayhi:
-    templates:
-      "*":
-        - "2* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! How are you{ going/}?"
-        - "2* {Hiya/Heya/Hi/Hello/Good %time}! How{'s/ is} it going?"
-        - "2* How{ are you/ is it/'s it} going?"
-        - "How is your %time{ going/}?"
-        - "3* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! What's up?"
-        - "What's up?"
-    options:
-      - - ["Terribly", [depressed], context]
+    - templates:
+        "*":
+          - "2* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! How are you{ going/}?"
+          - "2* {Hiya/Heya/Hi/Hello/Good %time}! How{'s/ is} it going?"
+          - "2* How{ are you/ is it/'s it} going?"
+          - "How is your %time{ going/}?"
+          - "3* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! What's up?"
+          - "What's up?"
+      opts:
+        - ["Terribly", [depressed], context]
         - ["Not the best", [sad], context]
         - ["I'm ok", [], context]
         - ["Pretty good", [happy], banter]
 
   context:
-    templates:
-      "sad": "> context_sad"
-      "depressed":
-        - "> context_sad"
-        - "5*> context_depressed"
-      "=":
-        - "How are you feeling?"
-    options:
-      - - ["Tired", [tired]]
+    - templates:
+        "sad":
+          - "What's {wrong/troubling you}?"
+      opts:
+        - ["Tired", [tired]]
+        - ["Stressed", [stressed]]
+        - ["Bored", [bored]]
+    - templates:
+        "depressed":
+          - "5* What's wrong?"
+      opts:
+        - ["Tired", [tired]]
+        - ["Stressed", [stressed]]
+        - ["Bored", [bored]]
+    - templates:
+        "=":
+          - "How are you feeling?"
+      opts:
+        - ["Tired", [tired]]
         - ["Bored", [stressed]]
         - ["Unsure", [unsure]]
         - ["Stuck", [stuck]]
-
-  context_sad:
-    templates:
-      "*":
-        - "What's {wrong/troubling you}?"
-    options:
-      - - ["Tired", [tired]]
-        - ["Stressed", [stressed]]
-        - ["Bored", [bored]]
-
-  context_depressed:
-    templates:
-      "*":
-        - "What's wrong?"
-    options:
-      - - ["Tired", [tired]]
-        - ["Stressed", [stressed]]
-        - ["Bored", [bored]]

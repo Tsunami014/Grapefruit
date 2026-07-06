@@ -15,7 +15,9 @@ protected:
     FlowLayout* olay;
     QLabel* curtxt;
 
-    QString getSentence(std::vector<std::string> sents);
+    /// [(sentence, idx of options in opts list), ...]
+    using _sentList = std::vector<std::pair<std::string, uint>>;
+    std::pair<QString, uint> getSentence(const _sentList& sents);
     QString polishSentence(QString sent);
 
     void refresh();
