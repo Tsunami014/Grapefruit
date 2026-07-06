@@ -9,9 +9,11 @@ purposes:
         sad:
           - "I hope you {feel/start feeling} better soon."
           - "That sounds really tough."
+        +:
+          - "You seem to be doing well!"
         ~:
           - "How are you doing today?"
     options:
-      - - ["A bit sad", [sad], comfort]
+      - - ["A bit sad", [sad]]
         - ["Pretty good", [okay]]
-
+        - ["Don't know", [-mood]]

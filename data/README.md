@@ -2,7 +2,8 @@
 ## What is important to mention
 ### What purpose should the message serve
 - Keep track of a 'purpose' from a list of predefined purposes that change on each option press (e.g. 'comfort' or 'encourage')
-    - The purpose named '^' is the 'initial purpose' (set to when the conversation starts or resets)
+    - The purpose named '^' is the 'initial purpose' (set to when the conversation starts)
+    - The purpose named '$' is the 'reset purpose' (set to when the conversation resets)
 ### What is there to mention
 - Context tags - a list of context items about the user (e.g. 'sad', 'tired', 'unsure', 'had a long day', 'thinking about project xyz', 'bored') that should aim to change every message (so include enough and make them specific so each new option will always change at least something and the conversation doesn't go in circles)
     - Context tags get mostly reset at the beginning of every conversation (some groups are marked as 'keep' (prefixed with =; the = gets stripped during parsing) (such as projects working on) and they stay but the rest reset)
@@ -20,7 +21,8 @@
 ### The options
 - The purpose templates are grouped together by the list of user options provided
     - This list contains multiple choices for what set of options to provide and it picks a random one
-    - Each option in the set is a word or phrase and has attached tags which if the option is selected adds that tag to the current tag pool (removing others in the same group) and also has an optional set purpose which if included sets the purpose to that.
+    - Each option in the set is a word or phrase and has attached tags and an optional set purpose which if included sets the purpose to that.
+    - 'Attached tags' are where if the option is selected, the tags are added to the current context, removing others in the same group. Additionally, if a tag is `-group`, it will remove all tags from that group instead.
 - Also include a 'redirect' option - "I'd rather talk about something else" (resets purpose and decays state as if exited and reentered the app)
 
 # Format example
@@ -36,9 +38,12 @@ purposes:
         sad:
           - "I hope you {feel/start feeling} better soon."
           - "That sounds really tough."
+        +:
+          - "You seem to be doing well!"
         ~:
           - "How are you doing today?"
     options:
       - - ["A bit sad", [sad], comfort]
         - ["Pretty good", [okay]]
+        - ["Don't know", [-mood]]
 ```

@@ -3,24 +3,60 @@
 #include <QRandomGenerator>
 #include <QFile>
 
-static YAML::Node config() {
-    QFile file(":/data/conv.yml");
-    bool ok = file.open(QIODevice::ReadOnly);
-    // Should always be ok because we're loading from internal files
-    return YAML::Load(file.readAll().toStdString());
+template<typename F>
+const auto& cached(F&& init) {
+    static const auto value = init();
+    return value;
 }
-static std::unordered_set<std::string> keeps() {
-    std::unordered_set<std::string> kps;
-    auto groups = config()["groups"];
-    for (const auto& entry : groups) {
-        std::string key = entry.first.as<std::string>();
-        if (key.size() > 0 && key.at(0) == '=' && entry.second.IsSequence()) {
-            for (const auto& item : entry.second) {
-                kps.insert(item.as<std::string>());
+
+const YAML::Node& config() {
+    return cached([]{
+        QFile file(":/data/conv.yml");
+        bool ok = file.open(QIODevice::ReadOnly);
+        // Should always be ok because we're loading from internal files
+        return YAML::Load(file.readAll().toStdString());
+    });
+}
+const std::map<std::string, std::unordered_set<std::string>>& groups() {
+    return cached([]{
+        std::map<std::string, std::unordered_set<std::string>> gs;
+        for (const auto& entry : config()["groups"]) {
+            std::unordered_set<std::string> conts;
+            if (entry.second.IsSequence()) {
+                for (const auto& item : entry.second) {
+                    conts.insert(item.as<std::string>());
+                }
+            }
+            gs.insert({entry.first.as<std::string>(), conts});
+        }
+        return gs;
+    });
+}
+/// A mapping from items to their groups
+const std::map<std::string, std::string>& getgroup() {
+    return cached([]{
+        std::map<std::string, std::string> ggp;
+        for (const auto& [grp, conts] : groups()) {
+            for (const auto& item : conts) {
+                ggp.insert({item, grp});
             }
         }
-    }
-    return kps;
+        return ggp;
+    });
+}
+const std::unordered_set<std::string>& keeps() {
+    return cached([]{
+        std::unordered_set<std::string> kps;
+        for (const auto& entry : config()["groups"]) {
+            std::string key = entry.first.as<std::string>();
+            if (key.size() > 0 && key.at(0) == '=' && entry.second.IsSequence()) {
+                for (const auto& item : entry.second) {
+                    kps.insert(item.as<std::string>());
+                }
+            }
+        }
+        return kps;
+    });
 }
 
 Conversation::Conversation(FlowLayout* olay, QLabel* curtxt)
@@ -29,17 +65,35 @@ Conversation::Conversation(FlowLayout* olay, QLabel* curtxt)
     }
 
 void Conversation::newTopic() {
+    // Remove all context keys unless in keep
     auto kp = keeps();
-    context.erase(
-        std::remove_if(context.begin(), context.end(),
-            [&](std::string s) {
-                return kp.find(s) == kp.end();
-            }
-        ), context.end()
-    );
+    for (auto it = context.begin();it != context.end();) {
+        if (kp.find(*it) == kp.end()) {
+            it = context.erase(it);
+        } else { ++it; }
+    }
+    purpose = "^";
     refresh();
 }
 void Conversation::onclick(Option o) {
+    if (o.newpurp != "") {
+        purpose = o.newpurp;
+    }
+    auto ggp = getgroup();
+    auto grps = groups();
+    for (const auto& chng : o.changes) {
+        std::string g;
+        bool clear = chng.at(0) == '-';
+        if (clear) { g = chng.substr(1); }
+        else { g = ggp.at(chng); }
+        for (const auto& val : grps.at(g)) {
+            auto it = context.find(val);
+            if (it != context.end()) {
+                context.erase(it); break;
+            }
+        }
+        if (!clear) context.insert(chng);
+    }
     refresh();
 }
 
@@ -49,18 +103,71 @@ void Conversation::refresh() {
         display("Purpose '"+QString::fromStdString(purpose)+"' does not exist!");
         return;
     }
-    auto allopts = ppse["options"];
-    if (!allopts || allopts.size() == 0) {
-        display("No options avaliable!");
+    std::vector<std::string> sents;
+    for (const auto& tmpl : ppse["templates"]) {
+        std::string group = tmpl.first.as<std::string>();
+        for (const auto& conts : tmpl.second) {
+            std::string key;
+            if (conts.first.IsNull()) { key = "~"; }
+            else { key = conts.first.as<std::string>(); }
+
+            if (key == "~") {
+                // Only show if no key from this group is present
+                bool good = true;
+                for (const auto& val : groups().at(group)) {
+                    if (context.find(val) != context.end()) {
+                        good = false; break;
+                    }
+                }
+                if (!good) continue;
+            } else if (key == "+") {
+                // Only show if no other key matched for is present
+                // But ensure at least one key from this group is present
+                std::unordered_set<std::string> badvals;
+                for (const auto& conts2 : tmpl.second) {
+                    badvals.insert(conts2.first.as<std::string>());
+                }
+                bool good = false;
+                for (const auto& val : groups().at(group)) {
+                    if (context.find(val) == context.end()) continue;
+                    good = badvals.find(val) == badvals.end();
+                    break; // There should only be one group tag active at a time
+                }
+                if (!good) continue;
+            } else {
+                // If the key is not present then don't use
+                if (context.find(key) == context.end()) continue;
+            }
+            for (const auto& sent : conts.second) {
+                sents.push_back(sent.as<std::string>());
+            }
+        }
+    }
+    if (sents.size() == 0) {
+        display("No sentence options avaliable!");
         return;
     }
-    uint idx = QRandomGenerator::global()->bounded(uint(allopts.size()));
+    uint sidx = QRandomGenerator::global()->bounded(uint(sents.size()));
+    QString sent = QString::fromStdString(sents[sidx]);
+
+    auto allopts = ppse["options"];
+    if (!allopts || allopts.size() == 0) {
+        display(sent);
+        return;
+    }
+    uint oidx = QRandomGenerator::global()->bounded(uint(allopts.size()));
 
     optList outopts;
-    for (const auto& item : allopts[idx]) {
-        outopts.push_back({QString::fromStdString(item[0].as<std::string>())});
+    for (const auto& item : allopts[oidx]) {
+        std::string npurp = "";
+        if (item.size() > 2) npurp = item[2].as<std::string>();
+        outopts.push_back({
+            QString::fromStdString(item[0].as<std::string>()),
+            item[1].as<std::unordered_set<std::string>>(),
+            npurp
+        });
     }
-    display("Hello!", outopts);
+    display(sent, outopts);
 }
 
 void Conversation::display(QString title, optList opts) {

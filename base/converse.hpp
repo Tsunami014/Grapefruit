@@ -10,7 +10,7 @@ public:
 
 protected:
     std::string purpose = "^";
-    std::vector<std::string> context = {};
+    std::unordered_set<std::string> context = {};
 
     FlowLayout* olay;
     QLabel* curtxt;
