@@ -9,21 +9,31 @@ reset: [sayhi]
 
 purposes:
   sayhi:
+    # How is it going?
     - templates:
         "*":
           - "2* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! How are you{ going/}?"
           - "2* {Hiya/Heya/Hi/Hello/Good %time}! How{'s/ is} it going?"
           - "2* How{ are you/ is it/'s it} going?"
           - "How is your %time{ going/}?"
-          - "3* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! What's up?"
-          - "What's up?"
       opts:
         - ["Terribly", [depressed], context]
         - ["Not the best", [sad], context]
-        - ["I'm ok", [], context]
+        - ["Ok", [], context]
         - ["Pretty good", [happy], banter]
+    # What's up?
+    - templates:
+        "*":
+          - "3* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! What's up?"
+          - "What's up?"
+      opts:
+        - ["I'm going well", [happy], banter]
+        - ["Nothing much", [], context]
+        - ["I'm going poorly", [sad], context]
+        - ["{Everything!//}", [], context]
 
   context:
+    # Why are you sad?
     - templates:
         "sad":
           - "What's {wrong/troubling you}?"
@@ -31,6 +41,7 @@ purposes:
         - ["Tired", [tired]]
         - ["Stressed", [stressed]]
         - ["Bored", [bored]]
+    # Why are you depressed?
     - templates:
         "depressed":
           - "5* What's wrong?"
@@ -38,6 +49,7 @@ purposes:
         - ["Tired", [tired]]
         - ["Stressed", [stressed]]
         - ["Bored", [bored]]
+    # How are you feeling? (when not sad)
     - templates:
         "=":
           - "How are you feeling?"

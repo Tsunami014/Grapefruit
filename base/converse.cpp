@@ -221,10 +221,11 @@ void Conversation::refresh() {
         // Compile the options into a list
         optList outopts;
         for (const auto& item : opt["opts"]) {
+            QString title = polishSentence(QString::fromStdString(item[0].as<std::string>()));
+            if (title.isEmpty()) continue;
             std::string npurp = "";
             if (item.size() > 2) npurp = item[2].as<std::string>();
-            outopts.push_back({
-                polishSentence(QString::fromStdString(item[0].as<std::string>())),
+            outopts.push_back({ title,
                 item[1].as<std::unordered_set<std::string>>(),
                 npurp
             });
