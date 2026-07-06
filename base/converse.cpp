@@ -208,6 +208,39 @@ QString Conversation::polishSentence(QString sent) {
     return sent;
 }
 
+bool Conversation::matches(const std::string& req, const _sentList& sents) {
+    if (req == "=") {
+        return sents.empty();
+    } else if (req == "*" || req == "") {
+        return true;
+    } else { switch (req[0]) {
+        case '+': {
+            // Only match if any key from this group is present
+            bool good = false;
+            for (const auto& val : groups().at(req.substr(1))) {
+                if (context.find(val) != context.end()) {
+                    good = true; break;
+                }
+            }
+            return good;}
+        case '-': {
+            bool good = true;
+            // Only match if no key from this group is present
+            for (const auto& val : groups().at(req.substr(1))) {
+                if (context.find(val) != context.end()) {
+                    good = false; break;
+                }
+            }
+            return good;}
+        case '!':
+            // Only match if the key is not present
+            return context.find(req.substr(1)) == context.end();
+        default:
+            // Only match if the key is present
+            return context.find(req) != context.end();
+    }}
+}
+
 void Conversation::refresh() {
     auto ppse = config()["purposes"][purpose];
     if (!ppse) {
@@ -230,6 +263,9 @@ void Conversation::refresh() {
                 npurp
             });
         }
+        if (opt["shuffle"] && opt["shuffle"].as<bool>()) {
+            std::shuffle(outopts.begin(), outopts.end(), *QRandomGenerator::global());
+        }
         opts.push_back(outopts);
         // Get all the templates
         for (const auto& tmpl : opt["templates"]) {
@@ -243,41 +279,15 @@ void Conversation::refresh() {
                     req = match.substr(last);
                 } else {
                     req = match.substr(last, next - last);
+                    last = next + 2;
                 }
-
-                if (req == "=") {
-                    if (!sents.empty()) {
-                        good = false; break;
-                    }
-                } else if (req != "*" && req != "") { switch (req[0]) {
-                    case '+':
-                        // Only match if any key from this group is present
-                        good = false;
-                        for (const auto& val : groups().at(req.substr(1))) {
-                            if (context.find(val) != context.end()) {
-                                good = true; break;
-                            }
-                        }
-                        break;
-                    case '-':
-                        // Only match if no key from this group is present
-                        for (const auto& val : groups().at(req.substr(1))) {
-                            if (context.find(val) != context.end()) {
-                                good = false; break;
-                            }
-                        }
-                        break;
-                    case '!':
-                        // Only match if the key is not present
-                        good = context.find(req.substr(1)) == context.end();
-                        break;
-                    default:
-                        // Only match if the key is present
-                        good = context.find(req) != context.end();
-                        break;
-                }}
+                good = false;
+                std::stringstream ss(req);
+                std::string token;
+                while (!good && std::getline(ss, token, '?')) {
+                    good = matches(token, sents);
+                }
                 if (next == std::string::npos) break;
-                last = next + 2;
             }
             if (good) {
                 if (tmpl.second.IsScalar()) {
@@ -295,6 +305,10 @@ void Conversation::refresh() {
     if (out.first.isNull()) {
         display("No sentences avaliable!");
         return;
+    }
+    if (out.first.startsWith("> ")) {
+        purpose = polishSentence(out.first.sliced(2)).toStdString();
+        return refresh();
     }
     auto sent = polishSentence(out.first);
     display(sent, opts.at(out.second));

@@ -17,6 +17,7 @@ protected:
 
     /// [(sentence, idx of options in opts list), ...]
     using _sentList = std::vector<std::pair<std::string, uint>>;
+    bool matches(const std::string& req, const _sentList& sents);
     std::pair<QString, uint> getSentence(const _sentList& sents);
     QString polishSentence(QString sent);
 

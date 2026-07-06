@@ -20,12 +20,14 @@
     - +group - must have a tag from the group
     - -group - matches when no tag from that group is active
     - = - matches when no other sentence has matched yet (matches are evaluated first-last)
+    - rule?rule... - can match any of the provided rules
   - A rule of `*` by itself means match everything
   - Only applicable templates are chosen from (e.g. if one group doesn't have the active tag it isn't avaliable)
   - Each template can also define synonyms (e.g. "I hope you {feel/get} better") or use context groups (e.g. %mood or %time)
     - But adding a context group to a template also adds the requirement that that group must have a tag active to that template
   - Starting a sentence with `x*` (optional space after) where x is a number 'repeats' the sentence x times, making it x times more likely to appear.
 - One avaliable template is chosen at random from all avaliable in the current purpose
+- If a sentence is in the format `> purpose` then it will set the purpose to the one specified and use a sentence from that instead.
 
 ### The options
 - The purpose templates are grouped together by the list of user options provided
@@ -33,6 +35,7 @@
   - Each option in the set is a word or phrase and has attached tags and an optional set purpose which if included sets the purpose to that.
   - 'Attached tags' are where if the option is selected, the tags are added to the current context, removing others in the same group. Additionally, if a tag is `-group`, it will remove all tags from that group instead.
 - A 'new topic' option is always included (no need to specify) that resets the conversation
+- If 'shuffle' is true then will shuffle the options. If false or omitted, will keep in order.
 
 # Format example
 I do not recommend to use the contents of this example, it only exists to demonstrate good formatting and that is it, not sample contents.
@@ -56,6 +59,7 @@ purposes:
           - "How are you doing today?"
         "*":
           - "2* How's your %time{ going/}?"
+      shuffle: true
       opts:
         - ["A bit sad", [sad], comfort]
         - ["Pretty good", [okay]]
