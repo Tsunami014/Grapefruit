@@ -212,53 +212,65 @@ void Conversation::refresh() {
     }
     std::vector<std::string> sents;
     for (const auto& tmpl : ppse["templates"]) {
-        std::string group = tmpl.first.as<std::string>();
-        if (group == "$") {
-            auto v2 = tmpl.second.as<std::vector<std::string>>();
-            sents.insert(sents.end(), v2.begin(), v2.end());
-            continue;
-        }
-        for (const auto& conts : tmpl.second) {
-            std::string key;
-            if (conts.first.IsNull()) { key = "~"; }
-            else { key = conts.first.as<std::string>(); }
-
-            if (key == "~") {
-                // Only show if no key from this group is present
-                bool good = true;
-                for (const auto& val : groups().at(group)) {
-                    if (context.find(val) != context.end()) {
-                        good = false; break;
-                    }
-                }
-                if (!good) continue;
-            } else if (key == "+" || key == "=") {
-                // Only show if no other key matched for is present
-                // But ensure at least one key from this group is present
-                std::unordered_set<std::string> badvals;
-                for (const auto& conts2 : tmpl.second) {
-                    badvals.insert(conts2.first.as<std::string>());
-                }
-                bool good = key == "=";
-                for (const auto& val : groups().at(group)) {
-                    if (context.find(val) == context.end()) continue;
-                    good = badvals.find(val) == badvals.end();
-                    break; // There should only be one group tag active at a time
-                }
-                if (!good) continue;
+        auto match = tmpl.first.as<std::string>();
+        bool good = true;
+        size_t last = 0; size_t next = 0;
+        while (good) {
+            size_t next = match.find(", ", last);
+            std::string req;
+            if (next == std::string::npos) {
+                req = match.substr(last);
             } else {
-                // If the key is not present then don't use
-                if (context.find(key) == context.end()) continue;
+                req = match.substr(last, next - last);
             }
-            for (const auto& sent : conts.second) {
-                sents.push_back(sent.as<std::string>());
-            }
+
+            if (req == "=") {
+                if (!sents.empty()) {
+                    good = false; break;
+                }
+            } else if (req != "*" && req != "") { switch (req[0]) {
+                case '+':
+                    // Only match if any key from this group is present
+                    good = false;
+                    for (const auto& val : groups().at(req.substr(1))) {
+                        if (context.find(val) != context.end()) {
+                            good = true; break;
+                        }
+                    }
+                    break;
+                case '-':
+                    // Only match if no key from this group is present
+                    for (const auto& val : groups().at(req.substr(1))) {
+                        if (context.find(val) != context.end()) {
+                            good = false; break;
+                        }
+                    }
+                    break;
+                case '!':
+                    // Only match if the key is not present
+                    good = context.find(req.substr(1)) == context.end();
+                    break;
+                default:
+                    // Only match if the key is present
+                    good = context.find(req) != context.end();
+                    break;
+            }}
+            if (next == std::string::npos) break;
+            last = next + 2;
+        }
+        if (good) {
+            auto moresents = tmpl.second.as<std::vector<std::string>>();
+            sents.insert(sents.end(), moresents.begin(), moresents.end());
         }
     }
     QString sent = getSentence(sents);
     if (sent.isNull()) {
         display("No sentence options avaliable!");
         return;
+    }
+    if (sent.startsWith("> ")) {
+        purpose = polishSentence(sent.sliced(2)).toStdString();
+        return refresh();
     }
     sent = polishSentence(sent);
 

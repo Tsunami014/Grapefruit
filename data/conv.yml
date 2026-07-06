@@ -1,6 +1,6 @@
 groups:
   mood: [sad, happy]
-  energy: [tired, stressed, bored, excited]
+  problem: [tired, stressed, bored, excited]
   uncertainty: [unsure, stuck, motivated]
   time: "time_of_day"
 
@@ -10,13 +10,20 @@ reset: [sayhi]
 purposes:
   sayhi:
     templates:
-      $:
-        - "3* {Hiya/Heya/Hi/Hello}! How are you{ going/}?"
-        - "3* {Hiya/Heya/Hi/Hello}! How{'s/ is} it going?"
-        - "2* How{ are you/ is it/'s it}{ going/}?"
-        - "100*Good %time!"
+      "*":
+        - "2* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! How are you{ going/}?"
+        - "2* {Hiya/Heya/Hi/Hello/Good %time}! How{'s/ is} it going?"
+        - "2* How{ are you/ is it/'s it} going?"
+        - "How is your %time{ going/}?"
+        - "3* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! What's up?"
+        - "What's up?"
     options:
-      - - ["Not the best", [sad], comfort]
-        - ["Kinda stressed", [sad, stressed], comfort]
-        - ["Ok", [], banter]
+      - - ["Kinda stressed", [sad, stressed], comfort]
+        - ["Not the best", [sad], context]
+        - ["Ok", [], context]
         - ["Pretty good", [happy], banter]
+
+  context:
+    templates:
+      "sad":
+        - "What's wrong?"
