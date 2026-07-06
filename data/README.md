@@ -14,12 +14,13 @@
 ## Realisation (generating the output)
 ### The sentence
 - Purposes have a list of templates grouped based on context tag (e.g. 'comfort' may contain 'sad' which may have things like "I hope you feel better")
-    - `~` is used when there is no tag, `+` is used for any tag that isn't already used
+    - `~` is used when there is no tag, `+` or `=` is used for any tag that isn't already used but `+` requires there to be a tag from the group.
     - Only applicable templates are chosen from (e.g. if one group doesn't have the active tag it isn't avaliable)
     - Each template can also define synonyms (e.g. "I hope you {feel/get} better") or use context groups (e.g. $mood or $project)
         - But adding a context group to a template also adds the requirement that that group must have a tag active to that template
+    - Starting a sentence with `x*` (optional space after) where x is a number 'repeats' the sentence x times, making it x times more likely to appear.
 - One avaliable template is chosen at random from all avaliable in the current purpose
-- Sentences can be included in a group `*` to always be avaliable (does not contain context tag requirements)
+- Sentences can be included in a group `$` to always be avaliable (does not contain context tag requirements). This is not recommended, except maybe for purposes that only occur initially when the context is mostly empty anyway.
 
 ### The options
 - The purpose templates are grouped together by the list of user options provided
@@ -41,15 +42,15 @@ reset: [checkup_mood, checkup_progress]
 purposes:
   checkup_mood:
     templates:
-      =:
+      $:
         - "Are you going well?"
       mood:
         sad:
-          - "I hope you {feel/start feeling} better soon."
+          - "I hope you {feel/start feeling} better soon.*2"
           - "That sounds really tough."
         +:
           - "You seem to be doing well!"
-        ~:
+        =:
           - "How are you doing today?"
     options:
       - - ["A bit sad", [sad], comfort]

@@ -1,7 +1,7 @@
 groups:
-  mood: [sad, okay, happy]
-  energy: [tired, energized]
-  social: [lonely, had_company]
+  mood: [sad, happy]
+  energy: [tired, stressed, bored, excited]
+  uncertainty: [unsure, stuck, motivated]
 
 initial: [sayhi]
 reset: [sayhi]
@@ -9,17 +9,12 @@ reset: [sayhi]
 purposes:
   sayhi:
     templates:
-      =:
-        - "Hello!"
-      mood:
-        sad:
-          - "I hope you {feel/start feeling} better soon."
-          - "That sounds really tough."
-        +:
-          - "You seem to be doing well!"
-        ~:
-          - "How are you doing today?"
+      $:
+        - "3* {Hiya/Heya/Hi/Hello}! How are you{ going/}?"
+        - "3* {Hiya/Heya/Hi/Hello}! How{'s/ is} it going?"
+        - "2* How{ are you/ is it/'s it}{ going/}?"
     options:
-      - - ["A bit sad", [sad]]
-        - ["Pretty good", [okay]]
-        - ["Don't know", [-mood]]
+      - - ["Not the best", [sad], comfort]
+        - ["Kinda stressed", [sad, stressed], comfort]
+        - ["Ok", [], banter]
+        - ["Pretty good", [happy], banter]

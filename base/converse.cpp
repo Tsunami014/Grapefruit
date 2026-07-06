@@ -101,6 +101,29 @@ void Conversation::onclick(Option o) {
     refresh();
 }
 
+const QRegularExpression getRe(R"(^(\d+) ?\* *(.+))");
+QString getSentence(std::vector<std::string> sents) {
+    QStringList choices;
+    for (const auto& str : sents) {
+        auto qstr = QString::fromStdString(str);
+        auto m = getRe.match(qstr);
+        if (m.hasMatch()) {
+            bool ok;
+            uint amnt = m.captured(1).toUInt(&ok);
+            if (!ok) {
+                choices << qstr;
+            } else {
+                QString add = m.captured(2);
+                for (uint i = 0; i < amnt; i++) choices << add;
+            }
+        } else {
+            choices << qstr;
+        }
+    }
+    uint sidx = QRandomGenerator::global()->bounded(uint(choices.size()));
+    return choices[sidx];
+}
+
 const QRegularExpression polishSynonymRe("{([^}]+)}");
 const QRegularExpression polishSplRe(R"((?<!\\)(?:\\\\)*\/)");
 QString polishSentence(QString sent) {
@@ -129,7 +152,7 @@ void Conversation::refresh() {
     std::vector<std::string> sents;
     for (const auto& tmpl : ppse["templates"]) {
         std::string group = tmpl.first.as<std::string>();
-        if (group == "=") {
+        if (group == "$") {
             auto v2 = tmpl.second.as<std::vector<std::string>>();
             sents.insert(sents.end(), v2.begin(), v2.end());
             continue;
@@ -148,14 +171,14 @@ void Conversation::refresh() {
                     }
                 }
                 if (!good) continue;
-            } else if (key == "+") {
+            } else if (key == "+" || key == "=") {
                 // Only show if no other key matched for is present
                 // But ensure at least one key from this group is present
                 std::unordered_set<std::string> badvals;
                 for (const auto& conts2 : tmpl.second) {
                     badvals.insert(conts2.first.as<std::string>());
                 }
-                bool good = false;
+                bool good = key == "=";
                 for (const auto& val : groups().at(group)) {
                     if (context.find(val) == context.end()) continue;
                     good = badvals.find(val) == badvals.end();
@@ -175,8 +198,7 @@ void Conversation::refresh() {
         display("No sentence options avaliable!");
         return;
     }
-    uint sidx = QRandomGenerator::global()->bounded(uint(sents.size()));
-    QString sent = polishSentence(QString::fromStdString(sents[sidx]));
+    QString sent = polishSentence(getSentence(sents));
 
     auto allopts = ppse["options"];
     if (!allopts || allopts.size() == 0) {
