@@ -259,8 +259,12 @@ void Conversation::refresh() {
             last = next + 2;
         }
         if (good) {
-            auto moresents = tmpl.second.as<std::vector<std::string>>();
-            sents.insert(sents.end(), moresents.begin(), moresents.end());
+            if (tmpl.second.IsScalar()) {
+                sents.push_back(tmpl.second.as<std::string>());
+            } else {
+                auto moresents = tmpl.second.as<std::vector<std::string>>();
+                sents.insert(sents.end(), moresents.begin(), moresents.end());
+            }
         }
     }
     QString sent = getSentence(sents);
@@ -286,7 +290,7 @@ void Conversation::refresh() {
         std::string npurp = "";
         if (item.size() > 2) npurp = item[2].as<std::string>();
         outopts.push_back({
-            QString::fromStdString(item[0].as<std::string>()),
+            polishSentence(QString::fromStdString(item[0].as<std::string>())),
             item[1].as<std::unordered_set<std::string>>(),
             npurp
         });

@@ -1,5 +1,5 @@
 groups:
-  mood: [sad, happy]
+  mood: [depressed, sad, happy]
   problem: [tired, stressed, bored, excited]
   uncertainty: [unsure, stuck, motivated]
   time: "time_of_day"
@@ -18,12 +18,39 @@ purposes:
         - "3* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! What's up?"
         - "What's up?"
     options:
-      - - ["Kinda stressed", [sad, stressed], comfort]
+      - - ["Terribly", [depressed], context]
         - ["Not the best", [sad], context]
-        - ["Ok", [], context]
+        - ["I'm ok", [], context]
         - ["Pretty good", [happy], banter]
 
   context:
     templates:
-      "sad":
+      "sad": "> context_sad"
+      "depressed":
+        - "> context_sad"
+        - "5*> context_depressed"
+      "=":
+        - "How are you feeling?"
+    options:
+      - - ["Tired", [tired]]
+        - ["Bored", [stressed]]
+        - ["Unsure", [unsure]]
+        - ["Stuck", [stuck]]
+
+  context_sad:
+    templates:
+      "*":
+        - "What's {wrong/troubling you}?"
+    options:
+      - - ["Tired", [tired]]
+        - ["Stressed", [stressed]]
+        - ["Bored", [bored]]
+
+  context_depressed:
+    templates:
+      "*":
         - "What's wrong?"
+    options:
+      - - ["Tired", [tired]]
+        - ["Stressed", [stressed]]
+        - ["Bored", [bored]]
