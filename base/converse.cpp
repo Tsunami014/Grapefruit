@@ -62,6 +62,8 @@ const std::unordered_set<std::string>& keeps() {
 
 Conversation::Conversation(FlowLayout* olay, QLabel* curtxt)
     : olay(olay), curtxt(curtxt) {
+        auto ppses = config()["initial"].as<std::vector<std::string>>();
+        purpose = ppses[QRandomGenerator::global()->bounded(uint(ppses.size()))];
         refresh();
     }
 
@@ -73,7 +75,8 @@ void Conversation::newTopic() {
             it = context.erase(it);
         } else { ++it; }
     }
-    purpose = "^";
+    auto ppses = config()["reset"].as<std::vector<std::string>>();
+    purpose = ppses[QRandomGenerator::global()->bounded(uint(ppses.size()))];
     refresh();
 }
 void Conversation::onclick(Option o) {

@@ -9,7 +9,7 @@ public:
     void newTopic();
 
 protected:
-    std::string purpose = "^";
+    std::string purpose;
     std::unordered_set<std::string> context = {};
 
     FlowLayout* olay;

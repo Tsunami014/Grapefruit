@@ -2,8 +2,11 @@ groups:
   mood: [sad, okay, happy]
   =project: "recomm_project"
 
+initial: [checkup_mood]
+reset: [checkup_mood]
+
 purposes:
-  ^:
+  checkup_mood:
     templates:
       mood:
         sad:
