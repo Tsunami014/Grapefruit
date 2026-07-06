@@ -12,10 +12,10 @@ purposes:
     # How is it going?
     - templates:
         "*":
-          - "2* {Hiya/Heya/Hi/Hello/Good %time/Good %time}! How are you{ going/}?"
+          - "2* {Hiya/Heya/Hi/Hello/2*Good %time}! How are you{ going/}?"
           - "2* {Hiya/Heya/Hi/Hello/Good %time}! How{'s/ is} it going?"
           - "2* How{ are you/ is it/'s it} going?"
-          - "How is your {%time/%time/%time/day}{ going/ been/}?"
+          - "How is your {3*%time/day}{ going/ been/}?"
       opts:
         - ["Terribly", [depressed], checkin]
         - ["Not {the best/well/good}", [sad], checkin]

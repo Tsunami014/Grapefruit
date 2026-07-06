@@ -1,6 +1,7 @@
 #include "converse.hpp"
 #include "externs.hpp"
 #include <yaml-cpp/yaml.h>
+#include <regex>
 #include <QRandomGenerator>
 #include <QRegularExpression>
 #include <QFile>
@@ -81,7 +82,7 @@ Conversation::Conversation(FlowLayout* olay, QLabel* curtxt)
     }
 void Conversation::newTopic() {
     // Remove all context keys unless in keep
-    auto kp = keeps();
+    const auto& kp = keeps();
     for (auto it = context.begin();it != context.end();) {
         if (kp.find(*it) == kp.end()) {
             it = context.erase(it);
@@ -96,8 +97,8 @@ void Conversation::onclick(Option o) {
     if (o.newpurp != "") {
         purpose = o.newpurp;
     }
-    auto ggp = getgroup();
-    auto grps = groups();
+    const auto& ggp = getgroup();
+    const auto& grps = groups();
     for (const auto& chng : o.changes) {
         std::string g;
         bool clear = chng.at(0) == '-';
@@ -114,66 +115,63 @@ void Conversation::onclick(Option o) {
     refresh();
 }
 
-const QRegularExpression groupsRe("%([a-zA-Z_]+)%?");
 
-const QRegularExpression getRe(R"(^(\d+) ?\* *(.+))");
-std::pair<QString, uint> Conversation::getSentence(const _sentList& sents) {
-    /// [(idx of sentence, sentence), ...]
-    std::vector<std::pair<uint, QString>> choices;
-    auto exts = externs();
-    uint idx = 0;
-    for (const auto& str : sents) {
-        auto qstr = QString::fromStdString(str.first);
-        // Check all context group tags exist
-        auto it = groupsRe.globalMatch(qstr);
-        bool good = true;
-        while (it.hasNext() && good) {
-            auto m = it.next();
-            std::string group = m.captured(1).toStdString();
-            if (exts.find(group) == exts.end()) {
-                good = false;
-                auto grps = groups();
-                auto it2 = grps.find(group);
-                if (it2 == grps.end()) break;
-                for (const auto& val : it2->second) {
-                    if (context.find(val) != context.end()) good = true; break;
-                }
-            }
-        }
-        if (!good) { idx++; continue; }
-        // Duplicate the sentence if specified
-        auto m = getRe.match(qstr);
-        if (m.hasMatch()) {
-            bool ok;
-            uint amnt = m.captured(1).toUInt(&ok);
-            if (!ok) {
-                choices.push_back({idx, qstr});
-            } else {
-                QString add = m.captured(2);
-                for (uint i = 0; i < amnt; i++) choices.push_back({idx, add});
-            }
+const std::regex chooseReStd(R"(^((\d+) ?\* *).+)");
+std::pair<std::string, int> choose(const std::vector<std::string>& opts) {
+    std::vector<std::pair<int, int>> choices; // idx, prefix len
+    int idx = 0;
+    for (const auto& str : opts) {
+        std::smatch matches;
+        if (std::regex_search(str, matches, chooseReStd)) {
+            int amnt = static_cast<int>(std::stoul(matches[2]));
+            int pln = matches[1].length();
+            for (int i = 0; i < amnt; i++) choices.push_back({idx, pln});
         } else {
-            choices.push_back({idx, qstr});
+            choices.push_back({idx, 0});
         }
         idx++;
     }
-    uint ln = choices.size();
-    if (ln == 0) return {};
-    uint sidx = QRandomGenerator::global()->bounded(ln);
-    // Return the text and the idx of the choice provided by the sentence
-    return {choices[sidx].second, sents[choices[sidx].first].second};
+    int ln = choices.size();
+    if (ln == 0) return {{}, -1};
+    int out = QRandomGenerator::global()->bounded(ln);
+    return {opts[out].substr(choices[out].second), choices[out].first};
+}
+const QRegularExpression chooseReQ(R"(^((\d+) ?\* *).+)");
+std::pair<QString, int> choose(const std::vector<QString>& opts) {
+    std::vector<std::pair<int, int>> choices; // idx, prefix len
+    int idx = 0;
+    for (const auto& str : opts) {
+        auto m = chooseReQ.match(str);
+        if (m.hasMatch()) {
+            uint amnt = m.captured(2).toInt();
+            int pln = m.captured(1).length();
+            for (uint i = 0; i < amnt; i++) choices.push_back({idx, pln});
+        } else {
+            choices.push_back({idx, 0});
+        }
+        idx++;
+    }
+    int ln = choices.size();
+    if (ln == 0) return {{}, -1};
+    int out = QRandomGenerator::global()->bounded(ln);
+    auto c = choices[out];
+    return {opts[c.first].mid(c.second), c.first};
+}
+std::pair<QString, int> choose(const QStringList& opts) {
+    return choose(std::vector(opts.constBegin(), opts.constEnd()));
 }
 
-const QRegularExpression polishSynonymRe("{([^}]+)}");
-const QRegularExpression polishSplRe(R"((?<!\\)(?:\\\\)*\/)");
+const QRegularExpression groupsRe("%([a-zA-Z_]+)%?");
+
+const QRegularExpression polishRe("{([^}]+)}");
 QString Conversation::polishSentence(QString sent) {
     // Replace synonym choices in {brackets/braces}
-    auto it = polishSynonymRe.globalMatch(sent);
+    auto it = polishRe.globalMatch(sent);
     int offs = 0;
     while (it.hasNext()) {
         auto m = it.next();
-        QStringList opts = m.captured(1).split(polishSplRe);
-        QString repl = opts[QRandomGenerator::global()->bounded(opts.length())];
+        auto opts = m.captured(1).split('/');
+        QString repl = choose(opts).first;
 
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
@@ -182,7 +180,7 @@ QString Conversation::polishSentence(QString sent) {
     }
     it = groupsRe.globalMatch(sent);
     offs = 0;
-    auto exts = externs();
+    const auto& exts = externs();
     while (it.hasNext()) {
         auto m = it.next();
         std::string group = m.captured(1).toStdString();
@@ -208,38 +206,6 @@ QString Conversation::polishSentence(QString sent) {
     return sent;
 }
 
-bool Conversation::matches(const std::string& req, const _sentList& sents) {
-    if (req == "=") {
-        return sents.empty();
-    } else if (req == "*" || req == "") {
-        return true;
-    } else { switch (req[0]) {
-        case '+': {
-            // Only match if any key from this group is present
-            bool good = false;
-            for (const auto& val : groups().at(req.substr(1))) {
-                if (context.find(val) != context.end()) {
-                    good = true; break;
-                }
-            }
-            return good;}
-        case '-': {
-            bool good = true;
-            // Only match if no key from this group is present
-            for (const auto& val : groups().at(req.substr(1))) {
-                if (context.find(val) != context.end()) {
-                    good = false; break;
-                }
-            }
-            return good;}
-        case '!':
-            // Only match if the key is not present
-            return context.find(req.substr(1)) == context.end();
-        default:
-            // Only match if the key is present
-            return context.find(req) != context.end();
-    }}
-}
 
 void Conversation::refresh() {
     auto ppse = config()["purposes"][purpose];
@@ -247,7 +213,40 @@ void Conversation::refresh() {
         display("Purpose '"+QString::fromStdString(purpose)+"' does not exist!");
         return;
     }
-    _sentList sents;
+    /// [(sentence, idx of options in opts list), ...]
+    std::vector<std::pair<std::string, uint>> sents;
+    auto matches = [&](const std::string& req) {
+        if (req == "=") {
+            return sents.empty();
+        } else if (req == "*" || req == "") {
+            return true;
+        } else { switch (req[0]) {
+            case '+': {
+                // Only match if any key from this group is present
+                bool good = false;
+                for (const auto& val : groups().at(req.substr(1))) {
+                    if (context.find(val) != context.end()) {
+                        good = true; break;
+                    }
+                }
+                return good;}
+            case '-': {
+                bool good = true;
+                // Only match if no key from this group is present
+                for (const auto& val : groups().at(req.substr(1))) {
+                    if (context.find(val) != context.end()) {
+                        good = false; break;
+                    }
+                }
+                return good;}
+            case '!':
+                // Only match if the key is not present
+                return context.find(req.substr(1)) == context.end();
+            default:
+                // Only match if the key is present
+                return context.find(req) != context.end();
+        }}
+    };
     std::vector<optList> opts;
     uint idx = 0;
     for (const auto& opt : ppse) {
@@ -285,7 +284,7 @@ void Conversation::refresh() {
                 std::stringstream ss(req);
                 std::string token;
                 while (!good && std::getline(ss, token, '?')) {
-                    good = matches(token, sents);
+                    good = matches(token);
                 }
                 if (next == std::string::npos) break;
             }
@@ -301,8 +300,35 @@ void Conversation::refresh() {
         }
         idx++;
     }
-    auto out = getSentence(sents);
-    if (out.first.isNull()) {
+
+    const auto& exts = externs();
+    std::vector<QString> outsents;
+    std::vector<uint> outoptidxs;
+    for (const auto& sent : sents) {
+        auto qstr = QString::fromStdString(sent.first);
+        // Check all context group tags exist
+        auto it = groupsRe.globalMatch(qstr);
+        bool good = true;
+        while (it.hasNext() && good) {
+            auto m = it.next();
+            std::string group = m.captured(1).toStdString();
+            if (exts.find(group) == exts.end()) { // Ensure the group is not external
+                good = false;
+                const auto& grps = groups();
+                const auto& it2 = grps.find(group);
+                if (it2 == grps.end()) break;
+                for (const auto& val : it2->second) {
+                    if (context.find(val) != context.end()) good = true; break;
+                }
+            }
+        }
+        if (!good) { continue; }
+        outsents.push_back(qstr);
+        outoptidxs.push_back(sent.second);
+    }
+
+    auto out = choose(outsents);
+    if (out.second == -1) {
         display("No sentences avaliable!");
         return;
     }
@@ -310,8 +336,7 @@ void Conversation::refresh() {
         purpose = polishSentence(out.first.sliced(2)).toStdString();
         return refresh();
     }
-    auto sent = polishSentence(out.first);
-    display(sent, opts.at(out.second));
+    display(polishSentence(out.first), opts.at(outoptidxs.at(out.second)));
 }
 
 void Conversation::display(QString title, optList opts) {
