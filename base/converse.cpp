@@ -4,12 +4,10 @@
 #include <QRegularExpression>
 #include <QFile>
 
-template<typename F>
-const auto& cached(F&& init) {
+template<typename F> const auto& cached(F&& init) {
     static const auto value = init();
     return value;
 }
-
 const YAML::Node& config() {
     return cached([]{
         QFile file(":/data/conv.yml");
@@ -18,6 +16,7 @@ const YAML::Node& config() {
         return YAML::Load(file.readAll().toStdString());
     });
 }
+/// A mapping of groups to their contents
 const std::map<std::string, std::unordered_set<std::string>>& groups() {
     return cached([]{
         std::map<std::string, std::unordered_set<std::string>> gs;
@@ -45,6 +44,7 @@ const std::map<std::string, std::string>& getgroup() {
         return ggp;
     });
 }
+/// A list of all tags to keep on reset
 const std::unordered_set<std::string>& keeps() {
     return cached([]{
         std::unordered_set<std::string> kps;
@@ -66,7 +66,6 @@ Conversation::Conversation(FlowLayout* olay, QLabel* curtxt)
         purpose = ppses[QRandomGenerator::global()->bounded(uint(ppses.size()))];
         refresh();
     }
-
 void Conversation::newTopic() {
     // Remove all context keys unless in keep
     auto kp = keeps();
@@ -79,6 +78,7 @@ void Conversation::newTopic() {
     purpose = ppses[QRandomGenerator::global()->bounded(uint(ppses.size()))];
     refresh();
 }
+
 void Conversation::onclick(Option o) {
     if (o.newpurp != "") {
         purpose = o.newpurp;
@@ -129,6 +129,11 @@ void Conversation::refresh() {
     std::vector<std::string> sents;
     for (const auto& tmpl : ppse["templates"]) {
         std::string group = tmpl.first.as<std::string>();
+        if (group == "=") {
+            auto v2 = tmpl.second.as<std::vector<std::string>>();
+            sents.insert(sents.end(), v2.begin(), v2.end());
+            continue;
+        }
         for (const auto& conts : tmpl.second) {
             std::string key;
             if (conts.first.IsNull()) { key = "~"; }

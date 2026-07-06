@@ -1,13 +1,16 @@
 groups:
   mood: [sad, okay, happy]
-  =project: "recomm_project"
+  energy: [tired, energized]
+  social: [lonely, had_company]
 
-initial: [checkup_mood]
-reset: [checkup_mood]
+initial: [sayhi]
+reset: [sayhi]
 
 purposes:
-  checkup_mood:
+  sayhi:
     templates:
+      =:
+        - "Hello!"
       mood:
         sad:
           - "I hope you {feel/start feeling} better soon."

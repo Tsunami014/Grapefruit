@@ -8,17 +8,18 @@
 - Context tags - a list of context items about the user (e.g. 'sad', 'tired', 'unsure', 'had a long day', 'thinking about project xyz', 'bored') that should be 'interesting', i.e. make an impact on messages sent, so include enough and make them specific so each new option will always change at least something and the conversation doesn't go in circles.
     - Context tags get mostly reset at the beginning of every conversation (some groups are marked as 'keep' (prefixed with =; the = gets stripped during parsing) (such as projects working on) and they stay but the rest reset)
     - Context tags should have groups (e.g. 'mood' contains 'sad' and 'happy') where conflicting tags (e.g. 'happy' and 'sad') should be in the same group and there is only ever at most one tag active per group.
-    - There are some context tags that are auto generated, and only the group should be used to refer to them.
+    - There are some context tags that are auto generated, and only the group should be used to refer to them. These will be auto-kept whether or not they are prefixed with = because they are not dependent on the conversation (although some are dependent on other context, in which case they will be updated).
     - Context tags must be unique and are referred to by name and not by group
 
 ## Realisation (generating the output)
 ### The sentence
 - Purposes have a list of templates grouped based on context tag (e.g. 'comfort' may contain 'sad' which may have things like "I hope you feel better")
-    - "~" is used when there is no tag, "+" is used for any tag that isn't already used
+    - `~` is used when there is no tag, `+` is used for any tag that isn't already used
     - Only applicable templates are chosen from (e.g. if one group doesn't have the active tag it isn't avaliable)
     - Each template can also define synonyms (e.g. "I hope you {feel/get} better") or use context groups (e.g. $mood or $project)
         - But adding a context group to a template also adds the requirement that that group must have a tag active to that template
 - One avaliable template is chosen at random from all avaliable in the current purpose
+- Sentences can be included in a group `*` to always be avaliable (does not contain context tag requirements)
 
 ### The options
 - The purpose templates are grouped together by the list of user options provided
@@ -28,6 +29,7 @@
 - A 'new topic' option is always included (no need to specify) that resets the conversation (setting the purpose to $)
 
 # Format example
+I do not recommend to use the contents of this example, it only exists to demonstrate good formatting and that is it, not sample contents.
 ```yaml
 groups:
   mood: [sad, okay, happy]
@@ -39,6 +41,8 @@ reset: [checkup_mood, checkup_progress]
 purposes:
   checkup_mood:
     templates:
+      =:
+        - "Are you going well?"
       mood:
         sad:
           - "I hope you {feel/start feeling} better soon."
@@ -55,3 +59,4 @@ purposes:
 
 # Auto generated context groups
 These are used as strings instead of lists of tags under a group name.
+- `"time_of_day"` - either "morning", "afternoon", "evening", or "night"
