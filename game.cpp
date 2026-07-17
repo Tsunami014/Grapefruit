@@ -1,6 +1,6 @@
 #include "game.hpp"
 #include "font.hpp"
-#include "base/options.hpp"
+#include "wids/house.hpp"
 #include "wids/icobtn.hpp"
 #include "wids/flow.hpp"
 #include <QBoxLayout>
@@ -16,9 +16,9 @@ MainGame::MainGame() {
     stack->addWidget(main);
     auto mlay = new QVBoxLayout(main);
 
-    {auto labl = new QLabel("Main area!", main);
-    labl->setStyleSheet("background-color: #4488CC;");
-    mlay->addWidget(labl, 2);}
+    auto* h = new House(main);
+    h->setStyleSheet("background-color: #4488CC;");
+    mlay->addWidget(h, 2);
 
     auto* curtxt = new QLabel(main);
     curtxt->setWordWrap(true);

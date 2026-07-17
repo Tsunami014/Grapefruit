@@ -17,6 +17,7 @@ set(CORE
     extra/drag.cpp
 
     wids/flow.cpp
+    wids/house.cpp
     wids/icobtn.hpp
     wids/secret.cpp
     wids/taskbbl.cpp
