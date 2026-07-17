@@ -46,9 +46,9 @@ MainGame::MainGame() {
                 connect(btn, &QPushButton::clicked, this, slot);
                 return btn;
             };
-            auto nt = addBtn("New topic", ":/assets/new.svg", [=](){ conv->newTopic(); });
-            auto at = addBtn("All Tasks", ":/assets/tasks.svg", [=](){ stack->setCurrentWidget(tasks); });
-            auto st = addBtn("Settings", ":/assets/settings.svg", [=](){ stack->setCurrentWidget(setts); });
+            auto nt = addBtn("New topic", ":/assets/UI/new.svg", [=](){ conv->newTopic(); });
+            auto at = addBtn("All Tasks", ":/assets/UI/tasks.svg", [=](){ stack->setCurrentWidget(tasks); });
+            auto st = addBtn("Settings", ":/assets/UI/settings.svg", [=](){ stack->setCurrentWidget(setts); });
             int w = std::max({
                 nt->sizeHint().width(), at->sizeHint().width(), st->sizeHint().width()
             });

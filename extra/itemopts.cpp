@@ -81,23 +81,23 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus)
         lay->addWidget(btn);
     };
 
-    mkbtn(":/assets/up.svg", [=](){
+    mkbtn(":/assets/UI/up.svg", [=](){
         if (!edit) return;
         QTextCursor cur = edit->textCursor();
         QTextBlock block = cur.block();
         swapBlocks(cur, block, block.previous());
         edit->setTextCursor(cur);
     });
-    mkbtn(":/assets/down.svg", [=](){
+    mkbtn(":/assets/UI/down.svg", [=](){
         QTextCursor cur = edit->textCursor();
         QTextBlock block = cur.block();
         swapBlocks(cur, block, block.next());
         edit->setTextCursor(cur);
     });
     lay->addSpacing(16);
-    mkbtn(":/assets/addtime.svg", [=](){ addTime(edit, 1); });
-    mkbtn(":/assets/subtime.svg", [=](){ addTime(edit, -1); });
-    mkbtn(":/assets/clock.svg", [=](){
+    mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 1); });
+    mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -1); });
+    mkbtn(":/assets/UI/clock.svg", [=](){
         QTextCursor cur = edit->textCursor();
         QTextBlock block = cur.block();
         QString line = block.text();
@@ -112,10 +112,10 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus)
         }
         edit->setTextCursor(cur);
     });
-    mkbtn(":/assets/calendar.svg", [=](){});
+    mkbtn(":/assets/UI/calendar.svg", [=](){});
 
     lay->addSpacing(32);
-    mkbtn(":/assets/erase.svg", [=](){
+    mkbtn(":/assets/UI/erase.svg", [=](){
         QTextCursor cur = edit->textCursor();
         if (cur.block().text().isEmpty()) {
             cur.deleteChar();

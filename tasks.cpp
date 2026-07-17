@@ -21,7 +21,7 @@ void MainGame::generateTasks() {
             auto bk = new QPushButton();
             bk->setProperty("fancy", true);
             bk->setProperty("backbtn", true);
-            bk->setIcon(QIcon(":/assets/back.svg"));
+            bk->setIcon(QIcon(":/assets/UI/back.svg"));
             bk->setIconSize(QSize(48, 40));
             connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
             left->addWidget(bk, 0, Qt::AlignHCenter);
