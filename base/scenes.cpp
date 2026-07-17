@@ -35,9 +35,11 @@ std::vector<SceneItem> getSceneItems(QString scene) {
     if (!its) return {};
     std::vector<SceneItem> out;
     for (const auto& item : its) {
-        QString nam = paths().at(item[0].as<std::string>());
+        auto nam = item[0].as<std::string>();
+        bool flip = nam[0] == '~';
+        if (flip) nam = nam.substr(1);
         QPointF pos(item[1].as<float>(), item[2].as<float>());
-        out.push_back({nam, pos});
+        out.push_back({paths().at(nam), pos, flip});
     }
     return out;
 }
