@@ -30,7 +30,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Svg Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Xml Svg SvgWidgets Widgets)
 qt_policy(SET QTP0002 NEW) # Shushes a warning
 
 include(FetchContent)
@@ -42,7 +42,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(yaml-cpp)
 
 qt_add_executable(${APP_NAME} ${CORE})
-target_link_libraries(${APP_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Svg Qt6::Widgets yaml-cpp::yaml-cpp)
+target_link_libraries(${APP_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Xml Qt6::Svg Qt6::SvgWidgets Qt6::Widgets yaml-cpp::yaml-cpp)
 
 target_include_directories(${APP_NAME} PUBLIC ${CMAKE_SOURCE_DIR})
 
