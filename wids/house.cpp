@@ -6,7 +6,7 @@
 House::House(QWidget* parent) : scn(), QGraphicsView(parent) {
     setScene(&scn);
     scale(8,8);
-    buildScene("desk");
+    buildScene("dining#eat");
 }
 
 void House::buildScene(QString scene) {

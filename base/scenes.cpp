@@ -31,22 +31,33 @@ const std::unordered_map<std::string, QString>& paths() {
     });
 }
 
-std::vector<SceneItem> getSceneItems(QString scene) {
-    auto its = sconfig()["scenes"][scene.toStdString()];
-    if (!its) return {};
-    std::vector<SceneItem> out;
+std::vector<SceneItem> gsis(QStringList parts, YAML::Node its, std::vector<SceneItem> out = {}) {
     auto pths = paths();
     for (const auto& item : its) {
-        auto nam = item[0].as<std::string>();
-        bool flip = nam[0] == '~';
-        if (flip) nam = nam.substr(1);
-        QPointF pos(item[1].as<float>(), item[2].as<float>());
-        auto p = pths.find(nam);
-        if (p == pths.end()) {
-            qFatal() << "Object not defined:" << nam;
-            return {};
+        if (item.IsMap()) {
+            auto key = QString::fromStdString(item.begin()->first.as<std::string>());
+            if (parts.contains(key)) {
+                out = gsis(parts, item.begin()->second, out);
+            }
+        } else {
+            auto nam = item[0].as<std::string>();
+            bool flip = nam[0] == '~';
+            if (flip) nam = nam.substr(1);
+            QPointF pos(item[1].as<float>(), item[2].as<float>());
+            auto p = pths.find(nam);
+            if (p == pths.end()) {
+                qFatal() << "Object not defined:" << nam;
+                return {};
+            }
+            out.push_back({p->second, pos, flip});
         }
-        out.push_back({p->second, pos, flip});
     }
     return out;
+}
+
+std::vector<SceneItem> getSceneItems(QString scene) {
+    QStringList parts = scene.split('#');
+    auto its = sconfig()["scenes"][parts[0].toStdString()];
+    if (!its) return {};
+    return gsis(parts.sliced(1), its);
 }

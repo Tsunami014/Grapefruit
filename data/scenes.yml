@@ -8,6 +8,8 @@ scenes:
     - [~chair-up, 22.73, 7.2]
     - [table-leg, 6, -3.53]
     - [chair-up, 7.47, 6.82]
+    - eat:
+      - [plate, 9.88, 4.25]
 
   desk:
     - [rug, 3, 0]
@@ -23,3 +25,5 @@ assets:
     - table-leg
     - desk
     - rug
+  food:
+    - plate
