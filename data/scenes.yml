@@ -1,8 +1,10 @@
 scenes:
   dining:
     - [chair-down, 6, -2.4]
-    - [table, 5.5, -2]
-    - [chair-up, 6.5, 7.9]
+    - [chair-down, 11.25, -5.65]
+    - [table, 5.75, -2.9]
+    - [chair-up, 6.6, 7.2]
+    - [chair-up, 6.6, 7.2]
 
 
 assets:

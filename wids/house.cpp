@@ -28,9 +28,15 @@ void House::buildScene(QString scene) {
 #include <QKeyEvent>
 void House::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_P) {
-        for (auto* item : scn.items()) {
+        const auto items = scn.items();
+        for (auto it = items.crbegin(); it != items.crend(); ++it) {
+            auto* item = *it;
             QString name = item->data(0).toString();
-            qDebug() << (name.isEmpty()? "??" : name) << "@" << item->scenePos();
+            auto pos = item->scenePos();
+            qDebug() << QString("%1 @ (%2, %3)")
+               .arg(name.isEmpty()? "??" : name)
+               .arg(QString::number(pos.x(), 'f', 2))
+               .arg(QString::number(pos.y(), 'f', 2));
         }
         event->accept();
         return;
