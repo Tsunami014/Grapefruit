@@ -12,51 +12,91 @@ purposes:
     # How is it going?
     - templates:
         "*":
-          - "2* {$Hi/2*Good %time}! How are you{ going/}?"
-          - "2* {$Hi/Good %time}! How{'s/ is} it going?"
+          - "3* {$Hi/3*Good %time}! How{ are you/ is it/'s it} going?"
           - "2* How{ are you/ is it/'s it} going?"
-          - "How is your {3*%time/day}{ going/ been/}?"
+          - "How's your {3*%time/day}{ going/ been/}?"
       opts:
         - ["Terribly", [depressed], checkin]
-        - ["Not {the best/well/good}", [sad], checkin]
-        - ["{Ok/Alright}", [], checkin]
-        - ["{Pretty good/Good/Nice!}", [happy], banter]
+        - ["Not {the best/well/good/too good}", [sad], checkin]
+        - ["{Ok/Alright/Meh}", [], checkin]
+        - ["{Pretty good/Great/Good/Nice!}", [happy], progress]
     # What's up?
     - templates:
         "*":
-          - "3* {$Hi/2*Good %time}! What's up?"
-          - "What's up?"
+          - "3* {$Hi/3*Good %time}! What's up?"
+          - "{10*What's /Wass}up?"
       opts:
-        - ["I'm going well", [happy], banter]
-        - ["{Nothing/Not} much", [], checkin]
-        - ["It's not going {well/the best}", [sad], checkin]
-        - ["Things are going poorly", [depressed], checkin]
-        - ["{Everything!//}", [], banter]
+        - ["{I'm/It's} going {well/good/great/pretty good}", [happy], progress]
+        - ["{Nothing/Not} much", [], suggest]
+        - ["{I'm not/It's not} going {well/the best/too good}", [sad], checkin]
+        - ["{I'm/It's} going {poorly/terribly/awfully}", [depressed], checkin]
+        - ["{Everything!//}", [sad], checkin]
+        - ["{The sky/50*}", [], haha]
+
+  haha:
+    # Laugh at a joke
+    - templates:
+        "*":
+          - "Ha{ha/ ha/}{! V/, v}ery funny{./!}"
+          - "Good one!"
+          - "Very funny{!/.}"
+      opts:
+        - ["But seriously, I'm not {2*going well/2*the best/at my best}{right now/now/2*}", [sad], checkin]
+        - ["{Nothing/Not} much is going on", [], suggest]
+        - ["Yeah, going well", [happy], progress]
 
   checkin:
     # Why are you sad?
     - templates:
         "sad?depressed":
-          - "What's {wrong/up}?"
-          - "What's {troubling/bothering} you?"
-          - "What's on your mind?"
+          - "{What's/Anything} wrong?"
+          - "Anything {troubling/bothering} you{right now/6*}?"
+          - "2*{What's/Anything/What is} {the matter/on your mind}?"
+        "depressed":
+          - "What's {3*troubling/3*bothering/saddening} you?"
       shuffle: true
       opts:
         - ["{I'm tired/Everything's tiring}", [tired], comfort]
-        - ["I'm stressed", [stressed], comfort]
+        - ["{I'm stressed/I'm a bit stressed/I'm anxious/Life's stressful}", [stressed], comfort]
         - ["{I'm bored/Nothing to do/Bored}", [bored], suggest]
-        - ["{I'm unsure what to do/I don't know what to do/I'm lost}", [unsure], suggest]
+        - ["$Unsure", [unsure], suggest]
         - ["{I'm stuck/I need help}", [stuck], suggest]
+        - ["{Nothing's wrong/I'm good/It's all good}", [-mood, -uncertainty]]
     # How are you going?
     - templates:
         "=":
-          - "How {are you going/is it going/are things}?"
+          - "2*How{ are you going/ is it going/ are things/'s it going/'s it coming along}?"
+          - "How{'s/ is} life treating you{ this %time/today/3*}?"
+          - "What's up?"
       shuffle: true
       opts:
-        - ["{I'm/It's} not going well", [sad]]
+        - ["{It's not/I'm not going/Not} good", [sad]]
         - ["{I'm stuck/I need help}", [stuck], encourage]
-        - ["{I'm unsure what to do/I don't know what to do/I'm lost}", [unsure], suggest]
-        - ["{I'm doing well/I've got this}!", [happy, motivated, -problem], banter]
+        - ["$Unsure", [unsure], suggest]
+        - ["{Great/Awesome/I'm doing well/I've got this}!", [happy, motivated, -problem], progress]
+
+  comfort:
+    - templates:
+        "*":
+          - "I hope you get better soon"
+
+  encourage:
+    - templates:
+        "*":
+          - "Encouragement!"
+
+  progress: # TODO: Become a reset option
+    # How's your work coming along?
+    - templates:
+      "*":
+        - "How are you going?"
+
+  suggest:
+    - templates:
+        "*":
+          - "What do you want to do next?"
+          - "Maybe you can do xyz?"
 
 dictionary:
   Hi: "Hiya/Heya/Hi/Hello"
+  Unsure: "{I'm unsure what to do/I don't know what to do/I'm lost}"
