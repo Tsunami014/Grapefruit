@@ -1,4 +1,5 @@
 #include "bgitem.hpp"
+#include "wids/house.hpp"
 #include <QFile>
 #include <QDomDocument>
 #include <QSvgRenderer>
@@ -31,6 +32,35 @@ void loadFile(QString fle) {
     fileCache.insert(fle, out);
 }
 
+#ifdef BUILD
+#include <QGraphicsSceneMouseEvent>
+#include <QStyleOptionGraphicsItem>
+class SvgItem : public QGraphicsSvgItem {
+public:
+    SvgItem(QGraphicsItem* parent = nullptr) : QGraphicsSvgItem(parent) {}
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent* event) override {
+        QImage image(boundingRect().size().toSize(), QImage::Format_ARGB32);
+        image.fill(Qt::transparent);
+
+        QPainter painter(&image);
+        QStyleOptionGraphicsItem option;
+        paint(&painter, &option, nullptr);
+        painter.end();
+
+        if (image.pixelColor(event->pos().toPoint()).alpha() > 0) {
+            QGraphicsSvgItem::mousePressEvent(event);
+        } else {
+            event->ignore();
+        }
+    }
+};
+#else
+using SvgItem = QGraphicsSvgItem;
+#endif
+
+
 QGraphicsSvgItem* bgItem(QString asset, QGraphicsItem* parent) {
     QByteArray out;
     if (svgCache.contains(asset)) {
@@ -60,7 +90,7 @@ QGraphicsSvgItem* bgItem(QString asset, QGraphicsItem* parent) {
         qFatal() << "Failed to render svg!";
         return nullptr;
     }
-    QGraphicsSvgItem* it = new QGraphicsSvgItem(parent);
+    QGraphicsSvgItem* it = new SvgItem(parent);
     it->setSharedRenderer(renderer);
     return it;
 }
