@@ -9,6 +9,11 @@ scenes:
     - [table-leg, 6, -3.53]
     - [chair-up, 7.47, 6.82]
 
+  desk:
+    - [rug, 3, 0]
+    - [chair-down, 0, 0]
+    - [desk, -3.38, 0.13]
+
 
 assets:
   furnature:
@@ -16,3 +21,5 @@ assets:
     - chair-up
     - table
     - table-leg
+    - desk
+    - rug

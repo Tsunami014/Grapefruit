@@ -1,6 +1,7 @@
 #include "scenes.hpp"
 #include <yaml-cpp/yaml.h>
 #include <QFile>
+#include <QDebug>
 
 template<typename F> const auto& cached(F&& init) {
     static const auto value = init();
@@ -34,12 +35,18 @@ std::vector<SceneItem> getSceneItems(QString scene) {
     auto its = sconfig()["scenes"][scene.toStdString()];
     if (!its) return {};
     std::vector<SceneItem> out;
+    auto pths = paths();
     for (const auto& item : its) {
         auto nam = item[0].as<std::string>();
         bool flip = nam[0] == '~';
         if (flip) nam = nam.substr(1);
         QPointF pos(item[1].as<float>(), item[2].as<float>());
-        out.push_back({paths().at(nam), pos, flip});
+        auto p = pths.find(nam);
+        if (p == pths.end()) {
+            qFatal() << "Object not defined:" << nam;
+            return {};
+        }
+        out.push_back({p->second, pos, flip});
     }
     return out;
 }
