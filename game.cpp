@@ -17,7 +17,7 @@ MainGame::MainGame() {
     auto mlay = new QVBoxLayout(main);
 
     auto* h = new House(main);
-    h->setStyleSheet("background-color: #4488CC;");
+    h->setStyleSheet("background-color: transparent;");
     mlay->addWidget(h, 2);
 
     auto* curtxt = new QLabel(main);
