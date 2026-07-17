@@ -15,6 +15,7 @@ set(CORE
 
     extra/itemopts.cpp
     extra/drag.cpp
+    extra/bgitem.cpp
 
     wids/flow.cpp
     wids/house.cpp
