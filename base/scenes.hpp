@@ -1,3 +1,8 @@
-#include <QStringList>
+#include <QString>
+#include <QPointF>
 
-QStringList getSceneItems(QString scene);
+struct SceneItem {
+    QString name;
+    QPointF pos;
+};
+std::vector<SceneItem> getSceneItems(QString scene);

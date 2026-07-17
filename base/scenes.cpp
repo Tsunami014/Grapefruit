@@ -30,12 +30,14 @@ const std::unordered_map<std::string, QString>& paths() {
     });
 }
 
-QStringList getSceneItems(QString scene) {
+std::vector<SceneItem> getSceneItems(QString scene) {
     auto its = sconfig()["scenes"][scene.toStdString()];
     if (!its) return {};
-    QStringList out;
+    std::vector<SceneItem> out;
     for (const auto& item : its) {
-        out << paths().at(item[0].as<std::string>());
+        QString nam = paths().at(item[0].as<std::string>());
+        QPointF pos(item[1].as<float>(), item[2].as<float>());
+        out.push_back({nam, pos});
     }
     return out;
 }
