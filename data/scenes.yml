@@ -1,0 +1,12 @@
+scenes:
+  dining:
+    - [chair-down]
+    - [table]
+    - [chair-up]
+
+
+assets:
+  furnature:
+    - chair-down
+    - chair-up
+    - table

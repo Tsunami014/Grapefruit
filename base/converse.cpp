@@ -10,11 +10,11 @@ template<typename F> const auto& cached(F&& init) {
     static const auto value = init();
     return value;
 }
-const YAML::Node& config() {
+const YAML::Node& cconfig() {
     return cached([]{
         QFile file(":/data/conv.yml");
         bool ok = file.open(QIODevice::ReadOnly);
-        // Should always be ok because we're loading from internal files
+        // Should always be ok because we're loading from a preset internal file
         return YAML::Load(file.readAll().toStdString());
     });
 }
@@ -22,7 +22,7 @@ const YAML::Node& config() {
 const std::unordered_map<std::string, std::unordered_set<std::string>>& groups() {
     return cached([]{
         std::unordered_map<std::string, std::unordered_set<std::string>> gs;
-        for (const auto& entry : config()["groups"]) {
+        for (const auto& entry : cconfig()["groups"]) {
             std::unordered_set<std::string> conts;
             if (entry.second.IsSequence()) {
                 for (const auto& item : entry.second) {
@@ -50,7 +50,7 @@ const std::unordered_map<std::string, std::string>& getgroup() {
 const std::unordered_map<std::string, std::string>& externs() {
     return cached([]{
         std::unordered_map<std::string, std::string> gs;
-        for (const auto& entry : config()["groups"]) {
+        for (const auto& entry : cconfig()["groups"]) {
             if (!entry.second.IsSequence()) {
                 gs.insert({entry.first.as<std::string>(), entry.second.as<std::string>()});
             }
@@ -62,7 +62,7 @@ const std::unordered_map<std::string, std::string>& externs() {
 const std::unordered_set<std::string>& keeps() {
     return cached([]{
         std::unordered_set<std::string> kps;
-        for (const auto& entry : config()["groups"]) {
+        for (const auto& entry : cconfig()["groups"]) {
             std::string key = entry.first.as<std::string>();
             if (key.size() > 0 && key.at(0) == '=' && entry.second.IsSequence()) {
                 for (const auto& item : entry.second) {
@@ -76,7 +76,7 @@ const std::unordered_set<std::string>& keeps() {
 
 Conversation::Conversation(FlowLayout* olay, QLabel* curtxt)
     : olay(olay), curtxt(curtxt) {
-        auto ppses = config()["initial"].as<std::vector<std::string>>();
+        auto ppses = cconfig()["initial"].as<std::vector<std::string>>();
         purpose = ppses[QRandomGenerator::global()->bounded(uint(ppses.size()))];
         refresh();
     }
@@ -88,7 +88,7 @@ void Conversation::newTopic() {
             it = context.erase(it);
         } else { ++it; }
     }
-    auto ppses = config()["reset"].as<std::vector<std::string>>();
+    auto ppses = cconfig()["reset"].as<std::vector<std::string>>();
     purpose = ppses[QRandomGenerator::global()->bounded(uint(ppses.size()))];
     refresh();
 }
@@ -171,7 +171,7 @@ QString Conversation::polishSentence(QString sent) {
     int offs = 0;
     while (it.hasNext()) {
         auto m = it.next();
-        QString repl = QString::fromStdString(config()["dictionary"][m.captured(1).toStdString()].as<std::string>());
+        QString repl = QString::fromStdString(cconfig()["dictionary"][m.captured(1).toStdString()].as<std::string>());
 
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;
@@ -220,7 +220,7 @@ QString Conversation::polishSentence(QString sent) {
 
 
 void Conversation::refresh() {
-    auto ppse = config()["purposes"][purpose];
+    auto ppse = cconfig()["purposes"][purpose];
     if (!ppse) {
         display("Purpose '"+QString::fromStdString(purpose)+"' does not exist!");
         return;

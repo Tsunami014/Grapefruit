@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>data/conv.yml</file>
+        <file>data/scenes.yml</file>
 
         <file>assets/UI/back.svg</file>
 
