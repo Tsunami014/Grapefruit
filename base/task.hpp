@@ -3,7 +3,7 @@
 
 class Task {
 public:
-    Task(const QString& name);
+    Task(const QString& name = "New Task");
 
     QString name;
     QString items;

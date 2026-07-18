@@ -1,6 +1,6 @@
 #pragma once
 #include <QWidget>
-#include "base/tasks.hpp"
+#include "base/task.hpp"
 
 class TaskOverlay : public QWidget {
 public:

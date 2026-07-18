@@ -8,7 +8,7 @@ set(CORE
     settings.cpp tasks.cpp style.cpp
 
     base/choose.cpp
-    base/tasks.cpp
+    base/task.cpp
     base/taskload.cpp
     base/options.cpp
     base/converse.cpp

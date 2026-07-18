@@ -86,11 +86,10 @@ void MainGame::generateTasks() {
 
 void MainGame::redoTasks() {
     auto redo = [this](){redoTasks();};
-    setTasksLay(tbbllay, [=](TaskBubble* bub, std::shared_ptr<Task> t){
-        QObject::connect(bub, &TaskBubble::clicked, this, [=](){
-                overlay = new TaskOverlay(t, redo, this);
-            tlay->addWidget(overlay, 0, 0);
-        });
+    setTasksLay(tbbllay, [=](std::shared_ptr<Task> t, bool upd){
+        overlay = new TaskOverlay(t, redo, this);
+        tlay->addWidget(overlay, 0, 0);
+        if (upd) redoTasks();
     }, this);
     setTasksCatsLay(tcatlay, redo, this);
     if (overlay) overlay->raise();

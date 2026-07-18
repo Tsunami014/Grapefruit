@@ -1,7 +1,8 @@
 #include "taskload.hpp"
-#include "tasks.hpp"
+#include "task.hpp"
 #include "font.hpp"
 #include "wids/confirm.hpp"
+#include "wids/taskbbl.hpp"
 #include <memory>
 #include <QPushButton>
 #include <QMessageBox>
@@ -38,7 +39,7 @@ void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) 
         lay->addWidget(btn);
     }
 }
-void setTasksLay(QLayout* lay, std::function<void(TaskBubble*, std::shared_ptr<Task>)> connect, QWidget* parent) {
+void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> press, QWidget* parent) {
     QLayoutItem* item;
     while ((item = lay->takeAt(0)) != nullptr) {
         if (auto* wid = item->widget()) wid->deleteLater();
@@ -50,7 +51,9 @@ void setTasksLay(QLayout* lay, std::function<void(TaskBubble*, std::shared_ptr<T
 
     for (auto& t : alltasks.at(cur)) {
         auto bub = new TaskBubble(t, parent);
-        connect(bub, t);
+        QObject::connect(bub, &TaskBubble::clicked, [=](){
+            press(t, false);
+        });
         lay->addWidget(bub);
     }
 
@@ -63,7 +66,9 @@ void setTasksLay(QLayout* lay, std::function<void(TaskBubble*, std::shared_ptr<T
     btn->setIcon(QIcon(":/assets/UI/plus.svg"));
     btn->setIconSize(QSize(48, 44));
     btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    //lay->connect(btn, &QPushButton::clicked, lay, );
+    lay->connect(btn, &QPushButton::clicked, lay, [=](){
+        press(newtask(), true);
+    });
     lay->addWidget(btn);
 }
 
@@ -159,6 +164,25 @@ void removeTask(std::shared_ptr<Task> task, bool trycurfirst) {
         );
         if (list.size() != oldsze) break;
     }
+}
+
+std::shared_ptr<Task> newtask() {
+    auto cur = getCurrent();
+    if (!cur.isNull()) {
+        auto ntsk = std::make_shared<Task>();
+        alltasks[cur].push_back(ntsk);
+        return ntsk;
+    }
+    return nullptr;
+}
+std::shared_ptr<Task> newtask(QString cat) {
+    auto it = alltasks.find(cat);
+    if (it != alltasks.end()) {
+        auto ntsk = std::make_shared<Task>();
+        it->second.push_back(ntsk);
+        return ntsk;
+    }
+    return nullptr;
 }
 
 void loadTasks() {

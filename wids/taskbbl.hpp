@@ -2,7 +2,7 @@
 #include <QWidget>
 #include <QBoxLayout>
 #include <QMouseEvent>
-#include "base/tasks.hpp"
+#include "base/task.hpp"
 
 class TaskBubble : public QWidget {
     Q_OBJECT
