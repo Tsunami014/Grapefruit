@@ -3,9 +3,10 @@
 #include "font.hpp"
 #include <memory>
 #include <QPushButton>
+#include <QMessageBox>
 
 using tasklist = std::vector<std::shared_ptr<Task>>;
-std::unordered_map<QString, tasklist> alltasks;
+std::map<QString, tasklist> alltasks;
 QString current;
 QString getCurrent() {
     if (alltasks.empty()) return {};
@@ -59,6 +60,53 @@ void setTasksLay(QLayout* lay, std::function<void(TaskBubble*, std::shared_ptr<T
     btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     //lay->connect(btn, &QPushButton::clicked, lay, );
     lay->addWidget(btn);
+}
+
+void newCategory(QString name) {
+    if (alltasks.find(name) == alltasks.end()) {
+        alltasks[name] = {};
+    }
+    current = name;
+}
+
+bool renameCategory(QString newname) {
+    auto cur = getCurrent();
+    if (cur.isNull() || cur == newname) return false;
+
+    while (alltasks.find(newname) != alltasks.end()) {
+        if (newname.isEmpty()) {
+            newname = "1";
+        } else {
+            int digi = newname.at(newname.length()-1).digitValue();
+            if (digi == -1) {
+                newname += "2";
+            } else if (digi == 9) {
+                newname = newname.sliced(0, -1) + "10";
+            } else {
+                newname = newname.sliced(0, -1) + QString::number(digi+1);
+            }
+        }
+    }
+
+    if (auto node = alltasks.extract(cur); !node.empty()) {
+        node.key() = newname;
+        alltasks.insert(std::move(node));
+    }
+    current = newname;
+    return true;
+}
+
+bool deleteCategory(QWidget* parent) {
+    auto cur = getCurrent();
+    if (cur.isNull()) return false;
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(parent, "Confirmation",
+          "Are you sure you want to delete the category '" + cur + "' and all its tasks?",
+          QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::No) return false;
+    alltasks.erase(alltasks.find(cur));
+    current = {};
+    return true;
 }
 
 void loadTasks() {

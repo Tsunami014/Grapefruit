@@ -51,7 +51,9 @@ void MainGame::generateTasks() {
         auto rnam = addBtn(":/assets/UI/rename.svg");
         rnam->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
         connect(rnam, &QPushButton::clicked, this, [this](){
-            overlay = new RenameOverlay("hi", [](QString){});
+            overlay = new RenameOverlay(getCurrent(), [this](QString s){
+                if (renameCategory(s)) redoTasks();
+            });
             tlay->addWidget(overlay, 0, 0);
         });
         topsect->addWidget(rnam);
@@ -59,13 +61,18 @@ void MainGame::generateTasks() {
         right->setSpacing(8);
             auto plus = addBtn(":/assets/UI/plus.svg");
             connect(plus, &QPushButton::clicked, this, [this](){
-                overlay = new RenameOverlay("hi", [](QString){});
+                overlay = new RenameOverlay("", [this](QString s){
+                    newCategory(s);
+                    redoTasks();
+                });
                 tlay->addWidget(overlay, 0, 0);
             });
             right->addWidget(plus);
 
             auto bin = addBtn(":/assets/UI/bin.svg");
-            connect(bin, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
+            connect(bin, &QPushButton::clicked, this, [this](){
+                if (deleteCategory(this)) redoTasks();
+            });
             right->addWidget(bin);
         topsect->addLayout(right);
     mtlay->addLayout(topsect);
