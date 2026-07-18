@@ -53,7 +53,7 @@ void MainGame::generateTasks() {
             auto plus = addBtn(":/assets/UI/plus.svg");
             connect(plus, &QPushButton::clicked, this, [this](){
                 overlay = new RenameOverlay("", [this](QString s){
-                    newCategory(s);
+                    newCategory(this, s);
                     redoTasks();
                 });
                 tlay->addWidget(overlay, 0, 0);
@@ -64,7 +64,7 @@ void MainGame::generateTasks() {
             rnam->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
             connect(rnam, &QPushButton::clicked, this, [this](){
                 overlay = new RenameOverlay(getCurrent(), [this](QString s){
-                    if (renameCategory(s)) redoTasks();
+                    if (renameCategory(this, s)) redoTasks();
                 });
                 tlay->addWidget(overlay, 0, 0);
             });

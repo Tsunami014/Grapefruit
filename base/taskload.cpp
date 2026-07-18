@@ -67,29 +67,45 @@ void setTasksLay(QLayout* lay, std::function<void(TaskBubble*, std::shared_ptr<T
     lay->addWidget(btn);
 }
 
-void newCategory(QString name) {
+void newCategory(QWidget* parent, QString name) {
     if (alltasks.find(name) == alltasks.end()) {
         alltasks[name] = {};
+    } else {
+        confirm(parent, "The category '" + name + "' already exists!", Conf_OK);
     }
     current = name;
 }
 
-bool renameCategory(QString newname) {
+bool renameCategory(QWidget* parent, QString newname) {
     auto cur = getCurrent();
-    if (cur.isNull() || cur == newname) return false;
+    if (cur.isNull()) {
+        confirm(parent, "No category is selected!\nCreate a category first!", Conf_OK);
+        return false;
+    }
+    if (cur == newname) return false;
 
-    while (alltasks.find(newname) != alltasks.end()) {
-        if (newname.isEmpty()) {
-            newname = "1";
+    if (auto it = alltasks.find(newname); it != alltasks.end()) {
+        auto resp = confirm(parent,
+            "The category name '" + newname + "' already exists! Do you want to overwrite it (yes) or use the next avaliable name (no)?",
+            Conf_YESNOCANCEL);
+        if (resp == QDialogButtonBox::RejectRole) return false;
+        if (resp == QDialogButtonBox::YesRole) {
+            alltasks.erase(it);
         } else {
-            int digi = newname.at(newname.length()-1).digitValue();
-            if (digi == -1) {
-                newname += "2";
-            } else if (digi == 9) {
-                newname = newname.sliced(0, -1) + "10";
-            } else {
-                newname = newname.sliced(0, -1) + QString::number(digi+1);
-            }
+            do {
+                if (newname.isEmpty()) {
+                    newname = "1";
+                } else {
+                    int digi = newname.at(newname.length()-1).digitValue();
+                    if (digi == -1) {
+                        newname += "2";
+                    } else if (digi == 9) {
+                        newname = newname.sliced(0, -1) + "10";
+                    } else {
+                        newname = newname.sliced(0, -1) + QString::number(digi+1);
+                    }
+                }
+            } while (alltasks.find(newname) != alltasks.end());
         }
     }
 
@@ -104,8 +120,8 @@ bool renameCategory(QString newname) {
 bool deleteCategory(QWidget* parent) {
     auto cur = getCurrent();
     if (cur.isNull()) return false;
-    if (!confirm(parent, "Confirmation",
-          "Are you sure you want to delete the category '" + cur + "' and all its tasks?")) {
+    if (confirm(parent, "Are you sure you want to delete the category '" + cur + "' and all its tasks?",
+          Conf_YESNO) != QDialogButtonBox::YesRole) {
         return false;
     }
     alltasks.erase(alltasks.find(cur));

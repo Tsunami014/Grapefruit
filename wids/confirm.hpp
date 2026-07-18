@@ -1,5 +1,12 @@
 #include <QWidget>
 #include <QString>
+#include <QDialogButtonBox>
+
+enum ConfirmOpts {
+    Conf_YESNO,
+    Conf_YESNOCANCEL,
+    Conf_OK
+};
 
 class ConfirmOverlay : public QWidget {
     Q_OBJECT
@@ -12,4 +19,4 @@ protected:
     void paintEvent(QPaintEvent* event) override;
 };
 
-bool confirm(QWidget* parent, const QString& title, const QString& text);
+QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, ConfirmOpts opts);

@@ -22,9 +22,9 @@ void ConfirmOverlay::paintEvent(QPaintEvent* event) {
     painter.fillRect(rect(), QColor(125, 125, 125, 125));
 }
 
-bool confirm(QWidget* parent, const QString& title, const QString& text) {
+QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, ConfirmOpts opts) {
     auto topLevel = parent ? parent->window() : nullptr;
-    if (!topLevel) return false;
+    if (!topLevel) return QDialogButtonBox::RejectRole;
 
     auto ovrl = new ConfirmOverlay(topLevel);
     ovrl->setGeometry(topLevel->rect());
@@ -52,13 +52,20 @@ bool confirm(QWidget* parent, const QString& title, const QString& text) {
     );
 
     auto lay = new QVBoxLayout(card);
-    auto txt = new QLabel("<b>" + title + "</b><br>" + text);
+    auto txt = new QLabel(text);
     resizeFont(txt, 1.3);
     txt->setWordWrap(true);
     lay->addWidget(txt);
     lay->addSpacing(8);
 
-    auto* btns = new QDialogButtonBox(QDialogButtonBox::Yes | QDialogButtonBox::No);
+    auto* btns = new QDialogButtonBox();
+    if (opts == Conf_YESNO) {
+        btns->setStandardButtons(QDialogButtonBox::Yes | QDialogButtonBox::No);
+    } else if (opts == Conf_YESNOCANCEL) {
+        btns->setStandardButtons(QDialogButtonBox::Yes | QDialogButtonBox::No | QDialogButtonBox::Cancel);
+    } else if (opts == Conf_OK) {
+        btns->setStandardButtons(QDialogButtonBox::Ok);
+    }
     lay->addWidget(btns);
     for (QPushButton* b : btns->findChildren<QPushButton*>()) {
         resizeFont(b, 1.5);
@@ -70,10 +77,10 @@ bool confirm(QWidget* parent, const QString& title, const QString& text) {
                (ovrl->height() - card->height()) / 2);
 
     QEventLoop loop;
-    bool result = false;
+    QDialogButtonBox::ButtonRole result = QDialogButtonBox::RejectRole;
 
     QObject::connect(btns, &QDialogButtonBox::clicked, ovrl, [&](QAbstractButton* btn) {
-        result = btns->buttonRole(btn) == QDialogButtonBox::YesRole;
+        result = btns->buttonRole(btn);
         loop.quit();
     });
     QObject::connect(ovrl, &ConfirmOverlay::pressed, ovrl, [&]() { loop.quit(); });
