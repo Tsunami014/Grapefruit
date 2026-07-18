@@ -12,7 +12,8 @@ scenes:
     - [table-leg, 6, -3.53]
     - [chair-up, 7.47, 6.82]
     - eat:
-      - [plate, 18.88, -0.88]
+      - [plate, 18.63, -1.25]
+    - pizza: [[pizza, 19.25, -0.38]]
 
   desk:
     - [rug, 3, 0]
@@ -30,3 +31,4 @@ assets:
     - rug
   food:
     - plate
+    - pizza
