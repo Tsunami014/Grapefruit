@@ -36,7 +36,9 @@ std::vector<SceneItem> gsis(QStringList parts, YAML::Node its, std::vector<Scene
     for (const auto& item : its) {
         if (item.IsMap()) {
             auto key = QString::fromStdString(item.begin()->first.as<std::string>());
-            if (parts.contains(key)) {
+            bool inv = key[0] == '^';
+            if (inv) key = key.mid(1);
+            if (parts.contains(key) ^ inv) {
                 out = gsis(parts, item.begin()->second, out);
             }
         } else {

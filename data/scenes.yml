@@ -2,14 +2,17 @@ scenes:
   dining:
     - [chair-down, 6, -2.4]
     - [chair-down, 11.25, -5.65]
-    - [~chair-down, 28.13, -4.15]
+    - ^eat:
+      - [~chair-down, 28.13, -4.15]
+    - eat:
+      - [~chair-down, 29, -5.53]
     - [table, 6, -3.53]
     - [~chair-up, 27.6, 3.45]
     - [~chair-up, 22.73, 7.2]
     - [table-leg, 6, -3.53]
     - [chair-up, 7.47, 6.82]
     - eat:
-      - [plate, 9.88, 4.25]
+      - [plate, 18.88, -0.88]
 
   desk:
     - [rug, 3, 0]
