@@ -16,6 +16,11 @@ private:
     QWidget* tasks;
     QGridLayout* tlay;
 
+    QVBoxLayout* tbbllay;
+    QLayout* tcatlay;
+
+    void redoTasks();
+
     Conversation* conv;
 
     void keyPressEvent(QKeyEvent* event) override;

@@ -1,9 +1,9 @@
 #include "renameOverl.hpp"
+#include "font.hpp"
 #include <QPainter>
 #include <QMouseEvent>
 #include <QGridLayout>
 #include <QApplication>
-#include <QGuiApplication>
 #include <QTimer>
 
 constexpr int MARGIN = 16;
@@ -19,6 +19,7 @@ RenameOverlay::RenameOverlay(QString initial, std::function<void(QString)> done,
     lay->setColumnStretch(2, 1);
 
     main = new QLineEdit(initial, this);
+    resizeFont(main, 1.2);
     connect(main, &QLineEdit::returnPressed, this, [=](){
         done(main->text());
         deleteLater();

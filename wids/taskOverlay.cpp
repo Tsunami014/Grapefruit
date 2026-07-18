@@ -7,7 +7,6 @@
 #include <QBoxLayout>
 #include <QLabel>
 #include <QApplication>
-#include <QGuiApplication>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QScrollBar>

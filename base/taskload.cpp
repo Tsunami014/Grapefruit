@@ -5,6 +5,7 @@
 #include "wids/taskOverlay.hpp"
 #include <memory>
 #include <QPushButton>
+#include <QTimer>
 
 std::vector<std::shared_ptr<Task>> taskslist;
 

@@ -43,7 +43,7 @@ void MainGame::generateTasks() {
 
         auto tclcont = new QWidget();
         tclcont->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        auto tcatlay = new FlowLayout(tclcont);
+        tcatlay = new FlowLayout(tclcont);
         topsect->addWidget(tclcont);
 
         addLine();
@@ -71,14 +71,14 @@ void MainGame::generateTasks() {
     line->setFrameShadow(QFrame::Raised);
     mtlay->addWidget(line);}
 
-    auto tbbllay = new QVBoxLayout();
+    tbbllay = new QVBoxLayout();
     mtlay->addLayout(tbbllay);
     mtlay->addStretch();
 
-    std::function<void()> redo;
-    redo = [tbbllay, this, &redo, tcatlay, tclcont](){
-        setTasksLay(tbbllay, tlay, this);
-        setTasksCatsLay(tcatlay, redo, tclcont);
-    };
-    redo();
+    redoTasks();
+}
+
+void MainGame::redoTasks() {
+    setTasksLay(tbbllay, tlay, this);
+    setTasksCatsLay(tcatlay, [this](){redoTasks();});
 }
