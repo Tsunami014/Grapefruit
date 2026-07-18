@@ -15,6 +15,12 @@ void MainGame::generateTasks() {
     tlay->addLayout(mtlay, 0, 0);
 
     auto topsect = new QHBoxLayout();
+    auto addLine = [&](){
+        QFrame* line = new QFrame();
+        line->setFrameShape(QFrame::VLine);
+        line->setFrameShadow(QFrame::Plain);
+        topsect->addWidget(line);
+    };
     topsect->setSpacing(16);
         auto left = new QVBoxLayout();
         left->setSpacing(8);
@@ -30,11 +36,29 @@ void MainGame::generateTasks() {
             labl->setAlignment(Qt::AlignCenter);
             left->addWidget(labl);}
         topsect->addLayout(left);
-        {QFrame* line = new QFrame();
-        line->setFrameShape(QFrame::VLine);
-        line->setFrameShadow(QFrame::Plain);
-        topsect->addWidget(line);}
+        addLine();
+
         topsect->addStretch();
+
+        addLine();
+        auto right = new QVBoxLayout();
+        right->setSpacing(8);
+            auto plus = new QPushButton();
+            plus->setProperty("fancy", true);
+            plus->setProperty("backbtn", true);
+            plus->setIcon(QIcon(":/assets/UI/plus.svg"));
+            plus->setIconSize(QSize(48, 40));
+            connect(plus, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
+            right->addWidget(plus);
+
+            auto bin = new QPushButton();
+            bin->setProperty("fancy", true);
+            bin->setProperty("backbtn", true);
+            bin->setIcon(QIcon(":/assets/UI/bin.svg"));
+            bin->setIconSize(QSize(48, 40));
+            connect(bin, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
+            right->addWidget(bin);
+        topsect->addLayout(right);
     mtlay->addLayout(topsect);
     {QFrame* line = new QFrame();
     line->setFrameShape(QFrame::HLine);
