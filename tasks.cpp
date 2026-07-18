@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "font.hpp"
 #include "base/taskload.hpp"
+#include "wids/renameOverl.hpp"
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
@@ -19,14 +20,18 @@ void MainGame::generateTasks() {
         line->setFrameShadow(QFrame::Plain);
         topsect->addWidget(line);
     };
+    auto addBtn = [&](QString asset){
+        auto btn = new QPushButton();
+        btn->setProperty("fancy", true);
+        btn->setProperty("backbtn", true);
+        btn->setIcon(QIcon(asset));
+        btn->setIconSize(QSize(48, 44));
+        return btn;
+    };
     topsect->setSpacing(16);
         auto left = new QVBoxLayout();
         left->setSpacing(8);
-            auto bk = new QPushButton();
-            bk->setProperty("fancy", true);
-            bk->setProperty("backbtn", true);
-            bk->setIcon(QIcon(":/assets/UI/back.svg"));
-            bk->setIconSize(QSize(48, 44));
+            auto bk = addBtn(":/assets/UI/back.svg");
             connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
             left->addWidget(bk, 0, Qt::AlignHCenter);
             {auto labl = new QLabel("All\ntasks");
@@ -43,29 +48,21 @@ void MainGame::generateTasks() {
         topsect->addWidget(tclcont);
 
         addLine();
-        auto rnam = new QPushButton();
-        rnam->setProperty("fancy", true);
-        rnam->setProperty("backbtn", true);
-        rnam->setIcon(QIcon(":/assets/UI/rename.svg"));
-        rnam->setIconSize(QSize(48, 44));
+        auto rnam = addBtn(":/assets/UI/rename.svg");
         rnam->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
-        connect(rnam, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
+        connect(rnam, &QPushButton::clicked, this, [this](){
+            tlay->addWidget(new RenameOverlay("hi", [](QString){}), 0, 0);
+        });
         topsect->addWidget(rnam);
         auto right = new QVBoxLayout();
         right->setSpacing(8);
-            auto plus = new QPushButton();
-            plus->setProperty("fancy", true);
-            plus->setProperty("backbtn", true);
-            plus->setIcon(QIcon(":/assets/UI/plus.svg"));
-            plus->setIconSize(QSize(48, 44));
-            connect(plus, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
+            auto plus = addBtn(":/assets/UI/plus.svg");
+            connect(plus, &QPushButton::clicked, this, [this](){
+                tlay->addWidget(new RenameOverlay("hi", [](QString){}), 0, 0);
+            });
             right->addWidget(plus);
 
-            auto bin = new QPushButton();
-            bin->setProperty("fancy", true);
-            bin->setProperty("backbtn", true);
-            bin->setIcon(QIcon(":/assets/UI/bin.svg"));
-            bin->setIconSize(QSize(48, 44));
+            auto bin = addBtn(":/assets/UI/bin.svg");
             connect(bin, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
             right->addWidget(bin);
         topsect->addLayout(right);

@@ -26,6 +26,7 @@ set(CORE
     wids/taskbbl.cpp
     wids/txtedit.cpp
     wids/taskOverlay.cpp
+    wids/renameOverl.cpp
 )
 
 set(CMAKE_AUTOMOC ON)
