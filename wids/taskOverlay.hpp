@@ -4,7 +4,7 @@
 
 class TaskOverlay : public QWidget {
 public:
-    explicit TaskOverlay(std::shared_ptr<Task> task, QWidget* parent = nullptr);
+    explicit TaskOverlay(std::shared_ptr<Task> task, std::function<void()> update, QWidget* parent = nullptr);
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;

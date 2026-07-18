@@ -1,11 +1,12 @@
 #include "taskOverlay.hpp"
+#include "base/taskload.hpp"
 #include "extra/itemopts.hpp"
 #include "extra/drag.hpp"
 #include "wids/txtedit.hpp"
 #include <QPainter>
 #include <QMouseEvent>
 #include <QBoxLayout>
-#include <QLabel>
+#include <QLineEdit>
 #include <QApplication>
 #include <QPushButton>
 #include <QScrollArea>
@@ -40,13 +41,14 @@ void highlight(QTextEdit* edit) {
 }
 
 
-TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(parent) {
+TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> update, QWidget* parent) : QWidget(parent) {
     auto* lay = new QVBoxLayout(this);
     lay->setContentsMargins(0,0,0,0);
 
     auto* mlay = new QVBoxLayout();
     mlay->setContentsMargins(innerMarg + QMargins(16, 16, 16, 16));
-        auto titl = new QLabel(task->name, this);
+    mlay->setSpacing(16);
+        auto titl = new QLineEdit(task->name, this);
         mlay->addWidget(titl);
         auto* edit = new TxtEdit(this);
         edit->setPlainText(task->items);
@@ -91,6 +93,15 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, QWidget* parent) : QWidget(
         QTimer::singleShot(0, this, [=]() {
             task->items = edit->toPlainText();
             highlight(edit);
+            update();
+            saveTasks();
+        });
+    });
+    connect(titl, &QLineEdit::textChanged, [=](){
+        QTimer::singleShot(0, this, [=]() {
+            task->name = titl->text();
+            update();
+            saveTasks();
         });
     });
 }

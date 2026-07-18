@@ -2,6 +2,7 @@
 #include <QStackedWidget>
 #include <QGridLayout>
 #include <QLabel>
+#include <QPointer>
 #include "base/converse.hpp"
 
 class MainGame : public QMainWindow {
@@ -18,6 +19,7 @@ private:
 
     QVBoxLayout* tbbllay;
     QLayout* tcatlay;
+    QPointer<QWidget> overlay;
 
     void redoTasks();
 

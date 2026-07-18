@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "font.hpp"
 #include "base/taskload.hpp"
+#include "wids/taskOverlay.hpp"
 #include "wids/renameOverl.hpp"
 #include <QLabel>
 #include <QBoxLayout>
@@ -50,14 +51,16 @@ void MainGame::generateTasks() {
         auto rnam = addBtn(":/assets/UI/rename.svg");
         rnam->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
         connect(rnam, &QPushButton::clicked, this, [this](){
-            tlay->addWidget(new RenameOverlay("hi", [](QString){}), 0, 0);
+            overlay = new RenameOverlay("hi", [](QString){});
+            tlay->addWidget(overlay, 0, 0);
         });
         topsect->addWidget(rnam);
         auto right = new QVBoxLayout();
         right->setSpacing(8);
             auto plus = addBtn(":/assets/UI/plus.svg");
             connect(plus, &QPushButton::clicked, this, [this](){
-                tlay->addWidget(new RenameOverlay("hi", [](QString){}), 0, 0);
+                overlay = new RenameOverlay("hi", [](QString){});
+                tlay->addWidget(overlay, 0, 0);
             });
             right->addWidget(plus);
 
@@ -79,6 +82,13 @@ void MainGame::generateTasks() {
 }
 
 void MainGame::redoTasks() {
-    setTasksLay(tbbllay, tlay, this);
-    setTasksCatsLay(tcatlay, [this](){redoTasks();});
+    auto redo = [this](){redoTasks();};
+    setTasksLay(tbbllay, [=](TaskBubble* bub, std::shared_ptr<Task> t){
+        QObject::connect(bub, &TaskBubble::clicked, this, [=](){
+                overlay = new TaskOverlay(t, redo, this);
+            tlay->addWidget(overlay, 0, 0);
+        });
+    }, this);
+    setTasksCatsLay(tcatlay, redo, this);
+    if (overlay) overlay->raise();
 }

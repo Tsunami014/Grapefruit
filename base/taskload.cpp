@@ -1,8 +1,6 @@
 #include "taskload.hpp"
 #include "tasks.hpp"
 #include "font.hpp"
-#include "wids/taskbbl.hpp"
-#include "wids/taskOverlay.hpp"
 #include <memory>
 #include <QPushButton>
 
@@ -43,7 +41,7 @@ void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) 
         lay->addWidget(btn);
     }
 }
-void setTasksLay(QLayout* lay, QGridLayout* tlay, QWidget* parent) {
+void setTasksLay(QLayout* lay, std::function<void(TaskBubble*, std::shared_ptr<Task>)> connect, QWidget* parent) {
     QLayoutItem* item;
     while ((item = lay->takeAt(0)) != nullptr) {
         if (auto* wid = item->widget()) wid->deleteLater();
@@ -52,9 +50,7 @@ void setTasksLay(QLayout* lay, QGridLayout* tlay, QWidget* parent) {
 
     for (auto& t : getCurrentTasks()) {
         auto bub = new TaskBubble(t, parent);
-        QObject::connect(bub, &TaskBubble::clicked, [=](){
-            tlay->addWidget(new TaskOverlay(t, parent), 0, 0);
-        });
+        connect(bub, t);
         lay->addWidget(bub);
     }
 }
