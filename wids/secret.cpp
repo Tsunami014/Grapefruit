@@ -41,7 +41,6 @@ Spoiler::Spoiler(const QString& title, QWidget* parent) : QWidget(parent) {
     toggleButton.setCheckable(true);
     toggleButton.setChecked(false);
 
-    contentArea.setStyleSheet("QScrollArea { background-color: white; border: none; }");
     contentArea.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     // start out collapsed
     contentArea.setMaximumHeight(0);
