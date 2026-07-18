@@ -1,7 +1,7 @@
 #pragma once
-#include "tasks.hpp"
-#include <memory>
+#include <QLayout>
 
-extern std::vector<std::shared_ptr<Task>> taskslist;
+void setTasksCatsLay(QLayout* lay, QWidget* parent = nullptr);
+void setTasksLay(QLayout* lay, QGridLayout* tlay, QWidget* parent = nullptr);
 void loadTasks();
 void saveTasks();

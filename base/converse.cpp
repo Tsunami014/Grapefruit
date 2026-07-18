@@ -307,5 +307,5 @@ void Conversation::refresh() {
 
 void Conversation::display(QString title, optList opts) {
     curtxt->setText(title);
-    setOpts(olay, opts, [=](Option o){ onclick(o); });
+    setOptsLay(olay, opts, [=](Option o){ onclick(o); });
 }

@@ -1,8 +1,6 @@
 #include "game.hpp"
 #include "font.hpp"
 #include "base/taskload.hpp"
-#include "wids/taskbbl.hpp"
-#include "wids/taskOverlay.hpp"
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
@@ -28,7 +26,7 @@ void MainGame::generateTasks() {
             bk->setProperty("fancy", true);
             bk->setProperty("backbtn", true);
             bk->setIcon(QIcon(":/assets/UI/back.svg"));
-            bk->setIconSize(QSize(48, 40));
+            bk->setIconSize(QSize(48, 44));
             connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
             left->addWidget(bk, 0, Qt::AlignHCenter);
             {auto labl = new QLabel("All\ntasks");
@@ -38,16 +36,28 @@ void MainGame::generateTasks() {
         topsect->addLayout(left);
         addLine();
 
-        topsect->addStretch();
+        auto tclcont = new QWidget();
+        tclcont->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        auto tcatlay = new FlowLayout(tclcont);
+        setTasksCatsLay(tcatlay, tclcont);
+        topsect->addWidget(tclcont);
 
         addLine();
+        auto rnam = new QPushButton();
+        rnam->setProperty("fancy", true);
+        rnam->setProperty("backbtn", true);
+        rnam->setIcon(QIcon(":/assets/UI/rename.svg"));
+        rnam->setIconSize(QSize(48, 44));
+        rnam->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
+        connect(rnam, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
+        topsect->addWidget(rnam);
         auto right = new QVBoxLayout();
         right->setSpacing(8);
             auto plus = new QPushButton();
             plus->setProperty("fancy", true);
             plus->setProperty("backbtn", true);
             plus->setIcon(QIcon(":/assets/UI/plus.svg"));
-            plus->setIconSize(QSize(48, 40));
+            plus->setIconSize(QSize(48, 44));
             connect(plus, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
             right->addWidget(plus);
 
@@ -55,7 +65,7 @@ void MainGame::generateTasks() {
             bin->setProperty("fancy", true);
             bin->setProperty("backbtn", true);
             bin->setIcon(QIcon(":/assets/UI/bin.svg"));
-            bin->setIconSize(QSize(48, 40));
+            bin->setIconSize(QSize(48, 44));
             connect(bin, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
             right->addWidget(bin);
         topsect->addLayout(right);
@@ -65,13 +75,9 @@ void MainGame::generateTasks() {
     line->setFrameShadow(QFrame::Raised);
     mtlay->addWidget(line);}
 
-    for (const auto& t : taskslist) {
-        auto bub = new TaskBubble(t, this);
-        connect(bub, &TaskBubble::clicked, this, [=](){
-            tlay->addWidget(new TaskOverlay(t, this), 0, 0);
-        });
-        mtlay->addWidget(bub);
-    }
+    auto tbbllay = new QVBoxLayout();
+    setTasksLay(tbbllay, tlay, this);
+    mtlay->addLayout(tbbllay);
 
     mtlay->addStretch();
 }
