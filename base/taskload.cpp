@@ -8,7 +8,7 @@
 
 std::vector<std::shared_ptr<Task>> taskslist;
 
-void setTasksCatsLay(QLayout* lay, QWidget* parent) {
+void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) {
     QLayoutItem* item;
     while ((item = lay->takeAt(0)) != nullptr) {
         if (auto* wid = item->widget()) wid->deleteLater();
@@ -20,7 +20,7 @@ void setTasksCatsLay(QLayout* lay, QWidget* parent) {
         btn->setProperty("fancy", true);
         btn->setProperty("optbtn", true);
         resizeFont(btn, 1.25);
-        //lay->connect(btn, &QPushButton::clicked, lay, [=](){  });
+        lay->connect(btn, &QPushButton::clicked, lay, redo);
         lay->addWidget(btn);
     //}
 }
