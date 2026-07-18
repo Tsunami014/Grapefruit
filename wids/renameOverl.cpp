@@ -2,15 +2,14 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QGridLayout>
-#include <QLabel>
-#include <QTextEdit>
 #include <QApplication>
 #include <QGuiApplication>
+#include <QTimer>
 
-constexpr int MARGIN = 12;
+constexpr int MARGIN = 16;
 
 
-RenameOverlay::RenameOverlay(QString initial, std::function<void(QString)> onchange, QWidget* parent) : QWidget(parent) {
+RenameOverlay::RenameOverlay(QString initial, std::function<void(QString)> done, QWidget* parent) : QWidget(parent) {
     auto* lay = new QGridLayout(this);
     lay->setContentsMargins(0,0,0,0);
     lay->setRowStretch(0, 1);
@@ -19,8 +18,13 @@ RenameOverlay::RenameOverlay(QString initial, std::function<void(QString)> oncha
     lay->setColumnStretch(1, 7);
     lay->setColumnStretch(2, 1);
 
-    main = new QLabel("Hello!", this);
+    main = new QLineEdit(initial, this);
+    connect(main, &QLineEdit::returnPressed, this, [=](){
+        done(main->text());
+        deleteLater();
+    });
     lay->addWidget(main, 1, 1);
+    QTimer::singleShot(0, this, [this](){ main->setFocus(); });
 }
 
 void RenameOverlay::keyPressEvent(QKeyEvent* event) {
@@ -46,7 +50,7 @@ void RenameOverlay::mousePressEvent(QMouseEvent* event) {
         return;
     }
     QWidget* wid = QApplication::widgetAt(point);
-    if (qobject_cast<QTextEdit*>(wid)) { event->ignore(); }
+    if (qobject_cast<QLineEdit*>(wid)) { event->ignore(); }
     else if (QWidget* focus = QApplication::focusWidget()) { focus->clearFocus(); }
 }
 
@@ -57,5 +61,5 @@ void RenameOverlay::paintEvent(QPaintEvent* event) {
     painter.fillRect(r, QColor(125, 125, 125, 125));
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(255, 255, 255));
-    painter.drawRoundedRect(main->geometry().adjusted(-MARGIN, -MARGIN, MARGIN, MARGIN), 16, 16);
+    painter.drawRoundedRect(main->geometry().adjusted(-MARGIN, -MARGIN, MARGIN, MARGIN), 14, 14);
 }

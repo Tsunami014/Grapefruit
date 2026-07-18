@@ -1,7 +1,8 @@
 #pragma once
-#include <QWidget>
+#include <QLineEdit>
 
 class RenameOverlay : public QWidget {
+    Q_OBJECT
 public:
     explicit RenameOverlay(QString initial, std::function<void(QString)> onchange, QWidget* parent = nullptr);
 
@@ -10,5 +11,5 @@ protected:
     void keyPressEvent(QKeyEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
 
-    QWidget* main;
+    QLineEdit* main;
 };
