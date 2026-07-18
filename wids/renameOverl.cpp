@@ -3,6 +3,7 @@
 #include <QGridLayout>
 #include <QBoxLayout>
 #include <QPushButton>
+#include <QLabel>
 #include <QLineEdit>
 #include <QPainter>
 #include <QMouseEvent>
@@ -12,7 +13,7 @@
 constexpr int MARGIN = 8;
 
 
-RenameOverlay::RenameOverlay(QString initial, std::function<void(QString)> done, QWidget* parent) : QWidget(parent) {
+RenameOverlay::RenameOverlay(QString title, QString initial, std::function<void(QString)> done, QWidget* parent) : QWidget(parent) {
     auto* lay = new QGridLayout(this);
     lay->setContentsMargins(0,0,0,0);
     lay->setRowStretch(0, 1);
@@ -22,8 +23,15 @@ RenameOverlay::RenameOverlay(QString initial, std::function<void(QString)> done,
     lay->setColumnStretch(2, 1);
 
     main = new QWidget(this);
-    auto mlay = new QHBoxLayout(main);
     lay->addWidget(main, 1, 1);
+    auto vlay = new QVBoxLayout(main);
+
+    auto labl = new QLabel(title, main);
+    resizeFont(labl, 1.2);
+    vlay->addWidget(labl, 0, Qt::AlignCenter);
+
+    auto hlay = new QHBoxLayout();
+    vlay->addLayout(hlay);
 
     auto le = new QLineEdit(initial, this);
     resizeFont(le, 1.4);
@@ -35,7 +43,7 @@ RenameOverlay::RenameOverlay(QString initial, std::function<void(QString)> done,
         le->setFocus();
         QGuiApplication::inputMethod()->show();
     });
-    mlay->addWidget(le);
+    hlay->addWidget(le);
 
     auto btn = new QPushButton();
     btn->setProperty("fancy", true);
@@ -44,7 +52,7 @@ RenameOverlay::RenameOverlay(QString initial, std::function<void(QString)> done,
     btn->setIconSize(QSize(mx, mx-4));
     btn->setProperty("backbtn", true);
     connect(btn, &QPushButton::clicked, le, &QLineEdit::returnPressed);
-    mlay->addWidget(btn);
+    hlay->addWidget(btn);
 }
 
 void RenameOverlay::keyPressEvent(QKeyEvent* event) {

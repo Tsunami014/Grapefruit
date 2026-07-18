@@ -4,7 +4,7 @@
 class RenameOverlay : public QWidget {
     Q_OBJECT
 public:
-    explicit RenameOverlay(QString initial, std::function<void(QString)> onchange, QWidget* parent = nullptr);
+    explicit RenameOverlay(QString title, QString initial, std::function<void(QString)> onchange, QWidget* parent = nullptr);
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
