@@ -11,5 +11,7 @@ void newCategory(QWidget* parent, QString name);
 bool renameCategory(QWidget* parent, QString newname);
 bool deleteCategory(QWidget* parent);
 
+void removeTask(std::shared_ptr<Task> task, bool trycurfirst = true);
+
 void loadTasks();
 void saveTasks();

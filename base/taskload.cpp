@@ -129,6 +129,38 @@ bool deleteCategory(QWidget* parent) {
     return true;
 }
 
+
+void removeTask(std::shared_ptr<Task> task, bool trycurfirst) {
+    // Most likely to be in the current category, so try there first
+    QString cur;
+    if (trycurfirst) {
+        auto cur = getCurrent();
+        if (!cur.isNull())
+        if (auto it = alltasks.find(cur); it != alltasks.end()) {
+            auto& list = it->second;
+            auto oldsze = list.size();
+
+            list.erase(
+                std::remove(list.begin(), list.end(), task),
+                list.end()
+            );
+            if (list.size() != oldsze) return;
+            // Otherwise, was not found
+        }
+    }
+
+    for (auto& [key, list] : alltasks) {
+        if (key == cur) continue;
+
+        auto oldsze = list.size();
+        list.erase(
+            std::remove(list.begin(), list.end(), task),
+            list.end()
+        );
+        if (list.size() != oldsze) break;
+    }
+}
+
 void loadTasks() {
     tasklist test = {};
     test.emplace_back(std::make_shared<Task>("Sample task 1"));

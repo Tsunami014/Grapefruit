@@ -3,6 +3,7 @@
 #include "extra/itemopts.hpp"
 #include "extra/drag.hpp"
 #include "wids/txtedit.hpp"
+#include "font.hpp"
 #include <QPainter>
 #include <QMouseEvent>
 #include <QBoxLayout>
@@ -48,8 +49,23 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
     auto* mlay = new QVBoxLayout();
     mlay->setContentsMargins(innerMarg + QMargins(16, 16, 16, 16));
     mlay->setSpacing(16);
-        auto titl = new QLineEdit(task->name, this);
-        mlay->addWidget(titl);
+        auto* sublay = new QHBoxLayout();
+            auto titl = new QLineEdit(task->name, this);
+            resizeFont(titl, 1.3);
+            sublay->addWidget(titl);
+
+            auto bin = new QPushButton();
+            bin->setProperty("fancy", true);
+            bin->setIcon(QIcon(":/assets/UI/bin.svg"));
+            int mx = titl->rect().height() + 8;
+            bin->setIconSize(QSize(mx, mx-4));
+            connect(bin, &QPushButton::clicked, this, [=](){
+                removeTask(task);
+                deleteLater();
+                update();
+            });
+            sublay->addWidget(bin);
+        mlay->addLayout(sublay);
         auto* edit = new TxtEdit(this);
         edit->setPlainText(task->items);
         highlight(edit);
