@@ -1,7 +1,7 @@
-.cache/*
-build-desktop/*
+desktop/*
 release/*
-build/*
 .qt/*
+out/*
+.cache/*
 *.log
 compile_commands.json

@@ -1,6 +1,6 @@
-.PHONY: all debug release clean setup-qt apk install
+.PHONY: all setup-qt debug release clean
 
-QT_VERSION = 6.10.1
+QT_VERSION = 6.10.2
 QT_ANDROID_DIR = $(CURDIR)/.qt/$(QT_VERSION)/android_arm64_v8a
 QT_HOST_DIR = $(CURDIR)/.qt/$(QT_VERSION)/gcc_64
 SYSROOT = $(ANDROID_SDK_ROOT)/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/sysroot
@@ -31,18 +31,17 @@ setup-qt:
 		aqt install-qt linux android $(QT_VERSION) android_arm64_v8a --outputdir .qt; \
 	fi
 
-debug: setup-qt
-	$(QT_ANDROID_DIR)/bin/qt-cmake -B build -S . $(ANDRIOD_FLAGS) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug
-	cmake --build build --target apk --parallel
 all: release
 release: setup-qt
 	$(QT_ANDROID_DIR)/bin/qt-cmake -B release -S . $(ANDRIOD_FLAGS) -DCMAKE_BUILD_TYPE=Release
 	cmake --build release --target apk --parallel
+	uber-apk-signer --apks ./release/android-build/build/outputs/apk/release/android-build-release-unsigned.apk -o ./out
+	sh -c 'for f in out/android-build-release-aligned-debugSigned.*; do mv -- "$$f" "out/release.apk$${f#*.apk}"; done;'
 
-# Use regular cmake
-desktop: setup-qt
-	$(QT_HOST_DIR)/bin/qt-cmake -B build-desktop -S . $(DESKTOP_FLAGS) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug
-	cmake --build build-desktop --parallel
+# Use regular cmake, and compile for desktop
+debug: setup-qt
+	$(QT_HOST_DIR)/bin/qt-cmake -B desktop -S . $(DESKTOP_FLAGS) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug
+	cmake --build desktop --parallel
 
 clean:
-	rm -rf ./build ./build-desktop ./release
+	rm -rf ./desktop ./release

@@ -1,5 +1,5 @@
 #!/bin/sh
-APK=build/android-build/build/outputs/apk/debug/android-build-debug.apk
+APK=out/release.apk
 PKG=com.example.androidapp
 
 any=false
