@@ -1,7 +1,9 @@
 #include "scenes.hpp"
+#include "choose.hpp"
 #include <yaml-cpp/yaml.h>
 #include <QFile>
 #include <QDebug>
+#include <QRandomGenerator>
 
 template<typename F> const auto& cached(F&& init) {
     static const auto value = init();
@@ -62,4 +64,21 @@ std::vector<SceneItem> getSceneItems(QString scene) {
     auto its = sconfig()["scenes"][parts[0].toStdString()];
     if (!its) return {};
     return gsis(parts.sliced(1), its);
+}
+
+QString randomScene() {
+    auto opts = sconfig()["choices"];
+    auto o = opts[QRandomGenerator::global()->bounded(int(opts.size()))];
+    QString end = QString::fromStdString(o["base"].as<std::string>());
+    for (const auto& item : o["extras"]) {
+        if (item.IsSequence()) {
+            auto chosen = choose(item.as<std::vector<std::string>>());
+            if (chosen.second != -1 && chosen.first != "") {
+                end += "#" + QString::fromStdString(chosen.first);
+            }
+        } else {
+            end += "#" + QString::fromStdString(item.as<std::string>());
+        }
+    }
+    return end;
 }

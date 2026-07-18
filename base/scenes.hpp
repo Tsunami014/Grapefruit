@@ -7,3 +7,4 @@ struct SceneItem {
     bool flip;
 };
 std::vector<SceneItem> getSceneItems(QString scene);
+QString randomScene();

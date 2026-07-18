@@ -6,13 +6,13 @@
 class House : public QGraphicsView {
 public:
     House(QWidget* parent = nullptr);
-    void buildScene(QString scene);
+    void newScene();
 
 protected:
 #ifdef BUILD
     void keyPressEvent(QKeyEvent* event) override;
 #endif
+    void buildScene(QString scene);
 
-private:
     QGraphicsScene scn;
 };

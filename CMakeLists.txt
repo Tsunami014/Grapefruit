@@ -7,6 +7,7 @@ set(CORE
     resources.qrc
     settings.cpp tasks.cpp style.cpp
 
+    base/choose.cpp
     base/tasks.cpp
     base/taskload.cpp
     base/options.cpp

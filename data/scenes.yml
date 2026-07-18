@@ -16,7 +16,7 @@ scenes:
     - pizza: [[pizza, 19.25, -0.38]]
 
   desk:
-    - [rug, 3, 0]
+    - rug: [[rug, -3.5, 6.13]]
     - [chair-down, 0, 0]
     - [desk, -3.38, 0.13]
 
@@ -32,3 +32,12 @@ assets:
   food:
     - plate
     - pizza
+
+choices:
+  - base: dining
+    extras:
+      - eat
+      - pizza
+  - base: desk
+    extras:
+      - [rug, ~]
