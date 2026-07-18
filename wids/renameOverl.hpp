@@ -1,5 +1,5 @@
 #pragma once
-#include <QLineEdit>
+#include <QWidget>
 
 class RenameOverlay : public QWidget {
     Q_OBJECT
@@ -11,5 +11,5 @@ protected:
     void keyPressEvent(QKeyEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
 
-    QLineEdit* main;
+    QWidget* main;
 };

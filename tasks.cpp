@@ -24,7 +24,6 @@ void MainGame::generateTasks() {
     auto addBtn = [&](QString asset){
         auto btn = new QPushButton();
         btn->setProperty("fancy", true);
-        btn->setProperty("backbtn", true);
         btn->setIcon(QIcon(asset));
         btn->setIconSize(QSize(48, 44));
         return btn;
@@ -33,6 +32,7 @@ void MainGame::generateTasks() {
         auto left = new QVBoxLayout();
         left->setSpacing(8);
             auto bk = addBtn(":/assets/UI/back.svg");
+            bk->setProperty("backbtn", true);
             connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
             left->addWidget(bk, 0, Qt::AlignHCenter);
             {auto labl = new QLabel("All\ntasks");

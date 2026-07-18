@@ -1,12 +1,15 @@
 #include "renameOverl.hpp"
 #include "font.hpp"
+#include <QGridLayout>
+#include <QBoxLayout>
+#include <QPushButton>
+#include <QLineEdit>
 #include <QPainter>
 #include <QMouseEvent>
-#include <QGridLayout>
 #include <QApplication>
 #include <QTimer>
 
-constexpr int MARGIN = 16;
+constexpr int MARGIN = 8;
 
 
 RenameOverlay::RenameOverlay(QString initial, std::function<void(QString)> done, QWidget* parent) : QWidget(parent) {
@@ -18,14 +21,27 @@ RenameOverlay::RenameOverlay(QString initial, std::function<void(QString)> done,
     lay->setColumnStretch(1, 7);
     lay->setColumnStretch(2, 1);
 
-    main = new QLineEdit(initial, this);
-    resizeFont(main, 1.2);
-    connect(main, &QLineEdit::returnPressed, this, [=](){
-        done(main->text());
+    main = new QWidget(this);
+    auto mlay = new QHBoxLayout(main);
+    lay->addWidget(main, 1, 1);
+
+    auto le = new QLineEdit(initial, this);
+    resizeFont(le, 1.4);
+    connect(le, &QLineEdit::returnPressed, this, [=](){
+        done(le->text());
         deleteLater();
     });
-    lay->addWidget(main, 1, 1);
-    QTimer::singleShot(0, this, [this](){ main->setFocus(); });
+    QTimer::singleShot(0, this, [le](){ le->setFocus(); });
+    mlay->addWidget(le);
+
+    auto btn = new QPushButton();
+    btn->setProperty("fancy", true);
+    btn->setIcon(QIcon(":/assets/UI/check.svg"));
+    int mx = le->rect().height() + 8;
+    btn->setIconSize(QSize(mx, mx-4));
+    btn->setProperty("backbtn", true);
+    connect(btn, &QPushButton::clicked, le, &QLineEdit::returnPressed);
+    mlay->addWidget(btn);
 }
 
 void RenameOverlay::keyPressEvent(QKeyEvent* event) {

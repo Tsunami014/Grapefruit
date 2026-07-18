@@ -14,11 +14,6 @@ QString getCurrent() {
     }
     return current;
 }
-tasklist getCurrentTasks() {
-    auto cur = getCurrent();
-    if (cur.isNull()) return {};
-    return alltasks.at(cur);
-}
 
 void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) {
     QLayoutItem* item;
@@ -48,11 +43,22 @@ void setTasksLay(QLayout* lay, std::function<void(TaskBubble*, std::shared_ptr<T
         delete item;
     }
 
-    for (auto& t : getCurrentTasks()) {
+    auto cur = getCurrent();
+    if (cur.isNull()) return;
+
+    for (auto& t : alltasks.at(cur)) {
         auto bub = new TaskBubble(t, parent);
         connect(bub, t);
         lay->addWidget(bub);
     }
+
+    auto btn = new QPushButton();
+    btn->setProperty("fancy", true);
+    btn->setIcon(QIcon(":/assets/UI/plus.svg"));
+    btn->setIconSize(QSize(48, 44));
+    btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    //lay->connect(btn, &QPushButton::clicked, lay, );
+    lay->addWidget(btn);
 }
 
 void loadTasks() {
