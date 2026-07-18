@@ -31,7 +31,10 @@ RenameOverlay::RenameOverlay(QString initial, std::function<void(QString)> done,
         done(le->text());
         deleteLater();
     });
-    QTimer::singleShot(0, this, [le](){ le->setFocus(); });
+    QTimer::singleShot(0, this, [le](){
+        le->setFocus();
+        QGuiApplication::inputMethod()->show();
+    });
     mlay->addWidget(le);
 
     auto btn = new QPushButton();
@@ -73,9 +76,8 @@ void RenameOverlay::mousePressEvent(QMouseEvent* event) {
 
 void RenameOverlay::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
-    auto r = rect();
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.fillRect(r, QColor(125, 125, 125, 125));
+    painter.fillRect(rect(), QColor(125, 125, 125, 125));
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(255, 255, 255));
     painter.drawRoundedRect(main->geometry().adjusted(-MARGIN, -MARGIN, MARGIN, MARGIN), 14, 14);

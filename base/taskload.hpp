@@ -1,5 +1,5 @@
 #pragma once
-#include <QLayout>
+#include <QBoxLayout>
 #include "wids/taskbbl.hpp"
 
 QString getCurrent();

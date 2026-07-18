@@ -25,6 +25,7 @@ set(CORE
     wids/secret.cpp
     wids/taskbbl.cpp
     wids/txtedit.cpp
+    wids/confirm.cpp
     wids/taskOverlay.cpp
     wids/renameOverl.cpp
 )

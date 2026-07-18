@@ -1,6 +1,7 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <QGridLayout>
+#include <QBoxLayout>
 #include <QLabel>
 #include <QPointer>
 #include "base/converse.hpp"

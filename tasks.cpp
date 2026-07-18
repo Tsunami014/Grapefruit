@@ -1,9 +1,7 @@
 #include "game.hpp"
-#include "font.hpp"
 #include "base/taskload.hpp"
 #include "wids/taskOverlay.hpp"
 #include "wids/renameOverl.hpp"
-#include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
 
@@ -34,11 +32,13 @@ void MainGame::generateTasks() {
             auto bk = addBtn(":/assets/UI/back.svg");
             bk->setProperty("backbtn", true);
             connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
-            left->addWidget(bk, 0, Qt::AlignHCenter);
-            {auto labl = new QLabel("All\ntasks");
-            resizeFont(labl, 1.25);
-            labl->setAlignment(Qt::AlignCenter);
-            left->addWidget(labl);}
+            left->addWidget(bk);
+
+            auto bin = addBtn(":/assets/UI/bin.svg");
+            connect(bin, &QPushButton::clicked, this, [this](){
+                if (deleteCategory(this)) redoTasks();
+            });
+            left->addWidget(bin);
         topsect->addLayout(left);
         addLine();
 
@@ -48,15 +48,6 @@ void MainGame::generateTasks() {
         topsect->addWidget(tclcont);
 
         addLine();
-        auto rnam = addBtn(":/assets/UI/rename.svg");
-        rnam->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
-        connect(rnam, &QPushButton::clicked, this, [this](){
-            overlay = new RenameOverlay(getCurrent(), [this](QString s){
-                if (renameCategory(s)) redoTasks();
-            });
-            tlay->addWidget(overlay, 0, 0);
-        });
-        topsect->addWidget(rnam);
         auto right = new QVBoxLayout();
         right->setSpacing(8);
             auto plus = addBtn(":/assets/UI/plus.svg");
@@ -69,11 +60,15 @@ void MainGame::generateTasks() {
             });
             right->addWidget(plus);
 
-            auto bin = addBtn(":/assets/UI/bin.svg");
-            connect(bin, &QPushButton::clicked, this, [this](){
-                if (deleteCategory(this)) redoTasks();
+            auto rnam = addBtn(":/assets/UI/rename.svg");
+            rnam->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
+            connect(rnam, &QPushButton::clicked, this, [this](){
+                overlay = new RenameOverlay(getCurrent(), [this](QString s){
+                    if (renameCategory(s)) redoTasks();
+                });
+                tlay->addWidget(overlay, 0, 0);
             });
-            right->addWidget(bin);
+            right->addWidget(rnam);
         topsect->addLayout(right);
     mtlay->addLayout(topsect);
     {QFrame* line = new QFrame();

@@ -1,6 +1,7 @@
 #include "taskload.hpp"
 #include "tasks.hpp"
 #include "font.hpp"
+#include "wids/confirm.hpp"
 #include <memory>
 #include <QPushButton>
 #include <QMessageBox>
@@ -53,6 +54,10 @@ void setTasksLay(QLayout* lay, std::function<void(TaskBubble*, std::shared_ptr<T
         lay->addWidget(bub);
     }
 
+    QWidget* space = new QWidget(parent);
+    space->setFixedSize(0, 8);
+    lay->addWidget(space);
+
     auto btn = new QPushButton();
     btn->setProperty("fancy", true);
     btn->setIcon(QIcon(":/assets/UI/plus.svg"));
@@ -99,11 +104,10 @@ bool renameCategory(QString newname) {
 bool deleteCategory(QWidget* parent) {
     auto cur = getCurrent();
     if (cur.isNull()) return false;
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(parent, "Confirmation",
-          "Are you sure you want to delete the category '" + cur + "' and all its tasks?",
-          QMessageBox::Yes | QMessageBox::No);
-    if (reply == QMessageBox::No) return false;
+    if (!confirm(parent, "Confirmation",
+          "Are you sure you want to delete the category '" + cur + "' and all its tasks?")) {
+        return false;
+    }
     alltasks.erase(alltasks.find(cur));
     current = {};
     return true;
