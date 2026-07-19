@@ -47,8 +47,8 @@ MainGame::MainGame() {
                 return btn;
             };
             auto nt = addBtn("New topic", ":/assets/UI/new.svg", [=](){ conv->newTopic(); });
-            auto at = addBtn("All Tasks", ":/assets/UI/tasks.svg", [=](){ stack->setCurrentWidget(tasks); });
-            auto st = addBtn("Settings", ":/assets/UI/settings.svg", [=](){ stack->setCurrentWidget(setts); });
+            auto at = addBtn("All Tasks", ":/assets/UI/tasks.svg", [=](){ toTasks(); });
+            auto st = addBtn("Settings", ":/assets/UI/settings.svg", [=](){ toSetts(); });
             int w = std::max({
                 nt->sizeHint().width(), at->sizeHint().width(), st->sizeHint().width()
             });
@@ -69,9 +69,8 @@ MainGame::MainGame() {
     generateSettings();
 
     // Create the tasks screen
-    tasks = new QWidget();
+    tasks = new TaskView(this);
     stack->addWidget(tasks);
-    generateTasks();
 
     // Last initialisation!
     initstyle();

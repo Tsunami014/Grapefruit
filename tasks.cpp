@@ -1,3 +1,4 @@
+#include "tasks.hpp"
 #include "game.hpp"
 #include "base/taskload.hpp"
 #include "wids/taskOverlay.hpp"
@@ -6,8 +7,8 @@
 #include <QPushButton>
 #include <QScrollArea>
 
-void MainGame::generateTasks() {
-    tlay = new QGridLayout(tasks);
+TaskView::TaskView(MainGame* mg) {
+    tlay = new QGridLayout(this);
     tlay->setContentsMargins(0, 0, 0, 0);
     auto mtlay = new QVBoxLayout();
     mtlay->setContentsMargins(9, 9, 9, 9);
@@ -32,7 +33,7 @@ void MainGame::generateTasks() {
         left->setSpacing(8);
             auto bk = addBtn(":/assets/UI/back.svg");
             bk->setProperty("backbtn", true);
-            connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
+            connect(bk, &QPushButton::clicked, this, [=](){ mg->toMain(); });
             left->addWidget(bk);
 
             auto bin = addBtn(":/assets/UI/bin.svg");
@@ -100,7 +101,7 @@ void MainGame::generateTasks() {
     redoTasks();
 }
 
-void MainGame::redoTasks() {
+void TaskView::redoTasks() {
     auto redo = [this](){ redoTasks(); };
     setTasksLay(tbbllay, [=](std::shared_ptr<Task> t, bool upd){
         overlay = new TaskOverlay(t, redo, this);

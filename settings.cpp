@@ -15,7 +15,7 @@ void MainGame::generateSettings() {
         bk->setProperty("backbtn", true);
         bk->setIcon(QIcon(":/assets/UI/back.svg"));
         bk->setIconSize(QSize(48, 40));
-        connect(bk, &QPushButton::clicked, this, [this](){ stack->setCurrentWidget(main); });
+        connect(bk, &QPushButton::clicked, this, [this](){ toMain(); });
         topsect->addWidget(bk, 0, Qt::AlignHCenter);
         {auto labl = new QLabel("Settings");
         resizeFont(labl, 1.5);
