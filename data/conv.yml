@@ -13,9 +13,9 @@ purposes:
     # How is it going?
     - templates:
         "*":
-          - "3* {$Hi}! How{2* are you/2* is it/'s it/2*'s %thistime/ is %thistime} $Going?"
+          - "3*{$Hi}! How{2* are you/2* is it/'s it/2*'s %thistime/ is %thistime} $Going?"
           - "How{ are you/ is it/'s it} $Going{2*/ %thistime}?"
-          - "How's your {3*%time/day}{going/been/coming along}?"
+          - "How's your {3*%time/day} {going/been/coming along}?"
           - "How{'s/ is/ was} your {%time/day}?"
       opts:
         - ["Terribly", [depressed], checkin]
@@ -25,7 +25,7 @@ purposes:
     # What's up?
     - templates:
         "*":
-          - "3* {$Hi/3*Good %time}! What's up?"
+          - "3*{$Hi/3*Good %time}! What's up?"
           - "{10*What's /Wass}up?"
       opts:
         - ["Going {well/good/great/pretty ok}", [happy], progress]
@@ -48,11 +48,12 @@ purposes:
         - ["{Going well/Going great/Well/Great/Awesome/Not bad}", [happy], progress]
 
   progress:
-    # How's your work coming along?
+    # How's your work coming along? / What are you up to?
     - templates:
         "*":
           - "How are you {going/coming along}?"
           - "How's it {going/coming along}?"
+          - "What {5*are /}you up to?"
 
   checkin:
     # Why are you sad?

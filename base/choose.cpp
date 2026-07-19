@@ -4,7 +4,7 @@
 #include <QRandomGenerator>
 
 
-const std::regex chooseReStd(R"(^((\d+) ?\* *).*)");
+const std::regex chooseReStd(R"(^((\d+) ?\*).*)");
 std::pair<std::string, int> choose(const std::vector<std::string>& opts) {
     std::vector<std::pair<int, int>> choices; // idx, prefix len
     int idx = 0;
