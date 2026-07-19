@@ -28,6 +28,7 @@ RenameOverlay::RenameOverlay(QString title, QString initial, std::function<void(
 
     auto labl = new QLabel(title, main);
     resizeFont(labl, 1.2);
+    labl->setWordWrap(true);
     vlay->addWidget(labl, 0, Qt::AlignCenter);
 
     auto hlay = new QHBoxLayout();
@@ -42,6 +43,18 @@ RenameOverlay::RenameOverlay(QString title, QString initial, std::function<void(
     QTimer::singleShot(0, this, [le](){
         le->setFocus();
         QGuiApplication::inputMethod()->show();
+    });
+    connect(le, &QLineEdit::textChanged, [le](const QString &text) {
+        QFontMetrics fm(le->font());
+        int mxwid = le->width();
+        if (fm.horizontalAdvance(text) > mxwid) {
+            QString ntxt = text;
+            while (fm.horizontalAdvance(ntxt) > mxwid && !ntxt.isEmpty()) {
+                ntxt.chop(1);
+            }
+            QSignalBlocker block(le);
+            le->setText(ntxt);
+        }
     });
     hlay->addWidget(le);
 
