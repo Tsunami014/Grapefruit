@@ -4,10 +4,14 @@ void MainGame::initstyle() {
     setStyleSheet(
         "* { color: black; }"
         "QMainWindow, *[bg=true] { background-color: #EED9E8; }"
+        "#card {"
+            "background: white;"
+            "border-radius: 8px;"
+        "}"
 
         "#curtxt { padding: 8px; }"
 
-        "IcoButton, QPushButton[fancy=true] {"
+        "IcoButton, QPushButton[fancy=true], QDialogButtonBox QPushButton {"
             "background-color: #8B81A2;"
             "color: white;"
             "padding: 4px;"
@@ -16,7 +20,7 @@ void MainGame::initstyle() {
             "border-radius: 12px;"
             "border-color: #7B738A;"
         "}"
-        "IcoButton:pressed, QPushButton[fancy=true]:pressed {"
+        "IcoButton:pressed, QPushButton[fancy=true]:pressed, QDialogButtonBox QPushButton:pressed {"
             "background-color: #756D93;"
             "border-style: inset;"
         "}"

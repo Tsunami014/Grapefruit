@@ -9,8 +9,34 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
+ConfirmOverlay::ConfirmOverlay(QWidget* parent) : QWidget(parent) {
+    auto* outerV = new QVBoxLayout(this);
+    outerV->setContentsMargins(0,0,0,0);
+    auto* outerH = new QHBoxLayout();
+    outerH->setContentsMargins(0,0,0,0);
+    outerV->addStretch();
+    outerV->addLayout(outerH);
+    outerV->addStretch();
+
+    inner = new QWidget(this);
+    outerH->addStretch(1);
+    outerH->addWidget(inner, 7);
+    outerH->addStretch(1);
+
+    inner->setObjectName("card");
+    setGeometry(parent->rect());
+    parent->installEventFilter(this);
+}
+bool ConfirmOverlay::eventFilter(QObject* watched, QEvent* event) {
+    if (watched == parent() && event->type() == QEvent::Resize) {
+        QResizeEvent* resizeEvent = static_cast<QResizeEvent*>(event);
+        setGeometry({QPoint(0, 0), resizeEvent->size()});
+    }
+    return QWidget::eventFilter(watched, event);
+}
+
 void ConfirmOverlay::mousePressEvent(QMouseEvent* event) {
-    if (QApplication::widgetAt(event->pos()) == this) {
+    if (QApplication::widgetAt(mapToGlobal(event->pos())) == this) {
         emit pressed();
         event->accept();
     } else { event->ignore(); }
@@ -27,31 +53,8 @@ QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, Confi
     if (!topLevel) return QDialogButtonBox::RejectRole;
 
     auto ovrl = new ConfirmOverlay(topLevel);
-    ovrl->setGeometry(topLevel->rect());
 
-    auto card = new QWidget(ovrl);
-    card->setObjectName("card");
-    card->setStyleSheet(
-        "#card {"
-            "background: white;"
-            "border-radius: 8px;"
-        "}"
-        "QPushButton {"
-            "background-color: #8B81A2;"
-            "color: white;"
-            "padding: 16px 8px;"
-            "border-style: outset;"
-            "border-width: 2px;"
-            "border-radius: 12px;"
-            "border-color: #7B738A;"
-        "}"
-        "QPushButton:pressed {"
-            "background-color: #756D93;"
-            "border-style: inset;"
-        "}"
-    );
-
-    auto lay = new QVBoxLayout(card);
+    auto lay = new QVBoxLayout(ovrl->inner);
     auto txt = new QLabel(text);
     resizeFont(txt, 1.3);
     txt->setWordWrap(true);
@@ -71,10 +74,6 @@ QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, Confi
         resizeFont(b, 1.5);
         b->setIcon(QIcon());
     }
-
-    card->adjustSize();
-    card->move((ovrl->width() - card->width()) / 2,
-               (ovrl->height() - card->height()) / 2);
 
     QEventLoop loop;
     QDialogButtonBox::ButtonRole result = QDialogButtonBox::RejectRole;

@@ -11,12 +11,14 @@ enum ConfirmOpts {
 class ConfirmOverlay : public QWidget {
     Q_OBJECT
 public:
-    ConfirmOverlay(QWidget* parent) : QWidget(parent) {}
+    ConfirmOverlay(QWidget* parent);
+    QWidget* inner;
 signals:
     void pressed();
 protected:
     void mousePressEvent(QMouseEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
+    bool eventFilter(QObject* watched, QEvent* event) override;
 };
 
 QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, ConfirmOpts opts);

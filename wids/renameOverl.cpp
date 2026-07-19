@@ -39,8 +39,9 @@ RenameOverlay::RenameOverlay(QString title, QString initial, std::function<void(
     le->setMaxLength(20);
     resizeFont(le, 1.4);
     connect(le, &QLineEdit::returnPressed, this, [=](){
-        done(le->text());
+        QString txt = le->text();
         deleteLater();
+        QTimer::singleShot(0, [=](){ done(txt); });
     });
     QTimer::singleShot(0, this, [=](){
         le->setFocus();

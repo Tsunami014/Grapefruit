@@ -28,7 +28,7 @@ purposes:
       opts:
         - ["Going {well/good/great/pretty ok}", [happy], progress]
         - ["{Nothing/Not} much", [], suggest]
-        - ["Not going {well/the best/too good/too well}", [sad], checkin]
+        - ["Not {well/the best/too good/too well}", [sad], checkin]
         - ["Going {poorly/terribly/awfully}", [depressed], checkin]
         - ["{Everything!/4*}", [], checkin]
         - ["{The sky/50*}", [], haha]
