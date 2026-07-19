@@ -74,4 +74,5 @@ dictionary:
 
 # Auto generated context groups
 These are used as strings instead of lists of tags under a group name.
-- `"time_of_day"` - either "morning", "afternoon", or "evening"
+- `"time_of_day"` - e.g. "morning", "afternoon", or "evening"
+- `"this_time_of_day"` - e.g. "this morning", "this afternoon", "tonight"

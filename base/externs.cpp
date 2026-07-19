@@ -21,6 +21,11 @@ QString runExtern(std::string name) {
     if (name == "time_of_day") {
         return getTime();
     }
+    if (name == "this_time_of_day") {
+        QString t = getTime();
+        if (t == "night") return "tonight";
+        return "this "+t;
+    }
     qFatal() << "Unknown external name:" << name;
     return "";
 }

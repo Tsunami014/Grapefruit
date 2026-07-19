@@ -3,23 +3,25 @@ groups:
   problem: [tired, stressed, bored, excited]
   uncertainty: [unsure, stuck, motivated]
   time: "time_of_day"
+  thistime: "this_time_of_day"
 
 initial: [sayhi]
-reset: [sayhi]
+reset: [sayhi, progress]
 
 purposes:
   sayhi:
     # How is it going?
     - templates:
         "*":
-          - "3* {$Hi/3*Good %time}! How{ are you/ is it/'s it} going?"
-          - "2* How{ are you/ is it/'s it} going?"
-          - "How's your {3*%time/day}{ going/ been/}?"
+          - "3* {$Hi}! How{2* are you/2* is it/'s it/2*'s %thistime/ is %thistime} $Going?"
+          - "How{ are you/ is it/'s it} $Going{2*/ %thistime}?"
+          - "How's your {3*%time/day}{going/been/coming along}?"
+          - "How{'s/ is/ was} your {%time/day}?"
       opts:
         - ["Terribly", [depressed], checkin]
         - ["Not {the best/well/good/too good}", [sad], checkin]
         - ["{Ok/Alright/Meh}", [], checkin]
-        - ["{Pretty good/Great/Good/Nice!}", [happy], progress]
+        - ["{Pretty good/Great/Good/Nice}!", [happy], progress]
     # What's up?
     - templates:
         "*":
@@ -44,6 +46,13 @@ purposes:
         - ["Not {doing well/going well/2*the best/at my best}", [sad], checkin]
         - ["{Pretty mid/2*Ok/2*Fine}", [], suggest]
         - ["{Going well/Going great/Well/Great/Awesome/Not bad}", [happy], progress]
+
+  progress:
+    # How's your work coming along?
+    - templates:
+        "*":
+          - "How are you {going/coming along}?"
+          - "How's it {going/coming along}?"
 
   checkin:
     # Why are you sad?
@@ -85,12 +94,6 @@ purposes:
         "*":
           - "Encouragement!"
 
-  progress: # TODO: Become a reset option
-    # How's your work coming along?
-    - templates:
-      "*":
-        - "How are you going?"
-
   suggest:
     - templates:
         "*":
@@ -101,3 +104,4 @@ dictionary:
   Hi: "Hiya/Heya/Hi/Hello/Hiii"
   ButSeriously: "But {really/seriously}, how are you{ going/ feeling/}{2*now/right now/3*}?"
   Unsure: "{Unsure/2*Aimless/2*Undecided/Lost}"
+  Going: "{going/been/coming along}"
