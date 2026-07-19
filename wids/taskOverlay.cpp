@@ -14,7 +14,7 @@
 #include <QScrollBar>
 #include <QScroller>
 
-const QMargins innerMarg{64, 72, 64, 56};
+const QMargins innerMarg{56, 64, 64, 48};
 
 
 void highlight(QTextEdit* edit) {
@@ -67,7 +67,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
             sublay->addWidget(bin);
         mlay->addLayout(sublay);
         auto* edit = new TxtEdit(this);
-        edit->setPlainText(task->items);
+        edit->setPlainText(task->getItems());
         highlight(edit);
         mlay->addWidget(edit);
     lay->addLayout(mlay);
@@ -107,7 +107,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
     });
     connect(edit, &QTextEdit::textChanged, [=](){
         QTimer::singleShot(0, this, [=]() {
-            task->items = edit->toPlainText();
+            task->setItems(edit->toPlainText());
             highlight(edit);
             update();
             saveTasks();

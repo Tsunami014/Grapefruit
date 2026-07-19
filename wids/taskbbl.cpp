@@ -13,7 +13,7 @@ TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(paren
     labl->setProperty("bubble", "top");
     main->addWidget(labl);}
 
-    {auto labl = new QLabel("Bottom task info will go here!", this);
+    {auto labl = new QLabel(t->bottom(), this);
     labl->setAlignment(Qt::AlignCenter);
     labl->setProperty("bubble", "bot");
     main->addWidget(labl);}
