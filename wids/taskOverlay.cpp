@@ -24,13 +24,18 @@ void highlight(QTextEdit* edit) {
     QString conts = edit->toPlainText().toHtmlEscaped();
     QStringList out;
     for (QString line : conts.split('\n')) {
+        bool done = line.startsWith(donePref);
         auto m = timeRe.match(line);
         if (m.hasMatch()) {
             QString g = m.captured(1);
-            QString repl = "<span style='background:#EAE; color:#222;'>#" + g + "</span>";
+            QString timecol = done? "#C9C" : "#EAE";
+            QString repl = "<span style='background:" + timecol + ";'>#" + g + "</span>";
 
             int start = m.capturedStart(0);
             line.replace(start, m.capturedEnd(0) - start, repl);
+        }
+        if (done) {
+            line = "<span style='background:#AAA; color: #555;'>" + line + "</span>";
         }
         out += line;
     }

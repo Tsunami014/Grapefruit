@@ -4,6 +4,7 @@
 #include <QTextEdit>
 #include <QRegularExpression>
 
-const QRegularExpression timeRe(R"((?<=^|[ \n<>])#([a-zA-Z])(?=[ \n<>]|$))");
+extern const QRegularExpression timeRe;
+extern const QString donePref;
 
 void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus);

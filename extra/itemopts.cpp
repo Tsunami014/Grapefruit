@@ -5,6 +5,9 @@
 #include <QTextCursor>
 #include <QTextBlock>
 
+const QRegularExpression timeRe(R"((?<=^|[ \n<>])#([a-zA-Z])(?=[ \n<>]|$))");
+const QString donePref = "/ ";
+
 void swapBlocks(QTextCursor& cur, const QTextBlock& block, const QTextBlock& next) {
     if (!next.isValid()) return;
     int column = cur.position() - cur.block().position();
@@ -25,11 +28,12 @@ void swapBlocks(QTextCursor& cur, const QTextBlock& block, const QTextBlock& nex
     cur.setPosition(next.position() + qBound(0, column, next.length() - 1));
 }
 
-void setBlockText(QTextCursor& cur, const QTextBlock& block, const QString& text, int coloffs = 0) {
+void setBlockText(QTextCursor& cur, const QTextBlock& block, const QString& text, int coloffs = 0, int minoffs = 0) {
     if (!block.isValid()) return;
 
     const int blockPos = block.position();
-    const int column = cur.position() - cur.block().position() + coloffs;
+    int column = cur.position() - cur.block().position();
+    if (column >= minoffs) column += coloffs;
 
     cur.beginEditBlock();
         cur.setPosition(blockPos);
@@ -55,7 +59,11 @@ void addTime(QTextEdit* edit, int diff) {
         line.replace(start, m.capturedEnd(0) - start, repl);
         setBlockText(cur, block, line);
     } else {
-        setBlockText(cur, block, "#A "+line, 3);
+        if (line.startsWith(donePref)) {
+            setBlockText(cur, block, donePref+"#A "+line.sliced(donePref.length()), 3, donePref.length());
+        } else {
+            setBlockText(cur, block, "#A "+line, 3);
+        }
     }
     edit->setTextCursor(cur);
 }
@@ -95,6 +103,18 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus)
         edit->setTextCursor(cur);
     });
     lay->addSpacing(16);
+    mkbtn(":/assets/UI/checkbox.svg", [=](){
+        QTextCursor cur = edit->textCursor();
+        QTextBlock block = cur.block();
+        QString line = block.text();
+        if (line.startsWith(donePref)) {
+            setBlockText(cur, block, line.sliced(donePref.length()), -donePref.length());
+        } else {
+            setBlockText(cur, block, donePref+line, donePref.length());
+        }
+        edit->setTextCursor(cur);
+    });
+    lay->addSpacing(8);
     mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 1); });
     mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -1); });
     mkbtn(":/assets/UI/clock.svg", [=](){
