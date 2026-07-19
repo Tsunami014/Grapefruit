@@ -3,6 +3,8 @@
 #include <QMouseEvent>
 #include <QAbstractButton>
 #include <QScrollBar>
+#include <QLayout>
+#include <QLayoutItem>
 
 const double FRICTION = 0.9;
 const int THRESHOLD = 8;  // px needed to move by to count as dragging
@@ -19,6 +21,15 @@ void DragScroll::installOn(QWidget* w) {
     w->installEventFilter(this);
     for (auto* c : w->findChildren<QWidget*>())
         c->installEventFilter(this);
+}
+void DragScroll::installOn(QLayout* l) {
+    if (!l) return;
+    for (int i = 0; i < l->count(); ++i) {
+        QLayoutItem* it = l->itemAt(i);
+
+        if (QWidget* nw = it->widget()) installOn(nw);
+        if (QLayout* nl = it->layout()) installOn(nl);
+    }
 }
 
 bool DragScroll::eventFilter(QObject* obj, QEvent* ev) {

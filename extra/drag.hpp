@@ -1,12 +1,13 @@
 #pragma once
 #include <QTimer>
 #include <QElapsedTimer>
-#include <QScrollArea>
+#include <QScrollBar>
 
 class DragScroll : public QObject {
 public:
     explicit DragScroll(QWidget* viewport, QScrollBar* scrollb);
     void installOn(QWidget* w);
+    void installOn(QLayout* l);
 
 protected:
     bool eventFilter(QObject* obj, QEvent* ev) override;

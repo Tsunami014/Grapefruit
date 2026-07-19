@@ -4,6 +4,7 @@
 #include "wids/renameOverl.hpp"
 #include <QBoxLayout>
 #include <QPushButton>
+#include <QScrollArea>
 
 void MainGame::generateTasks() {
     tlay = new QGridLayout(tasks);
@@ -42,10 +43,25 @@ void MainGame::generateTasks() {
         topsect->addLayout(left);
         addLine();
 
-        auto tclcont = new QWidget();
-        tclcont->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        tcatlay = new FlowLayout(tclcont);
-        topsect->addWidget(tclcont);
+        auto* scrl = new QScrollArea(this);
+        scrl->setFrameShape(QFrame::NoFrame);
+        scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        scrl->setProperty("bg", true);
+
+        scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+        scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
+        tcatdrag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
+
+        auto* catcont = new QWidget();
+        catcont->setObjectName("catcont");
+        catcont->setStyleSheet("#catcont { background: transparent; }");
+        tcatlay = new FlowLayout(catcont);
+        tcatlay->vertical(2);
+        scrl->setWidget(catcont);
+        scrl->setWidgetResizable(true);
+        topsect->addWidget(scrl);
 
         addLine();
         auto right = new QVBoxLayout();
@@ -85,12 +101,13 @@ void MainGame::generateTasks() {
 }
 
 void MainGame::redoTasks() {
-    auto redo = [this](){redoTasks();};
+    auto redo = [this](){ redoTasks(); };
     setTasksLay(tbbllay, [=](std::shared_ptr<Task> t, bool upd){
         overlay = new TaskOverlay(t, redo, this);
         tlay->addWidget(overlay, 0, 0);
         if (upd) redoTasks();
     }, this);
     setTasksCatsLay(tcatlay, redo, this);
+    tcatdrag->installOn(tcatlay);
     if (overlay) overlay->raise();
 }

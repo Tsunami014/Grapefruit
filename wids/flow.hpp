@@ -10,6 +10,9 @@ public:
     explicit FlowLayout(int margin = -1, int hSpacing = -1, int vSpacing = -1);
     ~FlowLayout();
 
+    void vertical(int mxRows) { maxRows = mxRows; }
+    void horizontal() { maxRows = -1; }
+
     void addItem(QLayoutItem* item) override;
     int horizontalSpacing() const;
     int verticalSpacing() const;
@@ -24,10 +27,15 @@ public:
     QLayoutItem* takeAt(int index) override;
 
 private:
-    int doLayout(const QRect& rect, bool testOnly) const;
+    int doLayout(const QRect& rect, bool testOnly = false) const;
     int smartSpacing(QStyle::PixelMetric pm) const;
 
     QList<QLayoutItem*> itemList;
     int hSpace;
     int vSpace;
+
+    mutable QSize lastSze;
+
+    /// If maxRows <= 0 then will place elements horizontally, else will place elements vertically
+    int maxRows = -1;
 };

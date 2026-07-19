@@ -5,6 +5,8 @@
 #include <QLabel>
 #include <QPointer>
 #include "base/converse.hpp"
+#include "wids/flow.hpp"
+#include "extra/drag.hpp"
 
 class MainGame : public QMainWindow {
     Q_OBJECT
@@ -19,7 +21,8 @@ private:
     QGridLayout* tlay;
 
     QVBoxLayout* tbbllay;
-    QLayout* tcatlay;
+    FlowLayout* tcatlay;
+    DragScroll* tcatdrag;
     QPointer<QWidget> overlay;
 
     void redoTasks();

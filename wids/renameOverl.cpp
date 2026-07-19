@@ -1,6 +1,5 @@
 #include "renameOverl.hpp"
 #include "font.hpp"
-#include <QGridLayout>
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QLabel>
@@ -12,49 +11,40 @@
 
 constexpr int MARGIN = 8;
 
-
 RenameOverlay::RenameOverlay(QString title, QString initial, std::function<void(QString)> done, QWidget* parent) : QWidget(parent) {
-    auto* lay = new QGridLayout(this);
-    lay->setContentsMargins(0,0,0,0);
-    lay->setRowStretch(0, 1);
-    lay->setRowStretch(2, 1);
-    lay->setColumnStretch(0, 1);
-    lay->setColumnStretch(1, 7);
-    lay->setColumnStretch(2, 1);
+    auto* outerV = new QVBoxLayout(this);
+    outerV->setContentsMargins(0,0,0,0);
+    auto* outerH = new QHBoxLayout();
+    outerH->setContentsMargins(0,0,0,0);
+    outerV->addStretch();
+    outerV->addLayout(outerH);
+    outerV->addStretch();
 
     main = new QWidget(this);
-    lay->addWidget(main, 1, 1);
+    outerH->addStretch(1);
+    outerH->addWidget(main, 7);
+    outerH->addStretch(1);
     auto vlay = new QVBoxLayout(main);
 
     auto labl = new QLabel(title, main);
+    labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     resizeFont(labl, 1.2);
     labl->setWordWrap(true);
-    vlay->addWidget(labl, 0, Qt::AlignCenter);
+    vlay->addWidget(labl);
 
     auto hlay = new QHBoxLayout();
     vlay->addLayout(hlay);
 
     auto le = new QLineEdit(initial, this);
+    le->setMaxLength(20);
     resizeFont(le, 1.4);
     connect(le, &QLineEdit::returnPressed, this, [=](){
         done(le->text());
         deleteLater();
     });
-    QTimer::singleShot(0, this, [le](){
+    QTimer::singleShot(0, this, [=](){
         le->setFocus();
         QGuiApplication::inputMethod()->show();
-    });
-    connect(le, &QLineEdit::textChanged, [le](const QString &text) {
-        QFontMetrics fm(le->font());
-        int mxwid = le->width();
-        if (fm.horizontalAdvance(text) > mxwid) {
-            QString ntxt = text;
-            while (fm.horizontalAdvance(ntxt) > mxwid && !ntxt.isEmpty()) {
-                ntxt.chop(1);
-            }
-            QSignalBlocker block(le);
-            le->setText(ntxt);
-        }
     });
     hlay->addWidget(le);
 
