@@ -1,5 +1,5 @@
 #pragma once
-#include <QWidget>
+#include <QLabel>
 #include <QBoxLayout>
 #include <QTextEdit>
 #include <QRegularExpression>

@@ -10,6 +10,7 @@
 #include <QLineEdit>
 #include <QApplication>
 #include <QPushButton>
+#include <QTextBlock>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QScroller>
@@ -35,7 +36,7 @@ void highlight(QTextEdit* edit) {
             line.replace(start, m.capturedEnd(0) - start, repl);
         }
         if (done) {
-            line = "<span style='background:#AAA; color: #555;'>" + line + "</span>";
+            line = "<span style='background:#AAA; color: #555;'><span style='font-weight: bold'>/</span>" + line.sliced(1) + "</span>";
         }
         out += line;
     }
@@ -44,6 +45,29 @@ void highlight(QTextEdit* edit) {
     QTextCursor ncur = edit->textCursor();
     ncur.setPosition(pos);
     edit->setTextCursor(ncur);
+}
+
+QString labelTxt(QTextEdit* edit) {
+    QTextCursor cur = edit->textCursor();
+    if (cur.isNull()) return "";
+    QTextBlock block = cur.block();
+    QString line = block.text();
+
+    QStringList out;
+    bool done = line.startsWith(donePref);
+    if (done) out += "completed";
+
+    auto m = timeRe.match(line);
+    if (m.hasMatch()) {
+        int time = m.captured(1)[0].toLower().unicode() - 'a';
+        QString nxt = QString(done? "spent" : "will spend") + " ~";
+        if (time == 0) nxt += "30 mins";
+        else nxt += QString::number(float(time+1)*0.5) + " hrs";
+        out += nxt;
+    }
+    QString end = out.join(", ");
+    if (end.isEmpty()) return "No info on this item";
+    return end.at(0).toUpper()+end.sliced(1);
 }
 
 
@@ -77,6 +101,21 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
         mlay->addWidget(edit);
     lay->addLayout(mlay);
 
+
+    bbar = new QWidget(this);
+    bbar->setProperty("bg", true);
+    lay->addWidget(bbar);
+    auto* blay = new QVBoxLayout(bbar);
+
+    auto labl = new QLabel(bbar);
+    labl->setFocusPolicy(Qt::NoFocus);
+    labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    labl->setAlignment(Qt::AlignCenter);
+    auto setLablTxt = [=](){ labl->setText(labelTxt(edit)); };
+    labl->connect(edit, &QTextEdit::textChanged, labl, setLablTxt);
+    QTimer::singleShot(0, labl, setLablTxt);
+    blay->addWidget(labl);
+
     auto* scrl = new QScrollArea(this);
     scrl->setFrameShape(QFrame::NoFrame);
     scrl->setFocusPolicy(Qt::NoFocus);
@@ -87,28 +126,28 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
     scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
+    blay->addWidget(scrl);
 
-    lay->addWidget(scrl);
-    bbar = new QWidget;
-    bbar->setProperty("bg", true);
-    scrl->setWidget(bbar);
+    auto* bitsWid = new QWidget(bbar);
+    bitsWid->setProperty("bg", true);
+    scrl->setWidget(bitsWid);
 
-    auto* blay = new QHBoxLayout(bbar);
-    blay->setContentsMargins(12,6,12,6);
-    blay->setSpacing(12);
-    blay->setSizeConstraint(QLayout::SetMinimumSize);
+    auto* bits = new QHBoxLayout(bitsWid);
+    bits->setContentsMargins(12,6,12,6);
+    bits->setSpacing(12);
+    bits->setSizeConstraint(QLayout::SetMinimumSize);
 
-    GenerateOpts(bbar, blay, edit, true);
-    bbar->adjustSize();
+    GenerateOpts(bitsWid, bits, edit, true);
+    bitsWid->adjustSize();
     auto* drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
 
     int sb = scrl->horizontalScrollBar()->sizeHint().height();
-    scrl->setFixedHeight(bbar->rect().height() + sb);
-    GenerateOpts(bbar, blay, edit, false);
+    scrl->setFixedHeight(bitsWid->rect().height() + sb);
+    GenerateOpts(bitsWid, bits, edit, false);
 
-    connect(edit, &TxtEdit::focusChange, bbar, [=](bool focus){
-        GenerateOpts(bbar, blay, edit, focus);
-        drag->installOn(bbar);
+    connect(edit, &TxtEdit::focusChange, bitsWid, [=](bool focus){
+        GenerateOpts(bitsWid, bits, edit, focus);
+        drag->installOn(bitsWid);
     });
     connect(edit, &QTextEdit::textChanged, [=](){
         QTimer::singleShot(0, this, [=]() {

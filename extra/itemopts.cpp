@@ -1,9 +1,9 @@
 #include "itemopts.hpp"
 #include <QLayoutItem>
-#include <QLabel>
 #include <QPushButton>
 #include <QTextCursor>
 #include <QTextBlock>
+#include <QTimer>
 
 const QRegularExpression timeRe(R"((?<=^|[ \n<>])#([a-zA-Z])(?=[ \n<>]|$))");
 const QString donePref = "/ ";
