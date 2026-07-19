@@ -114,6 +114,26 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus)
         }
         edit->setTextCursor(cur);
     });
+    mkbtn(":/assets/UI/checkall.svg", [=](){
+        QTextCursor cur = edit->textCursor();
+        QTextBlock curblk = cur.block();
+
+        for (QTextBlock block = edit->document()->begin();
+                block.isValid(); block = block.next()) {
+            QString line = block.text();
+            if (line.startsWith(donePref)) {
+                if (block == curblk) break;
+                continue;
+            }
+            if (block == curblk) {
+                setBlockText(cur, block, donePref+line, donePref.length());
+                break;
+            } else {
+                setBlockText(cur, block, donePref+line, 0);
+            }
+        }
+        edit->setTextCursor(cur);
+    });
     lay->addSpacing(8);
     mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 1); });
     mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -1); });

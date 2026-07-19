@@ -112,7 +112,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
     labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     labl->setAlignment(Qt::AlignCenter);
     auto setLablTxt = [=](){ labl->setText(labelTxt(edit)); };
-    labl->connect(edit, &QTextEdit::textChanged, labl, setLablTxt);
+    labl->connect(edit, &QTextEdit::cursorPositionChanged, labl, setLablTxt);
     QTimer::singleShot(0, labl, setLablTxt);
     blay->addWidget(labl);
 
