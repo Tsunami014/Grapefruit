@@ -116,22 +116,6 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus)
     });
     mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 1); });
     mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -1); });
-    lay->addSpacing(16);
-    mkbtn(":/assets/UI/clock.svg", [=](){
-        QTextCursor cur = edit->textCursor();
-        QTextBlock block = cur.block();
-        QString line = block.text();
-
-        auto m = timeRe.match(line);
-        if (m.hasMatch()) {
-            int start = m.capturedStart(0);
-            line.replace(start, m.capturedEnd(0) - start, "#b");
-            setBlockText(cur, block, line);
-        } else {
-            setBlockText(cur, block, "#b "+line, 3);
-        }
-        edit->setTextCursor(cur);
-    });
     mkbtn(":/assets/UI/calendar.svg", [=](){});
 
     lay->addSpacing(32);
