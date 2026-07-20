@@ -3,6 +3,14 @@
 #include "base/task.hpp"
 #include "wids/txtedit.hpp"
 
+class HlTxtEdit : public TxtEdit {
+    Q_OBJECT
+public:
+    using TxtEdit::TxtEdit;
+protected:
+    void paintEvent(QPaintEvent* event) override;
+};
+
 class TaskOverlay : public QWidget {
 public:
     explicit TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondeath, QWidget* parent = nullptr);
@@ -17,7 +25,7 @@ protected:
 private:
     QWidget* bbar;
     QWidget* editWid;
-    TxtEdit* edit;
+    HlTxtEdit* edit;
     /// Parts of the layout that are always hidden when selecting a large text box
     std::vector<QWidget*> parts;
     inline QMargins totMargin();

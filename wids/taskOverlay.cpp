@@ -15,18 +15,44 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QScroller>
+#include <QAbstractTextDocumentLayout>
 
 const QMargins innerMarg{36, 16, 64, 36};
 
+void HlTxtEdit::paintEvent(QPaintEvent* event) {
+    // Paint done backgrounds manually
+    QPainter painter(viewport());
+    QPointF offset(-horizontalScrollBar()->value(), -verticalScrollBar()->value());
+    QTextDocument* doc = document();
+
+    for (QTextBlock block = doc->begin(); block.isValid(); block = block.next()) {
+        if (!block.isVisible()) continue;
+        if (!block.text().startsWith(donePref)) continue;
+
+        QRectF r = doc->documentLayout()->blockBoundingRect(block).translated(offset);
+        r.setLeft(0);
+        r.setWidth(viewport()->width());
+        painter.fillRect(r, QColor("#AAA"));
+    }
+
+    QTextEdit::paintEvent(event);
+}
 
 void highlight(QTextEdit* edit) {
     QList<QTextEdit::ExtraSelection> sels;
     QTextDocument* doc = edit->document();
-
     for (QTextBlock block = doc->begin(); block.isValid(); block = block.next()) {
         QString line = block.text();
         bool done = line.startsWith(donePref);
-
+        if (done) {
+            QTextEdit::ExtraSelection sel;
+            sel.cursor = QTextCursor(block);
+            sel.cursor.setPosition(block.position());
+            sel.cursor.setPosition(block.position() + block.length() - 1, QTextCursor::KeepAnchor);
+            sel.format.setForeground(QColor("#555"));
+            sel.format.setProperty(QTextFormat::FullWidthSelection, true);
+            sels << sel;
+        }
         auto m = timeRe.match(line);
         if (m.hasMatch()) {
             QTextEdit::ExtraSelection sel;
@@ -34,14 +60,6 @@ void highlight(QTextEdit* edit) {
             sel.cursor.setPosition(block.position() + m.capturedStart(0));
             sel.cursor.setPosition(block.position() + m.capturedEnd(0), QTextCursor::KeepAnchor);
             sel.format.setBackground(QColor(done ? "#C9C" : "#EAE"));
-            sels << sel;
-        }
-        if (done) {
-            QTextEdit::ExtraSelection sel;
-            sel.cursor = QTextCursor(block);
-            sel.cursor.select(QTextCursor::LineUnderCursor);
-            sel.format.setBackground(QColor("#AAA"));
-            sel.format.setForeground(QColor("#555"));
             sels << sel;
         }
     }
@@ -132,7 +150,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             resizeFont(labl, 1.2);
             editLay->addWidget(labl);}
 
-            edit = new TxtEdit(editWid);
+            edit = new HlTxtEdit(editWid);
             edit->setPlainText(task->items);
             highlight(edit);
             editLay->addWidget(edit);
