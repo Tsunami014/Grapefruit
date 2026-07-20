@@ -19,6 +19,7 @@ void Slidr::mouseMoveEvent(QMouseEvent* event) {
     QSlider::mouseMoveEvent(event);
 }
 void Slidr::mouseReleaseEvent(QMouseEvent* event) {
+    clearFocus();
     if (event->button() == Qt::LeftButton && dragging) {
         applyValueFromPos(event->pos());
         dragging = false;

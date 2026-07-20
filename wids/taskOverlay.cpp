@@ -19,32 +19,32 @@ const QMargins innerMarg{36, 16, 64, 36};
 
 
 void highlight(QTextEdit* edit) {
-    QSignalBlocker block(edit);
-    int pos = edit->textCursor().position();
+    QList<QTextEdit::ExtraSelection> sels;
+    QTextDocument* doc = edit->document();
 
-    QString conts = edit->toPlainText().toHtmlEscaped();
-    QStringList out;
-    for (QString line : conts.split('\n')) {
+    for (QTextBlock block = doc->begin(); block.isValid(); block = block.next()) {
+        QString line = block.text();
         bool done = line.startsWith(donePref);
+
         auto m = timeRe.match(line);
         if (m.hasMatch()) {
-            QString g = m.captured(1);
-            QString timecol = done? "#C9C" : "#EAE";
-            QString repl = "<span style='background:" + timecol + ";'>#" + g + "</span>";
-
-            int start = m.capturedStart(0);
-            line.replace(start, m.capturedEnd(0) - start, repl);
+            QTextEdit::ExtraSelection sel;
+            sel.cursor = QTextCursor(block);
+            sel.cursor.setPosition(block.position() + m.capturedStart(0));
+            sel.cursor.setPosition(block.position() + m.capturedEnd(0), QTextCursor::KeepAnchor);
+            sel.format.setBackground(QColor(done ? "#C9C" : "#EAE"));
+            sels << sel;
         }
         if (done) {
-            line = "<span style='background:#AAA; color: #555;'><span style='font-weight: bold'>/</span>" + line.sliced(1) + "</span>";
+            QTextEdit::ExtraSelection sel;
+            sel.cursor = QTextCursor(block);
+            sel.cursor.select(QTextCursor::LineUnderCursor);
+            sel.format.setBackground(QColor("#AAA"));
+            sel.format.setForeground(QColor("#555"));
+            sels << sel;
         }
-        out += line;
     }
-    edit->setHtml("<span style='white-space: pre-wrap;'>"+out.join('\n')+"</span>");
-
-    QTextCursor ncur = edit->textCursor();
-    ncur.setPosition(pos);
-    edit->setTextCursor(ncur);
+    edit->setExtraSelections(sels);
 }
 
 QString labelTxt(QTextEdit* edit) {
@@ -138,9 +138,9 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
         saveTasks();
     }); });
     connect(titl, &QLineEdit::textChanged, [=](){ QTimer::singleShot(0, this, [=]() {
-            task->name = titl->text();
-            update();
-            saveTasks();
+        task->name = titl->text();
+        update();
+        saveTasks();
     }); });
     connect(slider, &QSlider::sliderMoved, [=](int val){ QTimer::singleShot(0, this, [=]() {
         task->import = val;

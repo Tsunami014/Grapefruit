@@ -6,6 +6,7 @@
 #include <memory>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QStyle>
 
 using tasklist = std::vector<std::shared_ptr<Task>>;
 std::map<QString, tasklist> alltasks;
@@ -19,24 +20,35 @@ QString getCurrent() {
 }
 
 void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) {
-    QLayoutItem* item;
-    while ((item = lay->takeAt(0)) != nullptr) {
-        if (auto* wid = item->widget()) wid->deleteLater();
-        delete item;
-    }
-
+    static std::vector<QPushButton*> btns;
     auto cur = getCurrent();
+
+    uint idx = 0;
     for (const auto& [k, _] : alltasks) {
-        auto* btn = new QPushButton(k, parent);
-        btn->setProperty("fancy", true);
-        btn->setProperty("optbtn", true);
-        btn->setProperty("current", k==cur);
-        resizeFont(btn, 1.25);
-        lay->connect(btn, &QPushButton::clicked, lay, [key=k, redo](){
-            current = key;
-            redo();
-        });
-        lay->addWidget(btn);
+        if (btns.size() <= idx) {
+            auto* btn = new QPushButton(k, parent);
+            btn->setProperty("fancy", true);
+            btn->setProperty("optbtn", true);
+            btn->setProperty("current", k==cur);
+            resizeFont(btn, 1.25);
+            QObject::connect(btn, &QPushButton::clicked, lay, [btn, redo](){
+                current = btn->text();
+                redo();
+            });
+            lay->addWidget(btn);
+            btns.push_back(btn);
+        } else {
+            auto* btn = btns.at(idx);
+            btn->setText(k);
+            btn->setProperty("current", k==cur);
+            btn->style()->unpolish(btn);
+            btn->style()->polish(btn);
+        }
+        idx++;
+    }
+    while (btns.size() > idx) {
+        btns.back()->deleteLater();
+        btns.pop_back();
     }
 }
 void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> press, QWidget* parent) {
