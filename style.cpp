@@ -125,5 +125,27 @@ void MainGame::initstyle() {
             "width: 0px; height: 0px;"
             "background: none;"
         "}"
+
+        "QSlider, QSlider::groove {"
+            "border: none;"
+            "background: #E2E4E9;"
+            "border-radius: 3px;"
+            "margin: 0px;"
+        "}"
+        "QSlider:horizontal { height: 24px; }"
+        "QSlider:vertical { width: 24px; }"
+        "QSlider::groove:horizontal { height: 18px; }"
+        "QSlider::groove:vertical { width: 18px; }"
+
+        "QSlider::sub-page { border-radius: 3px; }"
+        "QSlider::sub-page:horizontal, QSlider::add-page:vertical { background: #4F8EF7; }"
+
+        "QSlider::handle {"
+            "background: #FFFFFF;"
+            "border: 2px solid #3B6FD1;"
+            "border-radius: 6px;"
+            "width: 16px;"
+            "height: 16px;"
+        "}"
     );
 }

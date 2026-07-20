@@ -22,6 +22,7 @@ set(CORE
     wids/flow.cpp
     wids/house.cpp
     wids/icobtn.hpp
+    wids/slider.cpp
     wids/secret.cpp
     wids/taskbbl.cpp
     wids/txtedit.cpp

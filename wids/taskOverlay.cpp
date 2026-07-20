@@ -3,6 +3,7 @@
 #include "extra/itemopts.hpp"
 #include "extra/drag.hpp"
 #include "wids/txtedit.hpp"
+#include "wids/slider.hpp"
 #include "font.hpp"
 #include <QPainter>
 #include <QMouseEvent>
@@ -78,10 +79,10 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
     auto* mlay = new QVBoxLayout();
     mlay->setContentsMargins(innerMarg + QMargins(16, 16, 16, 16));
     mlay->setSpacing(16);
-        auto* sublay = new QHBoxLayout();
+        auto* sublay1 = new QHBoxLayout();
             auto titl = new QLineEdit(task->name, this);
             resizeFont(titl, 1.3);
-            sublay->addWidget(titl);
+            sublay1->addWidget(titl);
 
             auto bin = new QPushButton();
             bin->setProperty("fancy", true);
@@ -93,8 +94,24 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
                 deleteLater();
                 update();
             });
-            sublay->addWidget(bin);
-        mlay->addLayout(sublay);
+            sublay1->addWidget(bin);
+        mlay->addLayout(sublay1);
+        auto* sublay2 = new QHBoxLayout();
+            auto* txt = new QLabel(this);
+            sublay2->addWidget(txt);
+            auto* slider = new Slidr(Qt::Horizontal, this);
+            slider->setTickInterval(1);
+            slider->setTickPosition(QSlider::TicksBelow);
+            sublay2->addWidget(slider);
+            slider->setValue(0);
+            QObject::connect(slider, &QSlider::valueChanged, txt, [txt](int value) {
+                txt->setText("Import\nance: "+QString::number(value));
+            });
+            slider->setValue(1);
+            slider->setMaximum(5);
+            slider->setMinimum(1);
+        mlay->addLayout(sublay2);
+
         auto* edit = new TxtEdit(this);
         edit->setPlainText(task->getItems());
         highlight(edit);
@@ -148,6 +165,8 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
     connect(edit, &TxtEdit::focusChange, bitsWid, [=](bool focus){
         GenerateOpts(bitsWid, bits, edit, focus);
         drag->installOn(bitsWid);
+        if (focus) setLablTxt();
+        else labl->setText("");
     });
     connect(edit, &QTextEdit::textChanged, [=](){
         QTimer::singleShot(0, this, [=]() {
