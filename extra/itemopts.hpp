@@ -7,4 +7,4 @@
 extern const QRegularExpression timeRe;
 extern const QString donePref;
 
-void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus);
+void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit);

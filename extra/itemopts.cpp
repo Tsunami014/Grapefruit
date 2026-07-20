@@ -74,16 +74,13 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus)
         if (auto* wid = item->widget()) wid->deleteLater();
         delete item;
     }
-    if (!focus) return;
-
-    QSize sze(40,40);
 
     auto mkbtn = [&](const QString& ico, auto slot){
         auto btn = new QPushButton(parent);
         btn->setProperty("fancy", true);
         btn->setProperty("tinybtn", true);
         btn->setIcon(QIcon(ico));
-        btn->setIconSize(sze);
+        btn->setIconSize(QSize(40, 40));
         btn->setFocusPolicy(Qt::NoFocus);
         parent->connect(btn, &QPushButton::clicked, slot);
         lay->addWidget(btn);

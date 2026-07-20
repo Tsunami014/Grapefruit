@@ -1,6 +1,7 @@
 #pragma once
 #include <QWidget>
 #include "base/task.hpp"
+#include "wids/txtedit.hpp"
 
 class TaskOverlay : public QWidget {
 public:
@@ -11,7 +12,9 @@ protected:
     void keyPressEvent(QKeyEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
 
+    void generateBot();
 private:
     QWidget* bbar;
+    TxtEdit* edit;
     inline QMargins totMargin();
 };
