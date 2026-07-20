@@ -124,10 +124,18 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             slider->setMaximum(5);
             slider->setMinimum(1);
 
-        edit = new TxtEdit(this);
-        edit->setPlainText(task->items);
-        highlight(edit);
-        mlay->addWidget(edit);
+        editWid = new QWidget(this);
+        editWid->setContentsMargins(0,0,0,0);
+        mlay->addWidget(editWid);
+        auto* editLay = new QVBoxLayout(editWid);
+            {auto* labl = new QLabel("Task items:", editWid);
+            resizeFont(labl, 1.2);
+            editLay->addWidget(labl);}
+
+            edit = new TxtEdit(editWid);
+            edit->setPlainText(task->items);
+            highlight(edit);
+            editLay->addWidget(edit);
     lay->addLayout(mlay);
 
 

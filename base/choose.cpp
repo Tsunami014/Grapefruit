@@ -25,7 +25,7 @@ std::pair<std::string, int> choose(const std::vector<std::string>& opts) {
     return {opts[out].substr(choices[out].second), choices[out].first};
 }
 
-const QRegularExpression chooseReQ(R"(^((\d+) ?\* *).*)");
+const QRegularExpression chooseReQ(R"(^((\d+) ?\*).*)");
 std::pair<QString, int> choose(const std::vector<QString>& opts) {
     std::vector<std::pair<int, int>> choices; // idx, prefix len
     int idx = 0;

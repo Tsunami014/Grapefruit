@@ -16,7 +16,9 @@ protected:
     void generateBot();
 private:
     QWidget* bbar;
+    QWidget* editWid;
     TxtEdit* edit;
+    /// Parts of the layout that are always hidden when selecting a large text box
     std::vector<QWidget*> parts;
     inline QMargins totMargin();
     std::function<void()> ondeath;
