@@ -23,7 +23,7 @@ for arg in "$@"; do
             if [ -z $PID ]; then
                 echo "PID not found - app may not be running"; exit 1
             fi
-            adb logcat --pid=$PID
+            adb logcat --pid=$PID | grep -v 'Qt A11Y'
             ;;
         -h|--help|-help) ;;
         *) echo "Unknown argument: $arg"; exit 1 ;;

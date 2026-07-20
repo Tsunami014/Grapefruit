@@ -5,7 +5,8 @@
 
 class TaskOverlay : public QWidget {
 public:
-    explicit TaskOverlay(std::shared_ptr<Task> task, std::function<void()> update, QWidget* parent = nullptr);
+    explicit TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondeath, QWidget* parent = nullptr);
+    ~TaskOverlay() { ondeath(); }
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -18,4 +19,5 @@ private:
     TxtEdit* edit;
     std::vector<QWidget*> parts;
     inline QMargins totMargin();
+    std::function<void()> ondeath;
 };

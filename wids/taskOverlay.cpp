@@ -72,7 +72,7 @@ QString labelTxt(QTextEdit* edit) {
 }
 
 
-TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> update, QWidget* parent) : QWidget(parent) {
+TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondeath, QWidget* parent) : QWidget(parent), ondeath(ondeath) {
     auto* lay = new QVBoxLayout(this);
     lay->setContentsMargins(0,0,0,0);
 
@@ -101,7 +101,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
                           "Are you sure you want to delete the task '" + nam + "'?",
                           Conf_YESNO) != QDialogButtonBox::YesRole) return;
                     removeTask(task);
-                    update();
+                    ondeath();
                 });
             });
             sublay1->addWidget(bin);
@@ -141,17 +141,14 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
     connect(edit, &QTextEdit::textChanged, [=](){ QTimer::singleShot(0, this, [=]() {
         task->items = edit->toPlainText();
         highlight(edit);
-        update();
         saveTasks();
     }); });
     connect(titl, &QLineEdit::textChanged, [=](){ QTimer::singleShot(0, this, [=]() {
         task->name = titl->text();
-        update();
         saveTasks();
     }); });
     connect(slider, &QSlider::sliderMoved, [=](int val){ QTimer::singleShot(0, this, [=]() {
         task->import = val;
-        update();
         saveTasks();
     }); });
 }
@@ -210,7 +207,7 @@ void TaskOverlay::generateBot() {
         for (auto* w : parts) w->show();
     }
     bbar->layout()->activate();
-    QWidget::update();
+    update();
 }
 
 
