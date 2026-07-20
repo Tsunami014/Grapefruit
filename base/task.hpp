@@ -10,4 +10,6 @@ public:
     int import;
 
     QString bottom();
+
+    bool isNew() { return name == "New Task" && items.isEmpty(); }
 };

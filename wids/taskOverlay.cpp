@@ -2,6 +2,7 @@
 #include "base/taskload.hpp"
 #include "extra/itemopts.hpp"
 #include "extra/drag.hpp"
+#include "wids/confirm.hpp"
 #include "wids/slider.hpp"
 #include "font.hpp"
 #include <QPainter>
@@ -93,9 +94,15 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
             int mx = titl->rect().height() + 8;
             bin->setIconSize(QSize(mx, mx-4));
             connect(bin, &QPushButton::clicked, sl1wid, [=](){
-                removeTask(task);
+                QString nam = task->name;
                 deleteLater();
-                update();
+                QTimer::singleShot(0, parent, [=]() {
+                    if (!task->isNew() && confirm(parent,
+                          "Are you sure you want to delete the task '" + nam + "'?",
+                          Conf_YESNO) != QDialogButtonBox::YesRole) return;
+                    removeTask(task);
+                    update();
+                });
             });
             sublay1->addWidget(bin);
         auto* sl2wid = new QWidget(this);
