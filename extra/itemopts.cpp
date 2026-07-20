@@ -68,7 +68,7 @@ void addTime(QTextEdit* edit, int diff) {
     edit->setTextCursor(cur);
 }
 
-void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool focus) {
+void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit) {
     QLayoutItem* item;
     while ((item = lay->takeAt(0)) != nullptr) {
         if (auto* wid = item->widget()) wid->deleteLater();

@@ -3,14 +3,11 @@
 
 class Task {
 public:
-    Task(const QString& name = "New Task", const QString& conts = "");
+    Task(const QString& name = "New Task", const QString& conts = "", int import = 1);
 
     QString name;
-    void setItems(QString nits);
-    QString getItems();
+    QString items;
+    int import;
 
     QString bottom();
-
-private:
-    QString items;
 };

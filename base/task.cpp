@@ -1,12 +1,8 @@
 #include "task.hpp"
 
-Task::Task(const QString& nam, const QString& conts) : name(nam) { setItems(conts); }
-
-QString Task::getItems() { return items; }
-void Task::setItems(QString nits) {
-    items = nits;
-}
+Task::Task(const QString& nam, const QString& conts, int import)
+    : name(nam), items(conts), import(import) {}
 
 QString Task::bottom() {
-    return "Bottom text!";
+    return QString("!").repeated(import);
 }

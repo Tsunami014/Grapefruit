@@ -106,13 +106,13 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
             QObject::connect(slider, &QSlider::valueChanged, txt, [txt](int value) {
                 txt->setText("Import\nance: "+QString::number(value));
             });
-            slider->setValue(1);
+            slider->setValue(task->import);
             slider->setMaximum(5);
             slider->setMinimum(1);
         mlay->addLayout(sublay2);
 
         edit = new TxtEdit(this);
-        edit->setPlainText(task->getItems());
+        edit->setPlainText(task->items);
         highlight(edit);
         mlay->addWidget(edit);
     lay->addLayout(mlay);
@@ -125,21 +125,22 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
     generateBot();
 
     connect(edit, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
-    connect(edit, &QTextEdit::textChanged, [=](){
-        QTimer::singleShot(0, this, [=]() {
-            task->setItems(edit->toPlainText());
-            highlight(edit);
-            update();
-            saveTasks();
-        });
-    });
-    connect(titl, &QLineEdit::textChanged, [=](){
-        QTimer::singleShot(0, this, [=]() {
+    connect(edit, &QTextEdit::textChanged, [=](){ QTimer::singleShot(0, this, [=]() {
+        task->items = edit->toPlainText();
+        highlight(edit);
+        update();
+        saveTasks();
+    }); });
+    connect(titl, &QLineEdit::textChanged, [=](){ QTimer::singleShot(0, this, [=]() {
             task->name = titl->text();
             update();
             saveTasks();
-        });
-    });
+    }); });
+    connect(slider, &QSlider::sliderMoved, [=](int val){ QTimer::singleShot(0, this, [=]() {
+        task->import = val;
+        update();
+        saveTasks();
+    }); });
 }
 
 void TaskOverlay::generateBot() {
