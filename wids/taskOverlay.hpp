@@ -16,5 +16,6 @@ protected:
 private:
     QWidget* bbar;
     TxtEdit* edit;
+    std::vector<QWidget*> parts;
     inline QMargins totMargin();
 };

@@ -78,8 +78,12 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
     auto* mlay = new QVBoxLayout();
     mlay->setContentsMargins(innerMarg + QMargins(16, 16, 16, 16));
     mlay->setSpacing(16);
-        auto* sublay1 = new QHBoxLayout();
-            auto titl = new QLineEdit(task->name, this);
+        auto* sl1wid = new QWidget(this);
+        sl1wid->setContentsMargins(0,0,0,0);
+        mlay->addWidget(sl1wid);
+        parts.push_back(sl1wid);
+        auto* sublay1 = new QHBoxLayout(sl1wid);
+            auto titl = new QLineEdit(task->name, sl1wid);
             resizeFont(titl, 1.3);
             sublay1->addWidget(titl);
 
@@ -88,17 +92,20 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
             bin->setIcon(QIcon(":/assets/UI/bin.svg"));
             int mx = titl->rect().height() + 8;
             bin->setIconSize(QSize(mx, mx-4));
-            connect(bin, &QPushButton::clicked, this, [=](){
+            connect(bin, &QPushButton::clicked, sl1wid, [=](){
                 removeTask(task);
                 deleteLater();
                 update();
             });
             sublay1->addWidget(bin);
-        mlay->addLayout(sublay1);
-        auto* sublay2 = new QHBoxLayout();
-            auto* txt = new QLabel(this);
+        auto* sl2wid = new QWidget(this);
+        sl2wid->setContentsMargins(0,0,0,0);
+        parts.push_back(sl2wid);
+        mlay->addWidget(sl2wid);
+        auto* sublay2 = new QHBoxLayout(sl2wid);
+            auto* txt = new QLabel(sl2wid);
             sublay2->addWidget(txt);
-            auto* slider = new Slidr(Qt::Horizontal, this);
+            auto* slider = new Slidr(Qt::Horizontal, sl2wid);
             slider->setTickInterval(1);
             slider->setTickPosition(QSlider::TicksBelow);
             sublay2->addWidget(slider);
@@ -109,7 +116,6 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> updat
             slider->setValue(task->import);
             slider->setMaximum(5);
             slider->setMinimum(1);
-        mlay->addLayout(sublay2);
 
         edit = new TxtEdit(this);
         edit->setPlainText(task->items);
@@ -190,8 +196,11 @@ void TaskOverlay::generateBot() {
         int sb = scrl->horizontalScrollBar()->sizeHint().height();
         scrl->setFixedHeight(bitsWid->rect().height() + sb);
         drag->installOn(bitsWid);
+
+        for (auto* w : parts) w->hide();
     } else {
         blay->addSpacing(32);
+        for (auto* w : parts) w->show();
     }
     bbar->layout()->activate();
     QWidget::update();
@@ -213,21 +222,25 @@ void TaskOverlay::keyPressEvent(QKeyEvent* event) {
     QWidget::keyPressEvent(event);
 }
 void TaskOverlay::mousePressEvent(QMouseEvent* event) {
-    auto point = mapToGlobal(event->position().toPoint());
+    auto point = event->position().toPoint();
     auto r = rect();
     if (point.y() > r.bottom() - bbar->rect().height()) { event->ignore(); return; }
 
     if (!r.marginsRemoved(totMargin()).contains(point)) {
+        bool del = true;
         if (QGuiApplication::inputMethod()->isVisible()) {
             QGuiApplication::inputMethod()->hide();
-            if (QWidget* focus = QApplication::focusWidget()) { focus->clearFocus(); }
-        } else {
-            deleteLater();
+            del = false;
         }
+        if (QWidget* focus = QApplication::focusWidget()) {
+            focus->clearFocus();
+            del = false;
+        }
+        if (del) deleteLater();
         event->accept();
         return;
     }
-    QWidget* wid = QApplication::widgetAt(point);
+    QWidget* wid = QApplication::widgetAt(mapToGlobal(point));
     if (qobject_cast<QTextEdit*>(wid)) { event->ignore(); }
     else if (QWidget* focus = QApplication::focusWidget()) { focus->clearFocus(); }
 }
