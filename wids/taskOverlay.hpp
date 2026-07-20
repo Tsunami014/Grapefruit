@@ -7,6 +7,7 @@ class HlTxtEdit : public TxtEdit {
     Q_OBJECT
 public:
     using TxtEdit::TxtEdit;
+    void highlight();
 protected:
     void paintEvent(QPaintEvent* event) override;
 };
@@ -26,6 +27,11 @@ private:
     QWidget* bbar;
     QWidget* editWid;
     HlTxtEdit* edit;
+    QWidget* midwid;
+    QWidget* reasonsWid;
+    TxtEdit* reasons;
+    QWidget* qualsWid;
+    TxtEdit* quals;
     /// Parts of the layout that are always hidden when selecting a large text box
     std::vector<QWidget*> parts;
     inline QMargins totMargin();

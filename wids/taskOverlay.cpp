@@ -38,9 +38,9 @@ void HlTxtEdit::paintEvent(QPaintEvent* event) {
     QTextEdit::paintEvent(event);
 }
 
-void highlight(QTextEdit* edit) {
+void HlTxtEdit::highlight() {
     QList<QTextEdit::ExtraSelection> sels;
-    QTextDocument* doc = edit->document();
+    QTextDocument* doc = document();
     for (QTextBlock block = doc->begin(); block.isValid(); block = block.next()) {
         QString line = block.text();
         bool done = line.startsWith(donePref);
@@ -63,7 +63,7 @@ void highlight(QTextEdit* edit) {
             sels << sel;
         }
     }
-    edit->setExtraSelections(sels);
+    setExtraSelections(sels);
 }
 
 QString labelTxt(QTextEdit* edit) {
@@ -96,7 +96,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
 
     auto* mlay = new QVBoxLayout();
     mlay->setContentsMargins(innerMarg + QMargins(16, 16, 16, 16));
-    mlay->setSpacing(16);
+    mlay->setSpacing(8);
         auto* sl1wid = new QWidget(this);
         sl1wid->setContentsMargins(0,0,0,0);
         mlay->addWidget(sl1wid);
@@ -142,9 +142,37 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             slider->setMaximum(5);
             slider->setMinimum(1);
 
+        midwid = new QWidget(this);
+        midwid->setContentsMargins(0,0,0,0);
+        mlay->addWidget(midwid, 2);
+        auto* midlay = new QHBoxLayout(midwid);
+        midlay->setContentsMargins(0,0,0,0);
+            reasonsWid = new QWidget(this);
+            reasonsWid->setContentsMargins(0,0,0,0);
+            midlay->addWidget(reasonsWid);
+            auto* reasonsLay = new QVBoxLayout(reasonsWid);
+                {auto* labl = new QLabel("Reasoning:", reasonsWid);
+                resizeFont(labl, 1.2);
+                reasonsLay->addWidget(labl);}
+
+                reasons = new TxtEdit(reasonsWid);
+                reasons->setPlainText("Hello!");
+                reasonsLay->addWidget(reasons);
+            qualsWid = new QWidget(this);
+            qualsWid->setContentsMargins(0,0,0,0);
+            midlay->addWidget(qualsWid);
+            auto* qualsLay = new QVBoxLayout(qualsWid);
+                {auto* labl = new QLabel("Qualities:", qualsWid);
+                resizeFont(labl, 1.2);
+                qualsLay->addWidget(labl);}
+
+                quals = new TxtEdit(qualsWid);
+                quals->setPlainText("");
+                qualsLay->addWidget(quals);
+
         editWid = new QWidget(this);
         editWid->setContentsMargins(0,0,0,0);
-        mlay->addWidget(editWid);
+        mlay->addWidget(editWid, 3);
         auto* editLay = new QVBoxLayout(editWid);
             {auto* labl = new QLabel("Task items:", editWid);
             resizeFont(labl, 1.2);
@@ -152,7 +180,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
 
             edit = new HlTxtEdit(editWid);
             edit->setPlainText(task->items);
-            highlight(edit);
+            edit->highlight();
             editLay->addWidget(edit);
     lay->addLayout(mlay);
 
@@ -164,9 +192,11 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
     generateBot();
 
     connect(edit, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
+    connect(reasons, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
+    connect(quals, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
     connect(edit, &QTextEdit::textChanged, [=](){ QTimer::singleShot(0, this, [=]() {
         task->items = edit->toPlainText();
-        highlight(edit);
+        edit->highlight();
         saveTasks();
     }); });
     connect(titl, &QLineEdit::textChanged, [=](){ QTimer::singleShot(0, this, [=]() {
@@ -228,9 +258,20 @@ void TaskOverlay::generateBot() {
         drag->installOn(bitsWid);
 
         for (auto* w : parts) w->hide();
+        editWid->show(); midwid->hide();
+    } else if (reasons->hasFocus()) {
+        for (auto* w : parts) w->hide();
+        editWid->hide(); midwid->show();
+        qualsWid->hide(); reasonsWid->show();
+    } else if (quals->hasFocus()) {
+        for (auto* w : parts) w->hide();
+        editWid->hide(); midwid->show();
+        qualsWid->show(); reasonsWid->hide();
     } else {
         blay->addSpacing(32);
         for (auto* w : parts) w->show();
+        editWid->show(); midwid->show();
+        qualsWid->show(); reasonsWid->show();
     }
     bbar->layout()->activate();
     update();
