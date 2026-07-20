@@ -17,4 +17,6 @@ void setOptsLay(QLayout* lay, std::vector<Option> opts, std::function<void(Optio
         lay->connect(btn, &QPushButton::clicked, lay, [=](){ func(o); });
         lay->addWidget(btn);
     }
+    lay->invalidate();
+    lay->activate();
 }
