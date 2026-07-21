@@ -5,6 +5,7 @@
 QualityEdit::QualityEdit(std::set<QString> words, QWidget* parent)
     : TxtEdit(parent), words(words) {
     setFocusPolicy(Qt::NoFocus); // We manually focus ourselves
+    setTextInteractionFlags(Qt::NoTextInteraction); // No selecting text
     setReadOnly(true);
     if (!words.empty()) {
         updtxt();
@@ -29,6 +30,15 @@ void QualityEdit::rmWord(QString word) {
         words.erase(it);
         updtxt();
     }
+}
+void QualityEdit::toggleWord(QString word) {
+    auto it = words.find(word);
+    if (it != words.end()) {
+        words.erase(it);
+    } else {
+        words.insert(word);
+    }
+    updtxt();
 }
 
 void QualityEdit::updtxt() {

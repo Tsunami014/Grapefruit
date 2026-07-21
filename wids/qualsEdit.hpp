@@ -8,6 +8,7 @@ public:
     explicit QualityEdit(std::set<QString> words, QWidget* parent = nullptr);
     void addWord(QString word);
     void rmWord(QString word);
+    void toggleWord(QString word);
     std::set<QString> getWords() { return words; }
 
 protected:

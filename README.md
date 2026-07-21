@@ -12,3 +12,5 @@ A convenient command that does everything is
 ```
 make debug && ./run.sh i r l
 ```
+
+**NOTE**: in `wids/house.hpp` there is a `#define BUILD` that is virtually a developer toggle to assist with placing scene elements. Remember to comment it out when doing final versions!

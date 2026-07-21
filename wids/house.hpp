@@ -1,7 +1,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 
-#define BUILD
+//#define BUILD
 
 class House : public QGraphicsView {
 public:

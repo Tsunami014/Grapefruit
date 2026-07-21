@@ -99,8 +99,8 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
         swapBlocks(cur, block, block.next());
         edit->setTextCursor(cur);
     });
+    lay->addSpacing(16);
     if (full) {
-        lay->addSpacing(16);
         mkbtn(":/assets/UI/checkbox.svg", [=](){
             QTextCursor cur = edit->textCursor();
             QTextBlock block = cur.block();
@@ -115,10 +115,8 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
         mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 1); });
         mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -1); });
         mkbtn(":/assets/UI/calendar.svg", [=](){});
-    }
 
-    lay->addSpacing(32);
-    if (full) {
+        lay->addSpacing(32);
         mkbtn(":/assets/UI/checkall.svg", [=](){
             QTextCursor cur = edit->textCursor();
             QTextBlock curblk = cur.block();

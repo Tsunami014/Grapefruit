@@ -218,8 +218,8 @@ void TaskOverlay::generateBot() {
         delete item;
     }
 
-    if (edit->hasFocus() || reasons->hasFocus() || quals->hasFocus()) {
-        if (edit->hasFocus()) {
+    if (bool isedit = edit->hasFocus(); isedit || reasons->hasFocus() || quals->hasFocus()) {
+        if (isedit) {
             auto labl = new QLabel(bbar);
             labl->setFocusPolicy(Qt::NoFocus);
             labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -258,7 +258,7 @@ void TaskOverlay::generateBot() {
                 btn->setProperty("fancy", true);
                 btn->setProperty("tinybtn", true);
                 btn->setFocusPolicy(Qt::NoFocus);
-                connect(btn, &QPushButton::clicked, quals, [=](){ quals->addWord(k); });
+                connect(btn, &QPushButton::clicked, quals, [=](){ quals->toggleWord(k); });
                 bflow->addWidget(btn);
             }
         } else {
@@ -267,7 +267,7 @@ void TaskOverlay::generateBot() {
             bits->setSpacing(12);
 
             bits->setSizeConstraint(QLayout::SetMinimumSize);
-            GenerateOpts(bitsWid, bits, edit, edit->hasFocus());
+            GenerateOpts(bitsWid, bits, isedit? edit:reasons, isedit);
             bitsWid->adjustSize();
 
             int sb = scrl->horizontalScrollBar()->sizeHint().height();
@@ -277,7 +277,7 @@ void TaskOverlay::generateBot() {
         drag->installOn(bitsWid);
 
         for (auto* w : parts) w->hide();
-        if (edit->hasFocus()) {
+        if (isedit) {
             editWid->show(); midwid->hide();
         } else {
             editWid->hide(); midwid->show();
