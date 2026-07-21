@@ -68,7 +68,7 @@ void addTime(QTextEdit* edit, int diff) {
     edit->setTextCursor(cur);
 }
 
-void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit) {
+void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) {
     QLayoutItem* item;
     while ((item = lay->takeAt(0)) != nullptr) {
         if (auto* wid = item->widget()) wid->deleteLater();
@@ -99,43 +99,47 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit) {
         swapBlocks(cur, block, block.next());
         edit->setTextCursor(cur);
     });
-    lay->addSpacing(16);
-    mkbtn(":/assets/UI/checkbox.svg", [=](){
-        QTextCursor cur = edit->textCursor();
-        QTextBlock block = cur.block();
-        QString line = block.text();
-        if (line.startsWith(donePref)) {
-            setBlockText(cur, block, line.sliced(donePref.length()), -donePref.length());
-        } else {
-            setBlockText(cur, block, donePref+line, donePref.length());
-        }
-        edit->setTextCursor(cur);
-    });
-    mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 1); });
-    mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -1); });
-    mkbtn(":/assets/UI/calendar.svg", [=](){});
-
-    lay->addSpacing(32);
-    mkbtn(":/assets/UI/checkall.svg", [=](){
-        QTextCursor cur = edit->textCursor();
-        QTextBlock curblk = cur.block();
-
-        for (QTextBlock block = edit->document()->begin();
-                block.isValid(); block = block.next()) {
+    if (full) {
+        lay->addSpacing(16);
+        mkbtn(":/assets/UI/checkbox.svg", [=](){
+            QTextCursor cur = edit->textCursor();
+            QTextBlock block = cur.block();
             QString line = block.text();
             if (line.startsWith(donePref)) {
-                if (block == curblk) break;
-                continue;
-            }
-            if (block == curblk) {
-                setBlockText(cur, block, donePref+line, donePref.length());
-                break;
+                setBlockText(cur, block, line.sliced(donePref.length()), -donePref.length());
             } else {
-                setBlockText(cur, block, donePref+line, 0);
+                setBlockText(cur, block, donePref+line, donePref.length());
             }
-        }
-        edit->setTextCursor(cur);
-    });
+            edit->setTextCursor(cur);
+        });
+        mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 1); });
+        mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -1); });
+        mkbtn(":/assets/UI/calendar.svg", [=](){});
+    }
+
+    lay->addSpacing(32);
+    if (full) {
+        mkbtn(":/assets/UI/checkall.svg", [=](){
+            QTextCursor cur = edit->textCursor();
+            QTextBlock curblk = cur.block();
+
+            for (QTextBlock block = edit->document()->begin();
+                    block.isValid(); block = block.next()) {
+                QString line = block.text();
+                if (line.startsWith(donePref)) {
+                    if (block == curblk) break;
+                    continue;
+                }
+                if (block == curblk) {
+                    setBlockText(cur, block, donePref+line, donePref.length());
+                    break;
+                } else {
+                    setBlockText(cur, block, donePref+line, 0);
+                }
+            }
+            edit->setTextCursor(cur);
+        });
+    }
     mkbtn(":/assets/UI/erase.svg", [=](){
         QTextCursor cur = edit->textCursor();
         if (cur.block().text().isEmpty()) {

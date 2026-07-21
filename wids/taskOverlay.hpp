@@ -2,6 +2,7 @@
 #include <QWidget>
 #include "base/task.hpp"
 #include "wids/txtedit.hpp"
+#include "wids/qualsEdit.hpp"
 
 class HlTxtEdit : public TxtEdit {
     Q_OBJECT
@@ -31,7 +32,7 @@ private:
     QWidget* reasonsWid;
     TxtEdit* reasons;
     QWidget* qualsWid;
-    TxtEdit* quals;
+    QualityEdit* quals;
     /// Parts of the layout that are always hidden when selecting a large text box
     std::vector<QWidget*> parts;
     inline QMargins totMargin();

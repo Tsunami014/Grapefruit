@@ -1,8 +1,6 @@
 #include "quals.hpp"
-#include "font.hpp"
 #include <yaml-cpp/yaml.h>
 #include <QFile>
-#include <QPushButton>
 
 std::unordered_map<QString, qualityTyp> _quals() {
     QFile file(":/data/quals.yml");
@@ -34,15 +32,4 @@ std::set<QString> _qkeys() {
 const std::set<QString>& qualkeys() {
     static const auto out = _qkeys();
     return out;
-}
-
-void addQualityBtns(QLayout* lay, QWidget* parent) {
-    for (const auto& k : qualkeys()) {
-        auto btn = new QPushButton(k, parent);
-        resizeFont(btn, 1.3);
-        btn->setProperty("fancy", true);
-        btn->setProperty("tinybtn", true);
-        btn->setFocusPolicy(Qt::NoFocus);
-        lay->addWidget(btn);
-    }
 }

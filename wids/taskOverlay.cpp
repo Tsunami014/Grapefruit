@@ -168,9 +168,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
                 resizeFont(labl, 1.2);
                 qualsLay->addWidget(labl);}
 
-                quals = new TxtEdit(qualsWid);
-                quals->setPlainText("");
-                quals->setReadOnly(true);
+                quals = new QualityEdit({}, qualsWid);
                 qualsLay->addWidget(quals);
 
         editWid = new QWidget(this);
@@ -220,15 +218,17 @@ void TaskOverlay::generateBot() {
         delete item;
     }
 
-    if (edit->hasFocus()) {
-        auto labl = new QLabel(bbar);
-        labl->setFocusPolicy(Qt::NoFocus);
-        labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        labl->setAlignment(Qt::AlignCenter);
-        auto setLablTxt = [=](){ labl->setText(labelTxt(edit)); };
-        labl->connect(edit, &QTextEdit::cursorPositionChanged, labl, setLablTxt);
-        QTimer::singleShot(0, labl, setLablTxt);
-        blay->addWidget(labl);
+    if (edit->hasFocus() || reasons->hasFocus() || quals->hasFocus()) {
+        if (edit->hasFocus()) {
+            auto labl = new QLabel(bbar);
+            labl->setFocusPolicy(Qt::NoFocus);
+            labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+            labl->setAlignment(Qt::AlignCenter);
+            auto setLablTxt = [=](){ labl->setText(labelTxt(edit)); };
+            labl->connect(edit, &QTextEdit::cursorPositionChanged, labl, setLablTxt);
+            QTimer::singleShot(0, labl, setLablTxt);
+            blay->addWidget(labl);
+        }
 
         auto* scrl = new QScrollArea(bbar);
         scrl->setFrameShape(QFrame::NoFrame);
@@ -246,53 +246,47 @@ void TaskOverlay::generateBot() {
         bitsWid->setProperty("bg", true);
         scrl->setWidget(bitsWid);
 
-        auto* bits = new QHBoxLayout(bitsWid);
-        bits->setContentsMargins(12,6,12,6);
-        bits->setSpacing(12);
-        bits->setSizeConstraint(QLayout::SetMinimumSize);
+        if (quals->hasFocus()) {
+            scrl->setWidgetResizable(true);
+            auto* bflow = new FlowLayout(bitsWid, -1, 16, 16);
+            bflow->vertical(3);
 
-        GenerateOpts(bitsWid, bits, edit);
-        bitsWid->adjustSize();
-        auto* drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
+            // Create the buttons!
+            for (const auto& k : qualkeys()) {
+                auto btn = new QPushButton(k, bbar);
+                resizeFont(btn, 1.3);
+                btn->setProperty("fancy", true);
+                btn->setProperty("tinybtn", true);
+                btn->setFocusPolicy(Qt::NoFocus);
+                connect(btn, &QPushButton::clicked, quals, [=](){ quals->addWord(k); });
+                bflow->addWidget(btn);
+            }
+        } else {
+            auto* bits = new QHBoxLayout(bitsWid);
+            bits->setContentsMargins(12,6,12,6);
+            bits->setSpacing(12);
 
-        int sb = scrl->horizontalScrollBar()->sizeHint().height();
-        scrl->setFixedHeight(bitsWid->rect().height() + sb);
-        drag->installOn(bitsWid);
+            bits->setSizeConstraint(QLayout::SetMinimumSize);
+            GenerateOpts(bitsWid, bits, edit, edit->hasFocus());
+            bitsWid->adjustSize();
 
-        for (auto* w : parts) w->hide();
-        editWid->show(); midwid->hide();
-    } else if (reasons->hasFocus()) {
-        for (auto* w : parts) w->hide();
-        editWid->hide(); midwid->show();
-        qualsWid->hide(); reasonsWid->show();
-    } else if (quals->hasFocus()) {
-        auto* scrl = new QScrollArea(bbar);
-        scrl->setFrameShape(QFrame::NoFrame);
-        scrl->setFocusPolicy(Qt::NoFocus);
-        scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        scrl->setProperty("bg", true);
-
-        scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-        scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
-        blay->addWidget(scrl);
-
-        auto* bitsWid = new QWidget(bbar);
-        bitsWid->setProperty("bg", true);
-        scrl->setWidget(bitsWid);
-        scrl->setWidgetResizable(true);
-
-        auto* bflow = new FlowLayout(bitsWid, -1, 16, 16);
-        bflow->vertical(3);
-        addQualityBtns(bflow, bbar);
-        bitsWid->adjustSize();
+            int sb = scrl->horizontalScrollBar()->sizeHint().height();
+            scrl->setFixedHeight(bitsWid->rect().height() + sb);
+        }
         auto* drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
         drag->installOn(bitsWid);
 
         for (auto* w : parts) w->hide();
-        editWid->hide(); midwid->show();
-        qualsWid->show(); reasonsWid->hide();
+        if (edit->hasFocus()) {
+            editWid->show(); midwid->hide();
+        } else {
+            editWid->hide(); midwid->show();
+            if (reasons->hasFocus()) {
+                qualsWid->hide(); reasonsWid->show();
+            } else {
+                qualsWid->show(); reasonsWid->hide();
+            }
+        }
     } else {
         blay->addSpacing(32);
         for (auto* w : parts) w->show();
