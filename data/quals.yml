@@ -1,0 +1,4 @@
+tiring:
+  2: [tired, stressed]
+  1: [bored]
+  -2: [motivated, happy]

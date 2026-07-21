@@ -1,4 +1,4 @@
-# Idea
+# Conversation generation - `conv.yml`
 ## What is important to mention
 ### What purpose should the message serve
 - Keep track of a 'purpose' from a list of predefined purposes that change on each option press (e.g. 'comfort' or 'encourage')
@@ -72,7 +72,46 @@ dictionary:
   feel: "{feel/start feeling}"
 ```
 
-# Auto generated context groups
+## Auto generated context groups
 These are used as strings instead of lists of tags under a group name.
 - `"time_of_day"` - e.g. "morning", "afternoon", or "evening"
 - `"this_time_of_day"` - e.g. "this morning", "this afternoon", "tonight"
+
+
+# Scenes - `scenes.yml`
+## `scenes:`
+This contains all the scenes by name. In each scene is a list of items or conditions with sub-items.
+
+An item is a list; `[name, x, y]`. If the name begins with `~`, the asset will be flipped horizontally.
+
+A condition only displays the item if the nametag exists in the current scene. When prefixed with `^`, it will only display if this is NOT the case.
+
+## `assets:`
+These contain first keys to asset files then the names of every asset contained in that file. For example:
+```yaml
+assets:
+  furnature:
+    - chair-down
+    - chair-up
+```
+States that the `chair-up` and `chair-down` assets are contained within `furnature.svg` (all of these svgs are located in `assets/BG/`)
+
+## `choices:`
+These are a list of choices, each equally likely. A choice contains:
+- A `base`, which is the base scene name to use
+- `extras`, which are a list of 'extras' (tags to add to the current scene). An extra can be either;
+  - A string - which will be always used
+  - A list - from which a random item is picked (can prefix with `x*` which will increase the likelihood of that option by `x` times). Can include blank items (in yaml, that is `~`)
+
+# Qualities - `quals.yml`
+This file is a mapping from quality name to a list of conversation context tags that influence it and by how much.
+
+Each quality contains a mapping containing a score, and a list of all the quality keys which can give this score. All the scores will be tallied and the quality will be given an "overall score", which is 0 if negative, 1 if zero or 2 if positive. All qualities on a task will have their overall scores summed together and normalised between 0 and 1 for its overall score
+
+For example:
+```
+tiring:
+  2: [motivated, happy]
+  -1: [bored]
+  -2: [tired, stressed]
+```

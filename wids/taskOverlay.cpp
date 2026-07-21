@@ -168,6 +168,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
 
                 quals = new TxtEdit(qualsWid);
                 quals->setPlainText("");
+                quals->setReadOnly(true);
                 qualsLay->addWidget(quals);
 
         editWid = new QWidget(this);
@@ -183,7 +184,6 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             edit->highlight();
             editLay->addWidget(edit);
     lay->addLayout(mlay);
-
 
     bbar = new QWidget(this);
     bbar->setProperty("bg", true);
