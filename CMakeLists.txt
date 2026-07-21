@@ -14,6 +14,7 @@ set(CORE
     base/converse.cpp
     base/externs.cpp
     base/scenes.cpp
+    base/quals.cpp
 
     extra/itemopts.cpp
     extra/drag.cpp

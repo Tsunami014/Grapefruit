@@ -115,3 +115,4 @@ tiring:
   -1: [bored]
   -2: [tired, stressed]
 ```
+Remember, this is "should this task, which has this quality, be done now?" so it should value opposite tags to the quality

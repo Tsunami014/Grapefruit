@@ -1,9 +1,11 @@
 #include "taskOverlay.hpp"
 #include "base/taskload.hpp"
+#include "base/quals.hpp"
 #include "extra/itemopts.hpp"
 #include "extra/drag.hpp"
 #include "wids/confirm.hpp"
 #include "wids/slider.hpp"
+#include "wids/flow.hpp"
 #include "font.hpp"
 #include <QPainter>
 #include <QMouseEvent>
@@ -210,7 +212,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
 }
 
 void TaskOverlay::generateBot() {
-    auto* blay = qobject_cast<QVBoxLayout*>(bbar->layout());
+    auto* blay = qobject_cast<QBoxLayout*>(bbar->layout());
     QLayoutItem* item;
     while ((item = blay->takeAt(0)) != nullptr) {
         if (auto* wid = item->widget()) wid->deleteLater();
@@ -264,6 +266,30 @@ void TaskOverlay::generateBot() {
         editWid->hide(); midwid->show();
         qualsWid->hide(); reasonsWid->show();
     } else if (quals->hasFocus()) {
+        auto* scrl = new QScrollArea(bbar);
+        scrl->setFrameShape(QFrame::NoFrame);
+        scrl->setFocusPolicy(Qt::NoFocus);
+        scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        scrl->setProperty("bg", true);
+
+        scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+        scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
+        blay->addWidget(scrl);
+
+        auto* bitsWid = new QWidget(bbar);
+        bitsWid->setProperty("bg", true);
+        scrl->setWidget(bitsWid);
+        scrl->setWidgetResizable(true);
+
+        auto* bflow = new FlowLayout(bitsWid, -1, 16, 16);
+        bflow->vertical(3);
+        addQualityBtns(bflow, bbar);
+        bitsWid->adjustSize();
+        auto* drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
+        drag->installOn(bitsWid);
+
         for (auto* w : parts) w->hide();
         editWid->hide(); midwid->show();
         qualsWid->show(); reasonsWid->hide();

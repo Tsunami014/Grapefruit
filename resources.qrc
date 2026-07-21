@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>data/conv.yml</file>
         <file>data/scenes.yml</file>
+        <file>data/quals.yml</file>
 
         <file>assets/UI/new.svg</file>
         <file>assets/UI/tasks.svg</file>
