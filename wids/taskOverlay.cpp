@@ -76,13 +76,24 @@ void HlTxtEdit::highlight() {
             sel.cursor = QTextCursor(block);
             sel.cursor.setPosition(block.position() + m.capturedStart(0));
             sel.cursor.setPosition(block.position() + m.capturedEnd(0), QTextCursor::KeepAnchor);
-            auto col = QColor(date.isValid() ? "#EEA" : "#F99").toHsv();
+            QColor col;
+            if (!date.isValid()) col = QColor("#F9F");
+            else {
+                int days2 = QDate::currentDate().daysTo(date);
+                col = QColor(
+                    days2 < 0? "#F99" :
+                    days2 <= 1? "#FC8" :
+                    days2 <= 7? "#EEA" :
+                    days2 <= 14? "#CE8" :
+                    "#8EC"
+                );
+            }
             if (done) {
                 col.setHsv(col.hue(),
                         qBound(0, col.saturation() + 50, 255),
                         qBound(0, col.value() + 50, 255));
+                sel.format.setFontStrikeOut(true);
             }
-            if (done) sel.format.setFontStrikeOut(true);
             sel.format.setBackground(col);
             sels << sel;
         }}
