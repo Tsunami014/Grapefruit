@@ -80,10 +80,11 @@ QString labelTxt(QTextEdit* edit) {
 
     auto m = timeRe.match(line);
     if (m.hasMatch()) {
-        int time = m.captured(1)[0].toLower().unicode() - 'a';
+        float time = m.captured(1).toFloat();
         QString nxt = QString(done? "spent" : "will spend") + " ~";
-        if (time == 0) nxt += "30 mins";
-        else nxt += QString::number(float(time+1)*0.5) + " hrs";
+        if (time <= 0.5) nxt += "30 mins";
+        else if (time == 1) nxt += "1 hr";
+        else nxt += QString::number(time) + " hrs";
         out += nxt;
     }
     QString end = out.join(", ");

@@ -5,7 +5,9 @@
 #include <QTextBlock>
 #include <QTimer>
 
-const QRegularExpression timeRe(R"((?<=^|[ \n<>])#([a-zA-Z])(?=[ \n<>]|$))");
+const QRegularExpression timeRe(R"((?<=^|[ \n<>])\+([0-9]+(?:\.5)?)h(?=[ \n<>]|$))");
+const QString baseTime = "+0.5h ";
+const QString timeFmt = "+%1h";
 const QString donePref = "✔ ";
 
 void swapBlocks(QTextCursor& cur, const QTextBlock& block, const QTextBlock& next) {
@@ -44,25 +46,26 @@ void setBlockText(QTextCursor& cur, const QTextBlock& block, const QString& text
     cur.setPosition(blockPos + qBound(0, column, text.size()));
 }
 
-void addTime(QTextEdit* edit, int diff) {
+void addTime(QTextEdit* edit, float diff) {
     QTextCursor cur = edit->textCursor();
     QTextBlock block = cur.block();
     QString line = block.text();
 
     auto m = timeRe.match(line);
     if (m.hasMatch()) {
-        char nc = m.captured(1)[0].unicode() + diff;
-        if (!(nc >= 'a' && nc <= 'z') && !(nc >= 'A' && nc <= 'Z')) return;
-        QString repl = QString("#") + QChar::fromLatin1(nc);
+        float namnt = m.captured(1).toFloat() + diff;
+        if (namnt <= 0 || (diff > 0 && namnt >= 10)) return;
+        QString repl = timeFmt.arg(namnt);
 
         int start = m.capturedStart(0);
         line.replace(start, m.capturedEnd(0) - start, repl);
-        setBlockText(cur, block, line);
+        int origln = m.captured(0).length();
+        setBlockText(cur, block, line, repl.length()-origln, line.startsWith(donePref)? donePref.length():0);
     } else {
         if (line.startsWith(donePref)) {
-            setBlockText(cur, block, donePref+"#A "+line.sliced(donePref.length()), 3, donePref.length());
+            setBlockText(cur, block, donePref+baseTime+line.sliced(donePref.length()), baseTime.length(), donePref.length());
         } else {
-            setBlockText(cur, block, "#A "+line, 3);
+            setBlockText(cur, block, baseTime+line, baseTime.length());
         }
     }
     edit->setTextCursor(cur);
@@ -112,8 +115,8 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
             }
             edit->setTextCursor(cur);
         });
-        mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 1); });
-        mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -1); });
+        mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 0.5); });
+        mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -0.5); });
         mkbtn(":/assets/UI/calendar.svg", [=](){});
 
         lay->addSpacing(32);
