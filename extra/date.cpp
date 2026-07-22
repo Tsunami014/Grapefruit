@@ -1,5 +1,6 @@
 #include "date.hpp"
-#include "style.hpp"
+#include "game.hpp"
+#include "font.hpp"
 #include <QDialog>
 #include <QBoxLayout>
 #include <QCalendarWidget>
@@ -9,6 +10,9 @@
 #include <QHeaderView>
 #include <QTableView>
 #include <QTextCharFormat>
+#include <QEvent>
+#include <QPushButton>
+#include <QApplication>
 
 class CalendarItemDelegate : public QStyledItemDelegate {
 public:
@@ -82,14 +86,48 @@ private:
     QCalendarWidget* calendar;
 };
 
+class DateOverlay : public QWidget {
+public:
+    explicit DateOverlay(QWidget* parent) : QWidget(parent) {
+        parent->installEventFilter(this);
+        setGeometry(parent->rect());
+    }
+
+protected:
+    bool eventFilter(QObject* watched, QEvent* event) override {
+        if (event->type() == QEvent::Resize || event->type() == QEvent::Move) {
+            if (auto* w = qobject_cast<QWidget*>(watched)) {
+                setGeometry(w->rect());
+            }
+        }
+        return QWidget::eventFilter(watched, event);
+    }
+
+    void paintEvent(QPaintEvent* event) override {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.fillRect(rect(), QColor(125, 125, 125, 125));
+    }
+};
+
 
 QDate getDate(const QDate& initial) {
-    QDialog dialog(nullptr, Qt::Tool | Qt::WindowStaysOnTopHint);
-    dialog.setWindowTitle("Select Date");
-    StyleWidget(&dialog);
+    QWidget* prevFocus = QApplication::focusWidget();
+    if (prevFocus) prevFocus->clearFocus();
+    if (QGuiApplication::inputMethod()->isVisible()) {
+        QGuiApplication::inputMethod()->hide();
+    }
+    DateOverlay overlay(MG);
+    auto* outer = new QVBoxLayout(&overlay);
+    outer->setAlignment(Qt::AlignCenter);
 
-    auto* layout = new QVBoxLayout(&dialog);
-    auto* calendar = new QCalendarWidget(&dialog);
+    auto* card = new QWidget(&overlay);
+    card->setObjectName("card");
+    card->setAttribute(Qt::WA_StyledBackground, true);
+    outer->addWidget(card);
+    auto* layout = new QVBoxLayout(card);
+
+    auto* calendar = new QCalendarWidget(card);
     calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);  // Remove week numbers
     calendar->setGridVisible(false);
     calendar->setNavigationBarVisible(true);
@@ -108,14 +146,29 @@ QDate getDate(const QDate& initial) {
     calendar->setSelectedDate(initial.isNull()? QDate::currentDate():initial);
     layout->addWidget(calendar);
 
-    auto* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
-    layout->addWidget(buttons);
-
-    QObject::connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
-    QObject::connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
-
-    if (dialog.exec() == QDialog::Accepted) {
-        return calendar->selectedDate();
+    auto* btns = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, card);
+    layout->addWidget(btns);
+    for (QPushButton* b : btns->findChildren<QPushButton*>()) {
+        resizeFont(b, 1.5);
+        b->setIcon(QIcon());
     }
+
+    bool accepted = false;
+    QEventLoop loop;
+    QObject::connect(btns, &QDialogButtonBox::accepted, [&]() {
+        accepted = true;
+        loop.quit();
+    });
+    QObject::connect(btns, &QDialogButtonBox::rejected, [&]() {
+        loop.quit();
+    });
+
+    overlay.show();
+    overlay.raise();
+    loop.exec();
+    overlay.hide();
+    MG->removeEventFilter(&overlay);
+    if (prevFocus) prevFocus->setFocus();
+    if (accepted) return calendar->selectedDate();
     return {};
 }

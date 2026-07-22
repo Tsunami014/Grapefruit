@@ -2,6 +2,8 @@
 #include "game.hpp"
 #include "base/taskload.hpp"
 
+MainGame* MG = nullptr;
+
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
@@ -10,9 +12,9 @@ int main(int argc, char* argv[]) {
     QApplication::setFont(font);
 
     loadTasks();
-    auto game = new MainGame();
+    MG = new MainGame();
 
-    game->setWindowFlags(game->windowFlags() | Qt::ExpandedClientAreaHint);
-    game->show();
+    MG->setWindowFlags(MG->windowFlags() | Qt::ExpandedClientAreaHint);
+    MG->show();
     return app.exec();
 }

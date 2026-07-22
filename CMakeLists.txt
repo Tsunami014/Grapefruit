@@ -5,7 +5,7 @@ project(${APP_NAME} LANGUAGES CXX)
 set(CORE
     main.cpp game.cpp
     resources.qrc
-    settings.cpp tasks.cpp style.cpp
+    settings.cpp tasks.cpp
 
     base/choose.cpp
     base/task.cpp

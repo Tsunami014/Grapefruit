@@ -23,3 +23,5 @@ private:
 
     void generateSettings();
 };
+
+extern MainGame* MG;

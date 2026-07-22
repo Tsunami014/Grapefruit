@@ -7,7 +7,7 @@
 #include <QPushButton>
 #include <QScrollArea>
 
-TaskView::TaskView(MainGame* mg) {
+TaskView::TaskView() {
     tlay = new QGridLayout(this);
     tlay->setContentsMargins(0, 0, 0, 0);
     auto mtlay = new QVBoxLayout();
@@ -33,7 +33,7 @@ TaskView::TaskView(MainGame* mg) {
         left->setSpacing(8);
             auto bk = addBtn(":/assets/UI/back.svg");
             bk->setProperty("backbtn", true);
-            connect(bk, &QPushButton::clicked, this, [=](){ mg->toMain(); });
+            connect(bk, &QPushButton::clicked, this, [=](){ MG->toMain(); });
             left->addWidget(bk);
 
             auto bin = addBtn(":/assets/UI/bin.svg");

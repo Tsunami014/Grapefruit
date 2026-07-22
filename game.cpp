@@ -1,12 +1,12 @@
 #include "game.hpp"
 #include "font.hpp"
-#include "style.hpp"
 #include "wids/house.hpp"
 #include "wids/icobtn.hpp"
 #include "wids/flow.hpp"
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QKeyEvent>
+#include <QFile>
 
 MainGame::MainGame() {
     stack = new QStackedWidget(this);
@@ -70,11 +70,14 @@ MainGame::MainGame() {
     generateSettings();
 
     // Create the tasks screen
-    tasks = new TaskView(this);
+    tasks = new TaskView();
     stack->addWidget(tasks);
 
     // Last initialisation!
-    StyleWidget(this);
+    QFile file(":/style.qss");
+    bool ok = file.open(QIODevice::ReadOnly);
+    // Should always be ok because we're loading from a preset internal file
+    setStyleSheet(QString::fromUtf8(file.readAll()));
     stack->setCurrentWidget(main);
 }
 

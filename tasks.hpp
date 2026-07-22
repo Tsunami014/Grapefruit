@@ -5,11 +5,9 @@
 #include "wids/flow.hpp"
 #include "extra/drag.hpp"
 
-class MainGame; // Forward reference
 class TaskView : public QWidget {
 public:
-    TaskView(MainGame* mg);
-
+    TaskView();
 private:
     QGridLayout* tlay;
 
