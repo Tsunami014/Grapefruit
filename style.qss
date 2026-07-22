@@ -143,3 +143,93 @@ QSlider::handle {
     width: 16px;
     height: 16px;
 }
+
+/* Top navigation bar */
+QCalendarWidget QWidget#qt_calendar_navigationbar {
+    background-color: #FFFFFF;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 6px 4px;
+    border-bottom: 2px solid #EEF0F3;
+}
+
+/* Previous / next month buttons */
+QCalendarWidget QToolButton#qt_calendar_prevmonth,
+QCalendarWidget QToolButton#qt_calendar_nextmonth {
+    color: #3B82F6;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0px;
+    margin: 0px;
+}
+QCalendarWidget QToolButton#qt_calendar_prevmonth:hover,
+QCalendarWidget QToolButton#qt_calendar_nextmonth:hover {
+    background-color: #E8F0FE;
+}
+QCalendarWidget QToolButton#qt_calendar_prevmonth:pressed,
+QCalendarWidget QToolButton#qt_calendar_nextmonth:pressed {
+    background-color: #D2E3FC;
+}
+
+/* Centre buttons */
+QCalendarWidget QToolButton {
+    color: #3B82F6;
+    background-color: transparent;
+    border: none;
+    border-radius: 16px;
+    padding: 6px;
+    margin: 2px;
+    font-weight: 600;
+    icon-size: 16px, 16px;
+}
+QCalendarWidget QToolButton::menu-indicator {
+    image: none;
+}
+QCalendarWidget QToolButton:hover {
+    background-color: #E8F0FE;
+}
+QCalendarWidget QToolButton:pressed {
+    background-color: #D2E3FC;
+}
+
+/* Month dropdown menu */
+QCalendarWidget QMenu {
+    background-color: #FFFFFF;
+    border: 1px solid #D0D5DD;
+    border-radius: 6px;
+    padding: 4px;
+}
+QCalendarWidget QMenu::item {
+    padding: 4px 20px;
+    border-radius: 4px;
+}
+QCalendarWidget QMenu::item:selected {
+    background-color: #3B82F6;
+    color: #FFFFFF;
+}
+
+/* Year spinbox */
+QCalendarWidget QSpinBox {
+    border: 1px solid #D0D5DD;
+    border-radius: 8px;
+    padding: 4px 6px;
+    selection-background-color: #3B82F6;
+}
+QCalendarWidget QSpinBox::up-arrow,
+QCalendarWidget QSpinBox::down-arrow,
+QCalendarWidget QSpinBox::up-button,
+QCalendarWidget QSpinBox::down-button {
+    width: 0px; height: 0px;
+    border: none;
+}
+
+/* Get rid of a yucky line */
+QCalendarWidget QAbstractItemView:enabled {
+    outline: 0;
+    gridline-color: transparent;
+    selection-background-color: transparent;
+    selection-color: transparent;
+}
