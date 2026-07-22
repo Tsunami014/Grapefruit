@@ -203,6 +203,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
         task->name = titl->text();
         saveTasks();
     }); });
+    connect(titl, &QLineEdit::returnPressed, [=](){ titl->clearFocus(); });
     connect(slider, &QSlider::sliderMoved, [=](int val){ QTimer::singleShot(0, this, [=]() {
         task->import = val;
         saveTasks();

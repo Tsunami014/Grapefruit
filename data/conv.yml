@@ -33,7 +33,7 @@ purposes:
         - ["Not {well/the best/too good/too well}", [sad], checkin]
         - ["Going {poorly/terribly/awfully}", [depressed], checkin]
         - ["{Everything!/4*}", [], checkin]
-        - ["{The sky/50*}", [], haha]
+        - ["{The sky/The clouds/20*}", [], haha]
 
   haha:
     # Laugh at a joke

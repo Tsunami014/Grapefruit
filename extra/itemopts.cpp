@@ -6,7 +6,7 @@
 #include <QTimer>
 
 const QRegularExpression timeRe(R"((?<=^|[ \n<>])#([a-zA-Z])(?=[ \n<>]|$))");
-const QString donePref = "/ ";
+const QString donePref = "✔ ";
 
 void swapBlocks(QTextCursor& cur, const QTextBlock& block, const QTextBlock& next) {
     if (!next.isValid()) return;
