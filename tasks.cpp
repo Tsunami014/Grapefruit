@@ -44,25 +44,33 @@ TaskView::TaskView(MainGame* mg) {
         topsect->addLayout(left);
         addLine();
 
-        auto* scrl = new QScrollArea(this);
-        scrl->setFrameShape(QFrame::NoFrame);
-        scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        scrl->setProperty("bg", true);
+        auto* topsectmid = new QVBoxLayout();
+        topsect->addLayout(topsectmid);
+            {auto* labl = new QLabel("Categories", this);
+            labl->setContentsMargins(4,8,4,4);
+            labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+            labl->setAlignment(Qt::AlignCenter);
+            topsectmid->addWidget(labl);}
 
-        scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-        scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
-        tcatdrag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
+            auto* scrl = new QScrollArea(this);
+            scrl->setFrameShape(QFrame::NoFrame);
+            scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+            scrl->setProperty("bg", true);
 
-        auto* catcont = new QWidget();
-        catcont->setObjectName("catcont");
-        catcont->setStyleSheet("#catcont { background: transparent; }");
-        tcatlay = new FlowLayout(catcont);
-        tcatlay->vertical(2);
-        scrl->setWidget(catcont);
-        scrl->setWidgetResizable(true);
-        topsect->addWidget(scrl);
+            scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+            scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+            scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+            scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
+            tcatdrag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
+
+            auto* catcont = new QWidget();
+            catcont->setObjectName("catcont");
+            catcont->setStyleSheet("#catcont { background: transparent; }");
+            tcatlay = new FlowLayout(catcont);
+            tcatlay->vertical(2);
+            scrl->setWidget(catcont);
+            scrl->setWidgetResizable(true);
+            topsectmid->addWidget(scrl);
 
         addLine();
         auto right = new QVBoxLayout();

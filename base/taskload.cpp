@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QStyle>
+#include <QLabel>
 
 using tasklist = std::vector<std::shared_ptr<Task>>;
 std::map<QString, tasklist> alltasks;
@@ -30,7 +31,7 @@ void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) 
             btn->setProperty("fancy", true);
             btn->setProperty("optbtn", true);
             btn->setProperty("current", k==cur);
-            resizeFont(btn, 1.25);
+            resizeFont(btn, 1.2);
             QObject::connect(btn, &QPushButton::clicked, lay, [btn, redo](){
                 current = btn->text();
                 redo();
@@ -57,6 +58,12 @@ void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> 
         if (auto* wid = item->widget()) wid->deleteLater();
         delete item;
     }
+
+    {auto* labl = new QLabel("Tasks", parent);
+    labl->setContentsMargins(4,8,4,4);
+    labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    labl->setAlignment(Qt::AlignCenter);
+    lay->addWidget(labl);}
 
     auto cur = getCurrent();
     if (cur.isNull()) return;
