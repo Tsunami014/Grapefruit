@@ -22,5 +22,4 @@ private:
     void keyPressEvent(QKeyEvent* event) override;
 
     void generateSettings();
-    void initstyle();
 };

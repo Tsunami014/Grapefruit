@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
+        <file>style.qss</file>
+
         <file>data/conv.yml</file>
         <file>data/scenes.yml</file>
         <file>data/quals.yml</file>

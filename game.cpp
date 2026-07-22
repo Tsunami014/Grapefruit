@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "font.hpp"
+#include "style.hpp"
 #include "wids/house.hpp"
 #include "wids/icobtn.hpp"
 #include "wids/flow.hpp"
@@ -73,7 +74,7 @@ MainGame::MainGame() {
     stack->addWidget(tasks);
 
     // Last initialisation!
-    initstyle();
+    StyleWidget(this);
     stack->setCurrentWidget(main);
 }
 
