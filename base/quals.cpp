@@ -12,7 +12,8 @@ std::unordered_map<QString, qualityTyp> _quals() {
     for (const auto& q : config) {
         qualityTyp parts;
         for (const auto& item : q.second) {
-            parts.insert({item.first.as<int>(), item.second.as<std::unordered_set<std::string>>()});
+            auto vec = item.second.as<std::vector<std::string>>();
+            parts.insert({ item.first.as<int>(), {vec.begin(), vec.end()} });
         }
         out.insert({QString::fromStdString(q.first.as<std::string>()), parts});
     }

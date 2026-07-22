@@ -223,10 +223,8 @@ void Conversation::refresh() {
             if (title.isEmpty()) continue;
             std::string npurp = "";
             if (item.size() > 2) npurp = item[2].as<std::string>();
-            outopts.push_back({ title,
-                item[1].as<std::unordered_set<std::string>>(),
-                npurp
-            });
+            auto vec = item[1].as<std::vector<std::string>>();
+            outopts.push_back({ title, {vec.begin(), vec.end()}, npurp });
         }
         if (opt["shuffle"] && opt["shuffle"].as<bool>()) {
             std::shuffle(outopts.begin(), outopts.end(), *QRandomGenerator::global());
