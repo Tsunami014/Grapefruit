@@ -64,6 +64,7 @@ void HlTxtEdit::highlight() {
             sel.cursor.setPosition(block.position() + m.capturedStart(0));
             sel.cursor.setPosition(block.position() + m.capturedEnd(0), QTextCursor::KeepAnchor);
             sel.format.setBackground(QColor(done ? "#C9C" : "#EAE"));
+            if (done) sel.format.setFontStrikeOut(true);
             sels << sel;
         }}
         {auto m = dateRe.match(line);
@@ -81,6 +82,7 @@ void HlTxtEdit::highlight() {
                         qBound(0, col.saturation() + 50, 255),
                         qBound(0, col.value() + 50, 255));
             }
+            if (done) sel.format.setFontStrikeOut(true);
             sel.format.setBackground(col);
             sels << sel;
         }}
@@ -139,7 +141,7 @@ QString labelTxt(QTextEdit* edit) {
                     } else {
                         out += "due on "+date.toString("dddd, MMMM d");
                     }
-                } if (weeks2 > 0) {
+                } else if (weeks2 > 0) {
                     out += QString("due on %1 in %2 week%3 (%4 days away)")
                         .arg(date.toString("dddd"))
                         .arg(weeks2)
@@ -300,6 +302,7 @@ void TaskOverlay::generateBot() {
             labl->setFocusPolicy(Qt::NoFocus);
             labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
             labl->setAlignment(Qt::AlignCenter);
+            labl->setWordWrap(true);
             auto setLablTxt = [=](){ labl->setText(labelTxt(edit)); };
             labl->connect(edit, &QTextEdit::cursorPositionChanged, labl, setLablTxt);
             QTimer::singleShot(0, labl, setLablTxt);
