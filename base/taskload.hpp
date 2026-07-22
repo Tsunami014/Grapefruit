@@ -16,4 +16,5 @@ std::shared_ptr<Task> newtask();
 std::shared_ptr<Task> newtask(QString cat);
 
 void loadTasks();
+void sortTasks(bool all = false);
 void saveTasks();

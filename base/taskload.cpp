@@ -67,6 +67,7 @@ void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> 
 
     auto cur = getCurrent();
     if (cur.isNull()) return;
+    sortTasks();
 
     for (auto& t : alltasks.at(cur)) {
         auto bub = new TaskBubble(t, parent);
@@ -205,13 +206,33 @@ std::shared_ptr<Task> newtask(QString cat) {
 }
 
 void loadTasks() {
-    tasklist test = {};
+    tasklist test;
     test.emplace_back(std::make_shared<Task>("Sample task 1"));
     test.emplace_back(std::make_shared<Task>("Sample task 2"));
     alltasks["Test"] = test;
 
-    tasklist hi = {};
+    tasklist hi;
     hi.emplace_back(std::make_shared<Task>("Hello, world!"));
     alltasks["Hello"] = hi;
+    sortTasks(true);
 }
 void saveTasks() {}
+
+bool sortT(const std::shared_ptr<Task>& lhs, const std::shared_ptr<Task>& rhs) {
+    if (!lhs || !rhs) return !lhs && rhs;
+    return *lhs < *rhs;
+}
+void sortTasks(bool all) {
+    if (all) {
+        for (auto& [_, list] : alltasks) {
+            std::sort(list.begin(), list.end(), sortT);
+        }
+    } else {
+        auto cur = getCurrent();
+        if (!cur.isNull())
+        if (auto it = alltasks.find(cur); it != alltasks.end()) {
+            auto& list = it->second;
+            std::sort(list.begin(), list.end(), sortT);
+        }
+    }
+}
