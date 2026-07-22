@@ -52,6 +52,7 @@ void HlTxtEdit::highlight() {
             sel.cursor.setPosition(block.position());
             sel.cursor.setPosition(block.position() + block.length() - 1, QTextCursor::KeepAnchor);
             sel.format.setForeground(QColor("#555"));
+            sel.format.setFontStrikeOut(true);
             sel.format.setProperty(QTextFormat::FullWidthSelection, true);
             sels << sel;
         }
