@@ -10,7 +10,7 @@
 #include <QHeaderView>
 #include <QTableView>
 #include <QTextCharFormat>
-#include <QEvent>
+#include <QMouseEvent>
 #include <QPushButton>
 #include <QApplication>
 
@@ -86,21 +86,48 @@ private:
     QCalendarWidget* calendar;
 };
 
+constexpr float Hmaxratio = 1.5;
+constexpr float Wmaxratio = 1;
+constexpr int reg = 8;
+const QMargins regMargs(reg,reg,reg,reg);
+
 class DateOverlay : public QWidget {
 public:
-    explicit DateOverlay(QWidget* parent) : QWidget(parent) {
+    explicit DateOverlay(QWidget* parent, std::function<void()> click) : QWidget(parent), click(click) {
         parent->installEventFilter(this);
-        setGeometry(parent->rect());
+        setGeometry(parent->contentsRect());
+        constrain();
     }
 
 protected:
     bool eventFilter(QObject* watched, QEvent* event) override {
         if (event->type() == QEvent::Resize || event->type() == QEvent::Move) {
             if (auto* w = qobject_cast<QWidget*>(watched)) {
-                setGeometry(w->rect());
+                setGeometry(w->contentsRect());
+                constrain();
             }
         }
         return QWidget::eventFilter(watched, event);
+    }
+    void constrain() {
+        const auto margs = contentsMargins();
+        const int W = width()-(2*reg);
+        const int H = height()-(2*reg);
+        if (W <= 0 || H <= 0) {
+            setContentsMargins(regMargs);
+            return;
+        }
+        if (float(H)/W < Hmaxratio) {
+            if (float(W)/H < Wmaxratio) {
+                setContentsMargins(regMargs);
+                return;
+            }
+            const int xtra = qRound((W - H*Wmaxratio) / 2.0);
+            setContentsMargins(reg+xtra,reg,reg+xtra,reg);
+            return;
+        }
+        const int xtra = qRound((H - W*Hmaxratio) / 2.0);
+        setContentsMargins(reg,reg+xtra,reg,reg+xtra);
     }
 
     void paintEvent(QPaintEvent* event) override {
@@ -108,6 +135,16 @@ protected:
         painter.setRenderHint(QPainter::Antialiasing);
         painter.fillRect(rect(), QColor(125, 125, 125, 125));
     }
+
+    void mousePressEvent(QMouseEvent* event) override {
+        if (QApplication::widgetAt(mapToGlobal(event->position().toPoint())) == this) {
+            click();
+            event->accept();
+            return;
+        }
+        QWidget::mousePressEvent(event);
+    }
+    std::function<void()> click;
 };
 
 
@@ -117,7 +154,12 @@ QDate getDate(const QDate& initial) {
     if (QGuiApplication::inputMethod()->isVisible()) {
         QGuiApplication::inputMethod()->hide();
     }
-    DateOverlay overlay(MG);
+    bool accepted = false;
+    QEventLoop loop;
+    DateOverlay overlay(MG, [&]() {
+        accepted = true;
+        loop.quit();
+    });
     auto* outer = new QVBoxLayout(&overlay);
     outer->setAlignment(Qt::AlignCenter);
 
@@ -153,8 +195,6 @@ QDate getDate(const QDate& initial) {
         b->setIcon(QIcon());
     }
 
-    bool accepted = false;
-    QEventLoop loop;
     QObject::connect(btns, &QDialogButtonBox::accepted, [&]() {
         accepted = true;
         loop.quit();
