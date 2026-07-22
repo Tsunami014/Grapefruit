@@ -57,7 +57,7 @@ void HlTxtEdit::highlight() {
             sel.format.setProperty(QTextFormat::FullWidthSelection, true);
             sels << sel;
         }
-        auto m = timeRe.match(line);
+        {auto m = timeRe.match(line);
         if (m.hasMatch()) {
             QTextEdit::ExtraSelection sel;
             sel.cursor = QTextCursor(block);
@@ -65,7 +65,25 @@ void HlTxtEdit::highlight() {
             sel.cursor.setPosition(block.position() + m.capturedEnd(0), QTextCursor::KeepAnchor);
             sel.format.setBackground(QColor(done ? "#C9C" : "#EAE"));
             sels << sel;
-        }
+        }}
+        {auto m = dateRe.match(line);
+        if (m.hasMatch()) {
+            QChar sep = m.captured(2)[0];
+            auto date = QDate::fromString(m.captured(1).replace(sep, "-"), "yyyy-MM-dd");
+
+            QTextEdit::ExtraSelection sel;
+            sel.cursor = QTextCursor(block);
+            sel.cursor.setPosition(block.position() + m.capturedStart(0));
+            sel.cursor.setPosition(block.position() + m.capturedEnd(0), QTextCursor::KeepAnchor);
+            auto col = QColor(date.isValid() ? "#EEA" : "#F99").toHsv();
+            if (done) {
+                col.setHsv(col.hue(),
+                        qBound(0, col.saturation() + 50, 255),
+                        qBound(0, col.value() + 50, 255));
+            }
+            sel.format.setBackground(col);
+            sels << sel;
+        }}
     }
     setExtraSelections(sels);
 }
@@ -80,7 +98,7 @@ QString labelTxt(QTextEdit* edit) {
     bool done = line.startsWith(donePref);
     if (done) out += "completed";
 
-    auto m = timeRe.match(line);
+    {auto m = timeRe.match(line);
     if (m.hasMatch()) {
         float time = m.captured(1).toFloat();
         QString nxt = QString(done? "spent" : "will spend") + " ~";
@@ -88,7 +106,57 @@ QString labelTxt(QTextEdit* edit) {
         else if (time == 1) nxt += "1 hr";
         else nxt += QString::number(time) + " hrs";
         out += nxt;
-    }
+    }}
+
+    {auto m = dateRe.match(line);
+    if (m.hasMatch()) {
+        QChar sep = m.captured(2)[0];
+        auto date = QDate::fromString(m.captured(1).replace(sep, "-"), "yyyy-MM-dd");
+        if (date.isValid()) {
+            auto cur = QDate::currentDate();
+            int days2 = cur.daysTo(date);
+            if (days2 == 0) {
+                out += "is due today";
+            } else if (days2 == 1) {
+                out += "due tomorrow";
+            } else if (days2 == -1) {
+                out += "was due yesterday";
+            } else if (days2 < 0) {
+                if (days2 > -30) {
+                    out += "was due "+QString::number(-days2)+" days ago";
+                } else {
+                    if (date.year() != cur.year()) {
+                        out += "was due on "+date.toString("MMMM d, yyyy");
+                    } else {
+                        out += "was due on "+date.toString("dddd, MMM d");
+                    }
+                }
+            } else {
+                int weeks2 = std::floor(float(days2)/7.0);
+                if (weeks2 > 3) {
+                    if (date.year() != cur.year()) {
+                        out += "due on "+date.toString("MMMM d, yyyy");
+                    } else {
+                        out += "due on "+date.toString("dddd, MMMM d");
+                    }
+                } if (weeks2 > 0) {
+                    out += QString("due on %1 in %2 week%3 (%4 days away)")
+                        .arg(date.toString("dddd"))
+                        .arg(weeks2)
+                        .arg(weeks2 == 1? "":"s")
+                        .arg(days2);
+                } else {
+                    out += QString("due %1 %2 (in %3 days)")
+                        .arg(cur.dayOfWeek() > date.dayOfWeek()? "next":"this")
+                        .arg(date.toString("dddd"))
+                        .arg(days2);
+                }
+            }
+        } else {
+            out += "invalid date";
+        }
+    }}
+
     QString end = out.join(", ");
     if (end.isEmpty()) return "No info on this item";
     return end.at(0).toUpper()+end.sliced(1);

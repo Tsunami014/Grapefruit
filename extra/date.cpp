@@ -159,10 +159,7 @@ QDate getDate(const QDate& initial) {
     }
     bool accepted = false;
     QEventLoop loop;
-    DateOverlay overlay(MG, [&]() {
-        accepted = true;
-        loop.quit();
-    });
+    DateOverlay overlay(MG, [&]() { loop.quit(); });
     auto* outer = new QVBoxLayout(&overlay);
     outer->setAlignment(Qt::AlignCenter);
 
@@ -202,9 +199,7 @@ QDate getDate(const QDate& initial) {
         accepted = true;
         loop.quit();
     });
-    QObject::connect(btns, &QDialogButtonBox::rejected, [&]() {
-        loop.quit();
-    });
+    QObject::connect(btns, &QDialogButtonBox::rejected, [&]() { loop.quit(); });
 
     overlay.show();
     overlay.raise();

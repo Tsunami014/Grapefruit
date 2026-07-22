@@ -10,6 +10,7 @@ const QRegularExpression timeRe(R"((?<=^|[ \n<>])\+([0-9]+(?:\.5)?)h(?=[ \n<>]|$
 const QString baseTime = "+0.5h ";
 const QString timeFmt = "+%1h";
 const QString donePref = "✔ ";
+const QRegularExpression dateRe(R"((?<=^|[ \n<>])@(\d{4}([.\/\-])\d{2}\2\d{2})(?=[ \n<>]|$))");
 
 void swapBlocks(QTextCursor& cur, const QTextBlock& block, const QTextBlock& next) {
     if (!next.isValid()) return;
@@ -61,12 +62,36 @@ void addTime(QTextEdit* edit, float diff) {
         int start = m.capturedStart(0);
         line.replace(start, m.capturedEnd(0) - start, repl);
         int origln = m.captured(0).length();
-        setBlockText(cur, block, line, repl.length()-origln, line.startsWith(donePref)? donePref.length():0);
+        setBlockText(cur, block, line, repl.length()-origln, start);
     } else {
         if (line.startsWith(donePref)) {
             setBlockText(cur, block, donePref+baseTime+line.sliced(donePref.length()), baseTime.length(), donePref.length());
         } else {
             setBlockText(cur, block, baseTime+line, baseTime.length());
+        }
+    }
+    edit->setTextCursor(cur);
+}
+void setDate(QTextEdit* edit) {
+    QTextCursor cur = edit->textCursor();
+    QTextBlock block = cur.block();
+    QString line = block.text();
+
+    auto m = dateRe.match(line);
+    if (m.hasMatch()) {
+        QChar sep = m.captured(2)[0];
+        auto oldD = QDate::fromString(m.captured(1).replace(sep, "-"), "yyyy-MM-dd");
+        auto newD = getDate(oldD);
+        if (!newD.isValid()) return;
+        QString repl = "@"+newD.toString("yyyy-MM-dd").replace('-', sep);
+
+        int start = m.capturedStart(0);
+        line.replace(start, m.capturedEnd(0) - start, repl);
+        int origln = m.captured(0).length();
+        setBlockText(cur, block, line, repl.length()-origln, start);
+    } else {
+        if (auto newD = getDate(); newD.isValid()) {
+            setBlockText(cur, block, line+" @"+newD.toString("yyyy-MM-dd"));
         }
     }
     edit->setTextCursor(cur);
@@ -118,7 +143,7 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
         });
         mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 0.5); });
         mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -0.5); });
-        mkbtn(":/assets/UI/calendar.svg", [=](){ getDate(); });
+        mkbtn(":/assets/UI/calendar.svg", [=](){ setDate(edit); });
 
         lay->addSpacing(32);
         mkbtn(":/assets/UI/checkall.svg", [=](){
