@@ -3,6 +3,7 @@
 #include "base/quals.hpp"
 #include "extra/itemopts.hpp"
 #include "extra/drag.hpp"
+#include "extra/date.hpp"
 #include "wids/confirm.hpp"
 #include "wids/slider.hpp"
 #include "wids/flow.hpp"
@@ -224,7 +225,8 @@ void TaskOverlay::generateBot() {
         delete item;
     }
 
-    if (bool isedit = edit->hasFocus(); isedit || reasons->hasFocus() || quals->hasFocus()) {
+    if (bool isedit = edit->hasFocus() || showingDate;
+            isedit || reasons->hasFocus() || quals->hasFocus()) {
         if (isedit) {
             auto labl = new QLabel(bbar);
             labl->setFocusPolicy(Qt::NoFocus);

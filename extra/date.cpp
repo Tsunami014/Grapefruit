@@ -14,6 +14,8 @@
 #include <QPushButton>
 #include <QApplication>
 
+bool showingDate = false;
+
 class CalendarItemDelegate : public QStyledItemDelegate {
 public:
     explicit CalendarItemDelegate(QCalendarWidget* calendar, QObject* parent = nullptr)
@@ -149,6 +151,7 @@ protected:
 
 
 QDate getDate(const QDate& initial) {
+    showingDate = true;
     QWidget* prevFocus = QApplication::focusWidget();
     if (prevFocus) prevFocus->clearFocus();
     if (QGuiApplication::inputMethod()->isVisible()) {
@@ -209,6 +212,7 @@ QDate getDate(const QDate& initial) {
     overlay.hide();
     MG->removeEventFilter(&overlay);
     if (prevFocus) prevFocus->setFocus();
+    showingDate = false;
     if (accepted) return calendar->selectedDate();
     return {};
 }
