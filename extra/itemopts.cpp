@@ -1,4 +1,5 @@
 #include "itemopts.hpp"
+#include "date.hpp"
 #include <QLayoutItem>
 #include <QPushButton>
 #include <QTextCursor>
@@ -117,7 +118,7 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
         });
         mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 0.5); });
         mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -0.5); });
-        mkbtn(":/assets/UI/calendar.svg", [=](){});
+        mkbtn(":/assets/UI/calendar.svg", [=](){ getDate(); });
 
         lay->addSpacing(32);
         mkbtn(":/assets/UI/checkall.svg", [=](){

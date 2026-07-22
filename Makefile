@@ -7,7 +7,6 @@ SYSROOT = $(ANDROID_SDK_ROOT)/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/s
 
 ANDRIOD_FLAGS = \
 	-GNinja \
-	-DCMAKE_SYSTEM_NAME=Android \
 	-DANDROID_ABI="arm64-v8a" \
 	-DANDROID_PLATFORM=android-33 \
 	-DANDROID_NDK_ROOT="$(ANDROID_SDK_ROOT)/ndk-bundle" \
