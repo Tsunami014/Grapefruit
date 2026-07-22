@@ -168,38 +168,64 @@ QDate getDate(const QDate& initial) {
     card->setAttribute(Qt::WA_StyledBackground, true);
     outer->addWidget(card);
     auto* layout = new QVBoxLayout(card);
+    layout->setSpacing(0);
+        auto* calendar = new QCalendarWidget(card);
+        auto* navBar = new QWidget(&overlay);
+        navBar->setObjectName("navigation");
+        auto* navlay = new QHBoxLayout(navBar);
+        navlay->setContentsMargins(4, 4, 4, 4);
+        auto addBtn = [&](QString txt, auto slot){
+            auto* btn = new QPushButton(txt, navBar);
+            resizeFont(btn, 1.3);
+            navlay->addWidget(btn);
+            QObject::connect(btn, &QPushButton::clicked, calendar, slot);
+            return btn;
+        };
+        addBtn(QString::fromUtf8("\u00AB"), &QCalendarWidget::showPreviousYear);
+        addBtn(QString::fromUtf8("\u2039"), &QCalendarWidget::showPreviousMonth);
+        auto* today = addBtn(QDate(calendar->yearShown(), calendar->monthShown(), 1).toString("MMMM yyyy"), [calendar] {
+            const QDate now = QDate::currentDate();
+            calendar->setSelectedDate(now);
+            calendar->showSelectedDate();
+        });
+        addBtn(QString::fromUtf8("\u203A"), &QCalendarWidget::showNextMonth);
+        addBtn(QString::fromUtf8("\u00BB"), &QCalendarWidget::showNextYear);
+        QObject::connect(calendar, &QCalendarWidget::currentPageChanged, today, [today](int year, int month) {
+            today->setText(QDate(year, month, 1).toString("MMMM yyyy"));
+        });
+        layout->addWidget(navBar);
 
-    auto* calendar = new QCalendarWidget(card);
-    calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);  // Remove week numbers
-    calendar->setGridVisible(false);
-    calendar->setNavigationBarVisible(true);
-    if (QTableView* view = calendar->findChild<QTableView*>("qt_calendar_calendarview")) {
-        view->setItemDelegate(new CalendarItemDelegate(calendar, view));
-        view->horizontalHeader()->setDefaultSectionSize(32);
-        view->verticalHeader()->setDefaultSectionSize(32);
-        view->setShowGrid(false);
-        view->setMouseTracking(true);
-    }
-    auto fmt = QTextCharFormat();
-    fmt.setForeground(QBrush(Qt::black));
-    calendar->setWeekdayTextFormat(Qt::Saturday, fmt);
-    calendar->setWeekdayTextFormat(Qt::Sunday, fmt);
+        calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);  // Remove week numbers
+        calendar->setGridVisible(false);
+        calendar->setNavigationBarVisible(false);
+        if (QTableView* view = calendar->findChild<QTableView*>("qt_calendar_calendarview")) {
+            view->setItemDelegate(new CalendarItemDelegate(calendar, view));
+            view->horizontalHeader()->setDefaultSectionSize(32);
+            view->verticalHeader()->setDefaultSectionSize(32);
+            view->setShowGrid(false);
+            view->setMouseTracking(true);
+        }
+        auto fmt = QTextCharFormat();
+        fmt.setForeground(QBrush(Qt::black));
+        calendar->setWeekdayTextFormat(Qt::Saturday, fmt);
+        calendar->setWeekdayTextFormat(Qt::Sunday, fmt);
 
-    calendar->setSelectedDate(initial.isNull()? QDate::currentDate():initial);
-    layout->addWidget(calendar);
+        calendar->setSelectedDate(initial.isNull()? QDate::currentDate():initial);
+        layout->addWidget(calendar);
 
-    auto* btns = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, card);
-    layout->addWidget(btns);
-    for (QPushButton* b : btns->findChildren<QPushButton*>()) {
-        resizeFont(b, 1.5);
-        b->setIcon(QIcon());
-    }
+        auto* btns = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, card);
+        layout->addSpacing(8);
+        layout->addWidget(btns);
+        for (QPushButton* b : btns->findChildren<QPushButton*>()) {
+            resizeFont(b, 1.5);
+            b->setIcon(QIcon());
+        }
 
-    QObject::connect(btns, &QDialogButtonBox::accepted, [&]() {
-        accepted = true;
-        loop.quit();
-    });
-    QObject::connect(btns, &QDialogButtonBox::rejected, [&]() { loop.quit(); });
+        QObject::connect(btns, &QDialogButtonBox::accepted, [&]() {
+            accepted = true;
+            loop.quit();
+        });
+        QObject::connect(btns, &QDialogButtonBox::rejected, [&]() { loop.quit(); });
 
     overlay.show();
     overlay.raise();
