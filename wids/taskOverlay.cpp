@@ -130,20 +130,23 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
         sl2wid->setContentsMargins(0,0,0,0);
         parts.push_back(sl2wid);
         mlay->addWidget(sl2wid);
-        auto* sublay2 = new QHBoxLayout(sl2wid);
-            auto* txt = new QLabel(sl2wid);
-            sublay2->addWidget(txt);
+        auto* sublay2 = new QVBoxLayout(sl2wid);
+            {auto* txt = new QLabel("Importance:", sl2wid);
+            sublay2->addWidget(txt);}
+
+            auto* subsublay2 = new QHBoxLayout();
+            sublay2->addLayout(subsublay2);
+            {auto* txt = new QLabel("!", sl2wid);
+            subsublay2->addWidget(txt);}
             auto* slider = new Slidr(Qt::Horizontal, sl2wid);
             slider->setTickInterval(1);
             slider->setTickPosition(QSlider::TicksBelow);
-            sublay2->addWidget(slider);
-            slider->setValue(0);
-            QObject::connect(slider, &QSlider::valueChanged, txt, [txt](int value) {
-                txt->setText("Import\nance: "+QString::number(value));
-            });
-            slider->setValue(task->import);
             slider->setMaximum(5);
             slider->setMinimum(1);
+            slider->setValue(task->import);
+            subsublay2->addWidget(slider);
+            {auto* txt = new QLabel("!!!!!", sl2wid);
+            subsublay2->addWidget(txt);}
 
         midwid = new QWidget(this);
         midwid->setContentsMargins(0,0,0,0);
