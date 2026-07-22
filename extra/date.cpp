@@ -18,8 +18,8 @@ bool showingDate = false;
 
 class CalendarItemDelegate : public QStyledItemDelegate {
 public:
-    explicit CalendarItemDelegate(QCalendarWidget* calendar, QObject* parent = nullptr)
-        : QStyledItemDelegate(parent), calendar(calendar) {}
+    explicit CalendarItemDelegate(QCalendarWidget* calendar, QDate orig, QObject* parent = nullptr)
+        : QStyledItemDelegate(parent), calendar(calendar), orig(orig) {}
 
     void paint(QPainter* painter, const QStyleOptionViewItem& option,
                const QModelIndex& index) const override {
@@ -68,10 +68,19 @@ public:
             painter->setPen(QPen(QColor("#3B82F6"), 1.5));
             painter->setBrush(Qt::NoBrush);
             painter->drawEllipse(rect);
-            textColour = QColor("#3B82F6");
+            if (cellDate == orig) {
+                textColour = QColor("#A8B0AE");
+            } else {
+                textColour = QColor("#3B82F6");
+            }
+        } else if (isEnabled && !isOtherMonth && cellDate == orig) {
+            painter->setPen(QPen(QColor("#A8B0AE"), 1.5));
+            painter->setBrush(Qt::NoBrush);
+            painter->drawEllipse(rect);
+            textColour = QColor("#A8B0AE");
         } else if (isHovered && isEnabled) {
             painter->setPen(Qt::NoPen);
-            painter->setBrush(QColor("#E8F0FE"));
+            painter->setBrush(QColor("#D8E0DE"));
             painter->drawEllipse(rect);
         }
 
@@ -86,6 +95,7 @@ public:
 
 private:
     QCalendarWidget* calendar;
+    QDate orig;
 };
 
 constexpr float Hmaxratio = 1.5;
@@ -199,7 +209,7 @@ QDate getDate(const QDate& initial) {
         calendar->setGridVisible(false);
         calendar->setNavigationBarVisible(false);
         if (QTableView* view = calendar->findChild<QTableView*>("qt_calendar_calendarview")) {
-            view->setItemDelegate(new CalendarItemDelegate(calendar, view));
+            view->setItemDelegate(new CalendarItemDelegate(calendar, initial, view));
             view->horizontalHeader()->setDefaultSectionSize(32);
             view->verticalHeader()->setDefaultSectionSize(32);
             view->setShowGrid(false);
