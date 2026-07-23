@@ -3,6 +3,7 @@
 #include "font.hpp"
 #include "wids/confirm.hpp"
 #include "wids/taskbbl.hpp"
+#include "extra/itemopts.hpp"
 #include <memory>
 #include <QPushButton>
 #include <QMessageBox>
@@ -205,25 +206,6 @@ std::shared_ptr<Task> newtask(QString cat) {
     return nullptr;
 }
 
-void loadTasks() {
-    tasklist test;
-    test.emplace_back(std::make_shared<Task>("Sample task 1"));
-    test.emplace_back(std::make_shared<Task>("Sample task 2"));
-    alltasks["Test"] = test;
-
-    tasklist hi;
-    hi.emplace_back(std::make_shared<Task>("Hello, world!",
-        "+1.5h Hello!\n"
-        "✔ +8.5h Do something cool\n"
-        "+1.5h I am awesome! @2026-07-25\n"
-        "+0.5h NEXT\n"
-        "+1.5h Hiness @2026-08-06\n"
-    ));
-    alltasks["Hello"] = hi;
-    sortTasks(true);
-}
-void saveTasks() {}
-
 bool sortT(const std::shared_ptr<Task>& lhs, const std::shared_ptr<Task>& rhs) {
     if (!lhs || !rhs) return !lhs && rhs;
     return *lhs < *rhs;
@@ -242,3 +224,29 @@ void sortTasks(bool all) {
         }
     }
 }
+
+
+void defTasks() {
+    tasklist test;
+    test.emplace_back(std::make_shared<Task>("Sample task 1"));
+    test.emplace_back(std::make_shared<Task>("Sample task 2"));
+    alltasks["Test"] = test;
+
+    tasklist hi;
+    hi.emplace_back(std::make_shared<Task>("Hello, world!", QString(
+        "+1.5h Task 1\n"
+        "%1+2.5h Do something cool!\n"
+        "+0.5h Isn't this so cool? @%2\n"
+        "+0h NEXT TASK\n"
+        "+1.5h Achieve hiness @%3"
+    ).arg(donePref)
+        .arg(QDate::currentDate().addDays(3).toString("yyyy-MM-dd"))
+        .arg(QDate::currentDate().addDays(16).toString("yyyy-MM-dd"))
+    ));
+    alltasks["Hello"] = hi;
+}
+void loadTasks() {
+    defTasks();
+    sortTasks(true);
+}
+void saveTasks() {}
