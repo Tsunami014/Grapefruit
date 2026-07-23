@@ -1,7 +1,6 @@
+#include "dbug.hpp"
 #include <QGraphicsView>
 #include <QGraphicsScene>
-
-//#define BUILD
 
 class House : public QGraphicsView {
 public:
@@ -9,7 +8,7 @@ public:
     void newScene();
 
 protected:
-#ifdef BUILD
+#ifdef DEBUG
     void keyPressEvent(QKeyEvent* event) override;
 #endif
     void buildScene(QString scene);
