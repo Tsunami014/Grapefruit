@@ -1,6 +1,18 @@
 #pragma once
 #include <QString>
+#include <QDate>
 #include <set>
+
+struct progress {
+    uint nextTasks;
+    uint totTasks;
+    float nextTime;
+    float totTime;
+    QDate nextDue;
+    QDate lastDue;
+
+    inline bool isEmpty() const { return totTasks == 0; }
+};
 
 class Task {
 public:
@@ -16,6 +28,8 @@ public:
     int import;
     std::set<QString> quals;
     QString reasons;
+
+    progress Progress();
 
     QString bottom();
     bool isNew() { return name == "New Task" && items.isEmpty() && quals.empty() && reasons.isEmpty(); }

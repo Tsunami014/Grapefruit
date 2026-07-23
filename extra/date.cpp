@@ -264,3 +264,44 @@ QDate getDate(const QDate& initial) {
     if (accepted) return calendar->selectedDate();
     return {};
 }
+
+QString parseTime(float hours, bool brief) {
+    if (hours <= 0) return brief ? "0m" : "0 mins";
+    if (hours <= 0.5) return brief ? "~30m" : "~30 mins";
+    if (hours == 1) return brief ? "~1h" : "~1 hr";
+    return "~" + QString::number(hours) + (brief ? "h" : " hrs");
+}
+QString parseDate(const QDate& date, bool brief) {
+    auto cur = QDate::currentDate();
+    int days2 = cur.daysTo(date);
+
+    if (days2 == 0) return "today";
+    if (days2 == 1) return brief ? "tmrw" : "tomorrow";
+    if (days2 == -1) return brief ? "yest" : "yesterday";
+
+    if (days2 < 0) {
+        if (days2 > -30) {
+            return QString::number(-days2) + (brief ? "d ago" : " days ago");
+        }
+        bool sameYear = date.year() == cur.year();
+        if (brief) return date.toString(sameYear ? "MMM d" : "MMM d, yyyy");
+        return "on " + date.toString(sameYear ? "dddd, MMM d" : "MMMM d, yyyy");
+    }
+
+    int weeks2 = std::floor(float(days2) / 7.0);
+    if (weeks2 > 3) {
+        bool sameYear = date.year() == cur.year();
+        if (brief) return date.toString(sameYear ? "MMM d" : "MMM d, yyyy");
+        return "on " + date.toString(sameYear ? "dddd, MMMM d" : "MMMM d, yyyy");
+    }
+    if (weeks2 > 0) {
+        if (brief) return QString("in %1d (%2w)").arg(days2).arg(weeks2);
+        return QString("on %1 in %2 week%3 (%4 days away)")
+            .arg(date.toString("dddd")).arg(weeks2).arg(weeks2 == 1 ? "" : "s").arg(days2);
+    }
+
+    if (brief) return QString("%1 (%2d)").arg(date.toString("ddd")).arg(days2);
+    return QString("%1 %2 (in %3 days)")
+        .arg(cur.dayOfWeek() > date.dayOfWeek() ? "next" : "this")
+        .arg(date.toString("dddd")).arg(days2);
+}

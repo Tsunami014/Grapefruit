@@ -119,11 +119,7 @@ QString labelTxt(QTextEdit* edit) {
     {auto m = timeRe.match(line);
     if (m.hasMatch()) {
         float time = m.captured(1).toFloat();
-        QString nxt = QString(done? "spent" : "will spend") + " ~";
-        if (time <= 0.5) nxt += "30 mins";
-        else if (time == 1) nxt += "1 hr";
-        else nxt += QString::number(time) + " hrs";
-        out += nxt;
+        out += QString(done? "spent" : "will spend") + " " + parseTime(time);
     }}
 
     {auto m = dateRe.match(line);
@@ -131,45 +127,8 @@ QString labelTxt(QTextEdit* edit) {
         QChar sep = m.captured(2)[0];
         auto date = QDate::fromString(m.captured(1).replace(sep, "-"), "yyyy-MM-dd");
         if (date.isValid()) {
-            auto cur = QDate::currentDate();
-            int days2 = cur.daysTo(date);
-            if (days2 == 0) {
-                out += "is due today";
-            } else if (days2 == 1) {
-                out += "due tomorrow";
-            } else if (days2 == -1) {
-                out += "was due yesterday";
-            } else if (days2 < 0) {
-                if (days2 > -30) {
-                    out += "was due "+QString::number(-days2)+" days ago";
-                } else {
-                    if (date.year() != cur.year()) {
-                        out += "was due on "+date.toString("MMMM d, yyyy");
-                    } else {
-                        out += "was due on "+date.toString("dddd, MMM d");
-                    }
-                }
-            } else {
-                int weeks2 = std::floor(float(days2)/7.0);
-                if (weeks2 > 3) {
-                    if (date.year() != cur.year()) {
-                        out += "due on "+date.toString("MMMM d, yyyy");
-                    } else {
-                        out += "due on "+date.toString("dddd, MMMM d");
-                    }
-                } else if (weeks2 > 0) {
-                    out += QString("due on %1 in %2 week%3 (%4 days away)")
-                        .arg(date.toString("dddd"))
-                        .arg(weeks2)
-                        .arg(weeks2 == 1? "":"s")
-                        .arg(days2);
-                } else {
-                    out += QString("due %1 %2 (in %3 days)")
-                        .arg(cur.dayOfWeek() > date.dayOfWeek()? "next":"this")
-                        .arg(date.toString("dddd"))
-                        .arg(days2);
-                }
-            }
+            QString pref = QDate::currentDate().daysTo(date) < 0 ? "was ":"";
+            out += pref+"due "+parseDate(date);
         } else {
             out += "invalid date";
         }
