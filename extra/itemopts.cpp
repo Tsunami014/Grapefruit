@@ -56,7 +56,7 @@ void addTime(QTextEdit* edit, float diff) {
     auto m = timeRe.match(line);
     if (m.hasMatch()) {
         float namnt = m.captured(1).toFloat() + diff;
-        if (namnt <= 0 || (diff > 0 && namnt >= 10)) return;
+        if (namnt < 0 || (diff > 0 && namnt >= 10)) return;
         QString repl = timeFmt.arg(namnt);
 
         int start = m.capturedStart(0);
