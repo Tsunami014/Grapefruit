@@ -48,14 +48,19 @@ void HlTxtEdit::highlight() {
         QString line = block.text();
         bool done = line.startsWith(donePref);
         if (done) {
-            QTextEdit::ExtraSelection sel;
+            {QTextEdit::ExtraSelection sel;
             sel.cursor = QTextCursor(block);
             sel.cursor.setPosition(block.position());
             sel.cursor.setPosition(block.position() + block.length() - 1, QTextCursor::KeepAnchor);
             sel.format.setForeground(QColor("#555"));
-            sel.format.setFontStrikeOut(true);
             sel.format.setProperty(QTextFormat::FullWidthSelection, true);
-            sels << sel;
+            sels << sel;}
+            {QTextEdit::ExtraSelection sel;
+            sel.cursor = QTextCursor(block);
+            sel.cursor.setPosition(block.position() + donePref.length());
+            sel.cursor.setPosition(block.position() + block.length() - 1, QTextCursor::KeepAnchor);
+            sel.format.setFontStrikeOut(true);
+            sels << sel;}
         }
         {auto m = timeRe.match(line);
         if (m.hasMatch()) {
@@ -90,8 +95,8 @@ void HlTxtEdit::highlight() {
             }
             if (done) {
                 col.setHsv(col.hue(),
-                        qBound(0, col.saturation() + 50, 255),
-                        qBound(0, col.value() + 50, 255));
+                        qBound(0, col.saturation() - 50, 255),
+                        qBound(0, col.value() - 50, 255));
                 sel.format.setFontStrikeOut(true);
             }
             sel.format.setBackground(col);

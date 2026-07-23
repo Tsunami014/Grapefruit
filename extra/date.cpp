@@ -203,6 +203,23 @@ QDate getDate(const QDate& initial) {
         QObject::connect(calendar, &QCalendarWidget::currentPageChanged, today, [today](int year, int month) {
             today->setText(QDate(year, month, 1).toString("MMMM yyyy"));
         });
+
+        today->ensurePolished();
+        QFont f = today->font();
+        f.setWeight(QFont::DemiBold);
+        QFontMetrics fm(f);
+        int maxwid = 0;
+        for (int m = 1; m <= 12; ++m) {
+            const QString sample = QLocale::system().monthName(m, QLocale::LongFormat)+" 2026";
+            maxwid = std::max(maxwid, fm.horizontalAdvance(sample));
+        }
+        QStyleOptionButton opt;
+        opt.initFrom(today);
+        // Get end width of maximum text width
+        QSize total = today->style()->sizeFromContents(
+            QStyle::CT_PushButton, &opt, QSize(maxwid, fm.height()), today);
+        today->setFixedWidth(total.width() + 8);
+
         layout->addWidget(navBar);
 
         calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);  // Remove week numbers
