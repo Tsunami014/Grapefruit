@@ -31,23 +31,24 @@ TaskView::TaskView() {
     topsect->setSpacing(16);
         auto left = new QVBoxLayout();
         left->setSpacing(8);
-            auto bk = addBtn(":/assets/UI/back.svg");
+            {auto bk = addBtn(":/assets/UI/back.svg");
             bk->setProperty("backbtn", true);
+            bk->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
             connect(bk, &QPushButton::clicked, this, [=](){ MG->toMain(); });
-            left->addWidget(bk);
+            left->addWidget(bk);}
 
-            auto bin = addBtn(":/assets/UI/bin.svg");
+            {auto bin = addBtn(":/assets/UI/bin.svg");
             connect(bin, &QPushButton::clicked, this, [this](){
                 if (deleteCategory(this)) redoTasks();
             });
-            left->addWidget(bin);
+            left->addWidget(bin);}
         topsect->addLayout(left);
         addLine();
 
         auto* topsectmid = new QVBoxLayout();
-        topsect->addLayout(topsectmid);
+        topsectmid->setSpacing(0);
             {auto* labl = new QLabel("Categories", this);
-            labl->setContentsMargins(4,8,4,4);
+            labl->setContentsMargins(4,8,4,8);
             labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
             labl->setAlignment(Qt::AlignCenter);
             topsectmid->addWidget(labl);}
@@ -71,11 +72,12 @@ TaskView::TaskView() {
             scrl->setWidget(catcont);
             scrl->setWidgetResizable(true);
             topsectmid->addWidget(scrl);
+        topsect->addLayout(topsectmid);
 
         addLine();
         auto right = new QVBoxLayout();
         right->setSpacing(8);
-            auto plus = addBtn(":/assets/UI/plus.svg");
+            {auto plus = addBtn(":/assets/UI/plus.svg");
             connect(plus, &QPushButton::clicked, this, [this](){
                 overlay = new RenameOverlay("New category", "", [this](QString s){
                     newCategory(this, s);
@@ -83,9 +85,9 @@ TaskView::TaskView() {
                 });
                 tlay->addWidget(overlay, 0, 0);
             });
-            right->addWidget(plus);
+            right->addWidget(plus);}
 
-            auto rnam = addBtn(":/assets/UI/rename.svg");
+            {auto rnam = addBtn(":/assets/UI/rename.svg");
             rnam->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
             connect(rnam, &QPushButton::clicked, this, [this](){
                 QString cur = getCurrent();
@@ -94,7 +96,7 @@ TaskView::TaskView() {
                 });
                 tlay->addWidget(overlay, 0, 0);
             });
-            right->addWidget(rnam);
+            right->addWidget(rnam);}
         topsect->addLayout(right);
     mtlay->addLayout(topsect);
     {QFrame* line = new QFrame();
