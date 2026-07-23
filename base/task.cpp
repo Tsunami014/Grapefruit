@@ -58,6 +58,6 @@ QString Task::bottom() {
         .arg(parseTime(ps.nextTime, true)).arg(parseDate(ps.nextDue, true));
 
     if (ps.lastDue == ps.nextDue) return pref;
-    return pref + QString(", %1 due %2")
+    return pref + QString(", Total %1 due %2")
         .arg(parseTime(ps.totTime, true)).arg(parseDate(ps.lastDue, true));
 }
