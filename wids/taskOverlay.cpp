@@ -249,8 +249,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
                 resizeFont(labl, 1.2);
                 reasonsLay->addWidget(labl);}
 
-                reasons = new TxtEdit(reasonsWid);
-                reasons->setPlainText("Hello!");
+                reasons = new TxtEdit(task->reasons, reasonsWid);
                 reasonsLay->addWidget(reasons);
             qualsWid = new QWidget(this);
             qualsWid->setContentsMargins(0,0,0,0);
@@ -260,7 +259,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
                 resizeFont(labl, 1.2);
                 qualsLay->addWidget(labl);}
 
-                quals = new QualityEdit({}, qualsWid);
+                quals = new QualityEdit(task->quals, qualsWid);
                 qualsLay->addWidget(quals);
 
         editWid = new QWidget(this);
@@ -286,20 +285,28 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
     connect(edit, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
     connect(reasons, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
     connect(quals, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
-    connect(edit, &QTextEdit::textChanged, [=](){ QTimer::singleShot(0, this, [=]() {
+    connect(edit, &QTextEdit::textChanged, [=](){
         task->items = edit->toPlainText();
         edit->highlight();
         saveTasks();
-    }); });
-    connect(titl, &QLineEdit::textChanged, [=](){ QTimer::singleShot(0, this, [=]() {
+    });
+    connect(reasons, &QTextEdit::textChanged, [=](){
+        task->reasons = reasons->toPlainText();
+        saveTasks();
+    });
+    connect(quals, &QTextEdit::textChanged, [=](){
+        task->quals = quals->getWords();
+        saveTasks();
+    });
+    connect(titl, &QLineEdit::textChanged, [=](){
         task->name = titl->text();
         saveTasks();
-    }); });
+    });
     connect(titl, &QLineEdit::returnPressed, [=](){ titl->clearFocus(); });
-    connect(slider, &QSlider::sliderMoved, [=](int val){ QTimer::singleShot(0, this, [=]() {
+    connect(slider, &QSlider::sliderMoved, [=](int val){
         task->import = val;
         saveTasks();
-    }); });
+    });
 }
 
 void TaskOverlay::generateBot() {
