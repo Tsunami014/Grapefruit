@@ -261,11 +261,13 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
     connect(titl, &QLineEdit::textChanged, [=](){
         task->name = titl->text();
         saveTasks();
+        updateBot();
     });
     connect(titl, &QLineEdit::returnPressed, [=](){ titl->clearFocus(); });
     connect(slider, &QSlider::sliderMoved, [=](int val){
         task->import = val;
         saveTasks();
+        updateBot();
     });
 }
 
@@ -309,19 +311,16 @@ void TaskOverlay::generateBot() {
     scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
-
-    auto* bhlay = new QHBoxLayout;
-        bhlay->setContentsMargins(0,0,0,0);
-        bhlay->addStretch();
-        bhlay->addWidget(scrl);
-        bhlay->addStretch();
-        blay->addLayout(bhlay);
+    blay->addWidget(scrl);
 
     QWidget* bitsWid;
     if (nofocus) {
-        auto* labl = new QLabel(task->bottom(), bbar);
-        labl->setContentsMargins(8,8,8,4);
-        bitsWid = labl;
+        tbtxt = new QLabel(task->bottom(), bbar);
+        tbtxt->setAlignment(Qt::AlignCenter);
+        tbtxt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        tbtxt->setContentsMargins(8,8,8,4);
+        bitsWid = tbtxt;
+        scrl->setWidgetResizable(true);
     } else {
         bitsWid = new QWidget(bbar);
         if (quals->hasFocus()) {
@@ -377,6 +376,9 @@ void TaskOverlay::generateBot() {
 
     bbar->layout()->activate();
     update();
+}
+void TaskOverlay::updateBot() {
+    if (tbtxt) tbtxt->setText(task->bottom());
 }
 
 

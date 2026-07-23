@@ -1,5 +1,7 @@
 #pragma once
 #include <QWidget>
+#include <QLabel>
+#include <QPointer>
 #include "base/task.hpp"
 #include "wids/txtedit.hpp"
 #include "wids/qualsEdit.hpp"
@@ -24,8 +26,9 @@ protected:
     void paintEvent(QPaintEvent* event) override;
 
     void generateBot();
+    void updateBot();
 private:
-    QWidget* bbar;
+    QPointer<QWidget> bbar;
     QWidget* editWid;
     HlTxtEdit* edit;
     QWidget* midwid;
@@ -33,6 +36,7 @@ private:
     TxtEdit* reasons;
     QWidget* qualsWid;
     QualityEdit* quals;
+    QPointer<QLabel> tbtxt;
     /// Parts of the layout that are always hidden when selecting a large text box
     std::vector<QWidget*> parts;
     inline QMargins totMargin();
