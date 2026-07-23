@@ -1,4 +1,5 @@
 #include "task.hpp"
+#include "dbug.hpp"
 
 Task::Task(const QString& nam, const QString& conts, int import, std::set<QString> quals, const QString& reasons)
     : name(nam), items(conts), import(import), quals(quals), reasons(reasons) {}
@@ -9,5 +10,10 @@ bool Task::operator<(const Task& oth) const {
 }
 
 QString Task::bottom() {
+#ifdef DEBUG
+#include "importance.hpp"
+    return "Task score: "+QString::number(basescore(std::make_shared<Task>(*this)));
+#else
     return QString("!").repeated(import);
+#endif
 }

@@ -15,6 +15,7 @@ set(CORE
     base/externs.cpp
     base/scenes.cpp
     base/quals.cpp
+    base/importance.cpp
 
     extra/itemopts.cpp
     extra/drag.cpp
