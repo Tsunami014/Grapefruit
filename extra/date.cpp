@@ -295,7 +295,11 @@ QString parseDate(const QDate& date, bool brief) {
         return "on " + date.toString(sameYear ? "dddd, MMMM d" : "MMMM d, yyyy");
     }
     if (weeks2 > 0) {
-        if (brief) return QString("in %1d (%2w)").arg(days2).arg(weeks2);
+        if (brief) {
+            int smldays = days2-(weeks2*7);
+            if (smldays == 0) return QString("in %1w").arg(weeks2);
+            return QString("in %1w %2d").arg(weeks2).arg(smldays);
+        }
         return QString("on %1 in %2 week%3 (%4 days away)")
             .arg(date.toString("dddd")).arg(weeks2).arg(weeks2 == 1 ? "" : "s").arg(days2);
     }

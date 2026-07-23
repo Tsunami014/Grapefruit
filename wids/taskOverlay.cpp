@@ -140,7 +140,7 @@ QString labelTxt(QTextEdit* edit) {
 }
 
 
-TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondeath, QWidget* parent) : QWidget(parent), ondeath(ondeath) {
+TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondeath, QWidget* parent) : QWidget(parent), ondeath(ondeath), task(task) {
     auto* lay = new QVBoxLayout(this);
     lay->setContentsMargins(0,0,0,0);
 
@@ -179,6 +179,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
         mlay->addWidget(sl2wid);
         auto* sublay2 = new QVBoxLayout(sl2wid);
             {auto* txt = new QLabel("Importance:", sl2wid);
+            resizeFont(txt, 1.2);
             sublay2->addWidget(txt);}
 
             auto* subsublay2 = new QHBoxLayout();
@@ -268,45 +269,61 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
     });
 }
 
-void TaskOverlay::generateBot() {
-    auto* blay = qobject_cast<QBoxLayout*>(bbar->layout());
+void clearlay(QLayout* lay) {
     QLayoutItem* item;
-    while ((item = blay->takeAt(0)) != nullptr) {
-        if (auto* wid = item->widget()) wid->deleteLater();
-        if (auto* lay = item->layout()) lay->deleteLater();
+    while ((item = lay->takeAt(0)) != nullptr) {
+        if (auto* w = item->widget()) w->deleteLater();
+        if (auto* l = item->layout()) {
+            clearlay(l);
+            l->deleteLater();
+        }
         delete item;
     }
+}
+void TaskOverlay::generateBot() {
+    auto* blay = qobject_cast<QBoxLayout*>(bbar->layout());
+    clearlay(blay);
 
-    if (bool isedit = edit->hasFocus() || showingDate;
-            isedit || reasons->hasFocus() || quals->hasFocus()) {
-        if (isedit) {
-            auto labl = new QLabel(bbar);
-            labl->setFocusPolicy(Qt::NoFocus);
-            labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-            labl->setAlignment(Qt::AlignCenter);
-            labl->setWordWrap(true);
-            auto setLablTxt = [=](){ labl->setText(labelTxt(edit)); };
-            labl->connect(edit, &QTextEdit::cursorPositionChanged, labl, setLablTxt);
-            QTimer::singleShot(0, labl, setLablTxt);
-            blay->addWidget(labl);
-        }
+    bool isedit = edit->hasFocus() || showingDate;
+    bool nofocus = !(isedit || reasons->hasFocus() || quals->hasFocus());
 
-        auto* scrl = new QScrollArea(bbar);
-        scrl->setFrameShape(QFrame::NoFrame);
-        scrl->setFocusPolicy(Qt::NoFocus);
-        scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        scrl->setProperty("bg", true);
+    if (isedit) {
+        auto labl = new QLabel(bbar);
+        labl->setFocusPolicy(Qt::NoFocus);
+        labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        labl->setAlignment(Qt::AlignCenter);
+        labl->setWordWrap(true);
+        auto setLablTxt = [=](){ labl->setText(labelTxt(edit)); };
+        labl->connect(edit, &QTextEdit::cursorPositionChanged, labl, setLablTxt);
+        QTimer::singleShot(0, labl, setLablTxt);
+        blay->addWidget(labl);
+    }
 
-        scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-        scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
-        blay->addWidget(scrl);
+    auto* scrl = new QScrollArea(bbar);
+    scrl->setFrameShape(QFrame::NoFrame);
+    scrl->setFocusPolicy(Qt::NoFocus);
+    scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    scrl->setProperty("bg", true);
 
-        auto* bitsWid = new QWidget(bbar);
-        bitsWid->setProperty("bg", true);
-        scrl->setWidget(bitsWid);
+    scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
 
+    auto* bhlay = new QHBoxLayout;
+        bhlay->setContentsMargins(0,0,0,0);
+        bhlay->addStretch();
+        bhlay->addWidget(scrl);
+        bhlay->addStretch();
+        blay->addLayout(bhlay);
+
+    QWidget* bitsWid;
+    if (nofocus) {
+        auto* labl = new QLabel(task->bottom(), bbar);
+        labl->setContentsMargins(8,8,8,4);
+        bitsWid = labl;
+    } else {
+        bitsWid = new QWidget(bbar);
         if (quals->hasFocus()) {
             scrl->setWidgetResizable(true);
             auto* bflow = new FlowLayout(bitsWid, -1, 16, 16);
@@ -334,9 +351,17 @@ void TaskOverlay::generateBot() {
             int sb = scrl->horizontalScrollBar()->sizeHint().height();
             scrl->setFixedHeight(bitsWid->rect().height() + sb);
         }
-        auto* drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
-        drag->installOn(bitsWid);
+    }
+    bitsWid->setProperty("bg", true);
+    scrl->setWidget(bitsWid);
+    auto* drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
+    drag->installOn(bitsWid);
 
+    if (nofocus) {
+        for (auto* w : parts) w->show();
+        editWid->show(); midwid->show();
+        qualsWid->show(); reasonsWid->show();
+    } else {
         for (auto* w : parts) w->hide();
         if (isedit) {
             editWid->show(); midwid->hide();
@@ -348,12 +373,8 @@ void TaskOverlay::generateBot() {
                 qualsWid->show(); reasonsWid->hide();
             }
         }
-    } else {
-        blay->addSpacing(32);
-        for (auto* w : parts) w->show();
-        editWid->show(); midwid->show();
-        qualsWid->show(); reasonsWid->show();
     }
+
     bbar->layout()->activate();
     update();
 }

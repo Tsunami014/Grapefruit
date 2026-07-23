@@ -37,4 +37,6 @@ private:
     std::vector<QWidget*> parts;
     inline QMargins totMargin();
     std::function<void()> ondeath;
+
+    std::shared_ptr<Task> task;
 };

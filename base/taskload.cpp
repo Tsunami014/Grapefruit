@@ -212,7 +212,13 @@ void loadTasks() {
     alltasks["Test"] = test;
 
     tasklist hi;
-    hi.emplace_back(std::make_shared<Task>("Hello, world!"));
+    hi.emplace_back(std::make_shared<Task>("Hello, world!",
+        "+1.5h Hello!\n"
+        "✔ +8.5h Do something cool\n"
+        "+1.5h I am awesome! @2026-07-25\n"
+        "+0.5h NEXT\n"
+        "+1.5h Hiness @2026-08-06\n"
+    ));
     alltasks["Hello"] = hi;
     sortTasks(true);
 }

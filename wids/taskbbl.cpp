@@ -4,16 +4,39 @@
 #include <QPainter>
 #include <QTimer>
 
+class CutoffLabel : public QLabel {
+public:
+    CutoffLabel(const QString& text, QWidget* parent) : QLabel(parent), full(text) {
+        setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    }
+    void setFullText(const QString& text) {
+        full = text;
+        updateClip();
+    }
+protected:
+    void resizeEvent(QResizeEvent* e) override {
+        QLabel::resizeEvent(e);
+        updateClip();
+    }
+    void updateClip() {
+        QFontMetrics fm(font());
+        auto margs = contentsMargins();
+        int realw = width() - margs.left() - margs.right();
+        QLabel::setText(fm.elidedText(full, Qt::ElideRight, realw));
+    }
+    QString full;
+};
+
 TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(parent) {
     main = new QVBoxLayout(this);
     main->setSpacing(0);
 
-    {auto labl = new QLabel(t->name, this);
+    {auto labl = new CutoffLabel(t->name, this);
     labl->setAlignment(Qt::AlignCenter);
     labl->setProperty("bubble", "top");
     main->addWidget(labl);}
 
-    {auto labl = new QLabel(t->bottom(), this);
+    {auto labl = new CutoffLabel(t->bottom(), this);
     labl->setAlignment(Qt::AlignCenter);
     labl->setProperty("bubble", "bot");
     main->addWidget(labl);}
