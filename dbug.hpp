@@ -4,5 +4,6 @@
  * Allows dragging objects in the main scene
  * Press 'P' in the main scene to debug log all the positions of objects in the main scene
  * Changes the bottom task text to state the task's score
+ * Sorts tasks in task list instead by task end score
  */
 #define DEBUG // Comment to disable

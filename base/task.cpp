@@ -4,12 +4,20 @@
 #include "extra/date.hpp"
 #include <QList>
 
+#ifdef DEBUG
+#include "importance.hpp"
+#endif
+
 Task::Task(const QString& nam, const QString& conts, int import, std::set<QString> quals, const QString& reasons)
     : name(nam), items(conts), import(import), quals(quals), reasons(reasons) {}
 bool Task::operator<(const Task& oth) const {
     // If this is less than oth it will be higher in the list
+#ifdef DEBUG
+    return basescore(oth) < basescore(*this);
+#else
     // Swapping the values (like done for import) virtually reverses it
     return std::tie(oth.import, name) < std::tie(import, oth.name);
+#endif
 }
 
 progress Task::Progress() {
@@ -45,8 +53,7 @@ progress Task::Progress() {
 QString Task::bottom() {
 #ifdef DEBUG
     QString pref = QString("!").repeated(import)+"  ";
-#include "importance.hpp"
-    pref += "$"+QString::number(basescore(std::make_shared<Task>(*this)))+"  ";
+    pref += "$"+QString::number(basescore(*this))+"  ";
 #endif
     auto ps = Progress();
     if (ps.isEmpty()) return pref+"No task items";
