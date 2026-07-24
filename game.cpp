@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "font.hpp"
+#include "dbug.hpp"
 #include "wids/house.hpp"
 #include "wids/icobtn.hpp"
 #include "wids/flow.hpp"
@@ -88,4 +89,10 @@ void MainGame::keyPressEvent(QKeyEvent* event) {
         return;
     }
     QWidget::keyPressEvent(event);
+}
+void MainGame::toTasks() {
+#ifdef DEBUG
+    tasks->redoTasks();
+#endif
+    stack->setCurrentWidget(tasks);
 }

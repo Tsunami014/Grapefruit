@@ -1,4 +1,5 @@
 #include "importance.hpp"
+#include "quals.hpp"
 #include <QRandomGenerator>
 #include <QHash>
 
@@ -33,7 +34,7 @@ double Load(std::shared_ptr<Task> task) {
         timesigm(p.totTime, 3, 0.5) * datesigm(p.nextDue, 1, 0.5))/10;
 }
 double Resonance(std::shared_ptr<Task> task) {
-    return 0.1;
+    return scoreQualities(task->quals);
 }
 double Momentum(std::shared_ptr<Task> task) {
     return 0.1;

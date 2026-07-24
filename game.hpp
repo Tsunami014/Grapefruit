@@ -9,15 +9,15 @@ public:
 
     void toMain() { stack->setCurrentWidget(main); }
     void toSetts() { stack->setCurrentWidget(setts); }
-    void toTasks() { stack->setCurrentWidget(tasks); }
+    void toTasks();
+
+    Conversation* conv;
 
 private:
     QStackedWidget* stack;
     QWidget* main;
     QWidget* setts;
     TaskView* tasks;
-
-    Conversation* conv;
 
     void keyPressEvent(QKeyEvent* event) override;
 

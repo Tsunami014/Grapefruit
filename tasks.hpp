@@ -8,6 +8,8 @@
 class TaskView : public QWidget {
 public:
     TaskView();
+
+    void redoTasks();
 private:
     QGridLayout* tlay;
 
@@ -15,6 +17,4 @@ private:
     FlowLayout* tcatlay;
     DragScroll* tcatdrag;
     QPointer<QWidget> overlay;
-
-    void redoTasks();
 };

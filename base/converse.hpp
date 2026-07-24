@@ -7,6 +7,7 @@ class Conversation {
 public:
     Conversation(FlowLayout* olay, QLabel* curtxt);
     void newTopic();
+    std::unordered_set<std::string> getContext() { return context; }
 
 protected:
     std::string purpose;
