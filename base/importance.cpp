@@ -8,11 +8,29 @@ double Randomness(std::shared_ptr<Task> task) {
 double Importance(std::shared_ptr<Task> task) {
     return double(task->import)/5;
 }
+
+constexpr double k = 14.0; // Number of days until it becomes half as important
+constexpr double s = 10.0; // The 'speed' of the change - each increase makes it take an extra day to reach the same value (relative to k)
+double datesigm(QDate date, double max, double min) {
+    if (date.isNull()) return min;
+    return (max-min) / (1.0 + std::exp((QDate::currentDate().daysTo(date) - k) / s)) + min;
+}
 double Urgency(std::shared_ptr<Task> task) {
-    return 0.1;
+    auto p = task->Progress();
+    if (p.isEmpty()) return 0.0;
+    return (datesigm(p.nextDue, 7, 1) + datesigm(p.lastDue, 3, 0.5))/10;
+}
+constexpr double a = 7.0; // The 'speed' of the change (or slope of the middle)
+constexpr double b = 6.0; // Number of hours until it becomes twice as load-y (when c is 1)
+constexpr double c = 0.22; // Initial dampening (takes longer to get started)
+double timesigm(float time, double max, double min) {
+    return (max-min) * std::pow(1+std::pow(double(time)/b, -a), -c) + min;
 }
 double Load(std::shared_ptr<Task> task) {
-    return 0.1;
+    auto p = task->Progress();
+    if (p.isEmpty()) return 0.0;
+    return (timesigm(p.nextTime, 7, 1) * datesigm(p.nextDue, 1, 0.5) +
+        timesigm(p.totTime, 3, 0.5) * datesigm(p.nextDue, 1, 0.5))/10;
 }
 double Resonance(std::shared_ptr<Task> task) {
     return 0.1;
