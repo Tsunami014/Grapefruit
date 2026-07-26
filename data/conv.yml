@@ -1,5 +1,5 @@
 groups:
-  mood: [depressed, sad, happy]
+  mood: [depressed, sad, relaxed, happy]
   problem: [tired, stressed, bored, excited]
   uncertainty: [unsure, stuck, motivated]
   time: "time_of_day"
@@ -13,27 +13,34 @@ purposes:
     # How is it going?
     - templates:
         "*":
-          - "3*{$Hi}! How{2* are you/2* is it/'s it/2*'s %thistime/ is %thistime} $Going?"
-          - "How{ are you/ is it/'s it} $Going{2*/ %thistime}?"
-          - "How's your {3*%time/day} {going/been/coming along}?"
+          - "{$Hi}! How{2* are you/2* is it/'s it} $Going?"
+          - "{$Hi}! How{'s/ is}{$ThisDay} $Going?"
+          - "How{ are you/ is it/'s it} $Going{4*/$ThisDay}?"
+          - "How{ is/'s}{3* everything/$ThisDay} $Going?"
+          - "2*How has{$ThisDay} $Been?"
           - "How{'s/ is/ was} your {%time/day}?"
       opts:
-        - ["Terribly", [depressed], checkin]
-        - ["Not {the best/well/good/too good}", [sad], checkin]
-        - ["{Ok/Alright/Meh}", [], checkin]
         - ["{Pretty good/Great/Good/Nice}!", [happy], progress]
+        - ["{2*Ok/2*Alright/Meh}", [], checkin]
+        - ["$NotBest", [sad], checkin]
+        - ["{2*Terrible/Awful}", [depressed], checkin]
     # What's up?
     - templates:
         "*":
           - "3*{$Hi/3*Good %time}! What's up?"
-          - "{10*What's /Wass}up?"
+          - "{8*What's /Wass}up?"
+          - "{$Hi}! Anything new?"
+          - "What's {going on} today?"
+      shuffle: true
       opts:
         - ["Going {well/good/great/pretty ok}", [happy], progress]
-        - ["{Nothing/Not} much", [], suggest]
-        - ["Not {well/the best/too good/too well}", [sad], checkin]
+        - ["{Nothing much/Not much/}", [], suggest]
+        - ["$NotBest", [sad], checkin]
         - ["Going {poorly/terribly/awfully}", [depressed], checkin]
-        - ["{Everything!/4*}", [], checkin]
-        - ["{The sky/The clouds/20*}", [], haha]
+        - ["$Sleeping", [tired], comfort]
+        - ["$Working", [motivated], progress]
+        - ["$Chilling", [relaxed], progress]
+        - ["{The sky/The clouds/30*}", [], haha]
 
   haha:
     # Laugh at a joke
@@ -42,58 +49,118 @@ purposes:
           - "Ha{ha/ ha/}{! V/, v}ery funny{./!} $ButSeriously"
           - "Good one! $ButSeriously"
           - "Very funny{!/.} $ButSeriously"
+      shuffle: true
       opts:
-        - ["Not {doing well/going well/2*the best/at my best}", [sad], checkin]
-        - ["{Pretty mid/2*Ok/2*Fine}", [], suggest]
-        - ["{Going well/Going great/Well/Great/Awesome/Not bad}", [happy], progress]
+        - ["$NotBest", [sad], checkin]
+        - ["{Mid/2*Ok/2*Fine/Not bad/3*}", [], suggest]
+        - ["{Well/Great/Awesome}", [happy], progress]
+        - ["$Sleeping", [tired], comfort]
+        - ["$Working", [motivated], progress]
+        - ["$Chilling", [relaxed], progress]
 
   progress:
-    # How's your work coming along? / What are you up to?
+    # How's your work coming along?
     - templates:
         "*":
-          - "How are you {going/coming along}?"
-          - "How's it {going/coming along}?"
-          - "What {5*are /}you up to?"
+          - "2*How{3* are you/'s it/ is everything} $Going?"
+          - "How{'s/ is} {the work/everything} $Coming?"
+          - "How are your {projects/tasks} $Coming?"
+      opts:
+        - ["{Terribly/Poorly}", [depressed], checkin]
+        - ["$Stuck", [stuck], checkin]
+        - ["$NotBest", [sad], checkin]
+        - ["{2*Ok/2*Alright/Meh/Getting there}", [], checkin]
+        - ["{Smoothly/Excellent/Great/Well}!", [happy], checkin]
+
+    # What are you up to?
+    - templates:
+        "*":
+          - "What {10*are /}you up to?"
+          - "What {10*are /}you {working on/planning/doing} {right now/now/2*%thistime/today}?"
+          - "What {2*are your plans/is the plan/'s the plan}{/5* for %thistime/2*%thistime}?"
+      shuffle: true
+      opts:
+        - ["$Sleeping", [tired], comfort]
+        - ["$Working", [motivated], progress]
+        - ["$Chilling", [relaxed], suggest]
+        - ["{Nothing/Nothing much/Not much}", [unsure], suggest]
+        - ["{2*Struggling/2*Wasting time/2*Getting nowhere/I'm stuck/Avoiding stuff/Procrastinating}", [sad], checkin]
+
+    # Done good work today?
+    - templates:
+        "*":
+          - "How{'s/ is} {2*your /}work $Going? Have you $DoneStuff{ %thistime/ today/2*}?"
+          - "Has {your /}work{ been good/ gone well/ been going well}{ %thistime/ today/}?"
+          - "Have you $DoneStuff{ %thistime/ today/}?"
+      opts:
+        - ["{I wish/}", [unsure], suggest]
+        - ["{Nope/None/No/I wish}", [], checkin]
+        - ["{A bit/Not much}", [], suggest]
+        - ["{Yup/Yeah/Yes/Heaps}!", [happy], progress]
 
   checkin:
     # Why are you sad?
     - templates:
-        "sad?depressed":
+        "!happy, !relaxed":
           - "{What's/Anything} wrong?"
           - "Anything {troubling/bothering} you{right now/6*}?"
           - "2*{What's/Anything/What is} {the matter/on your mind}?"
         "depressed":
-          - "What's {3*troubling/3*bothering/saddening} you?"
+          - "5*What{'s/ is} {3*troubling/3*bothering/saddening/2*upsetting} you?"
       shuffle: true
       opts:
-        - ["{Tired/Everything's tiring}", [tired], comfort]
-        - ["{Stressed/A bit stressed/Anxious/Life's stressful}", [stressed], comfort]
+        - ["$Tired", [tired], comfort]
+        - ["$Stressed", [stressed], comfort]
         - ["{Bored/Nothing to do}", [bored], suggest]
         - ["$Unsure", [unsure], suggest]
-        - ["{Stuck/Need help}", [stuck], suggest]
+        - ["$Stuck", [stuck], suggest]
         - ["{Nothing/Nothing's wrong/I'm good/All good/All's good}", [-mood, -uncertainty]]
     # How are you going?
     - templates:
-        "=":
-          - "2*How{ are you going/ is it going/ are things/'s it going/'s it coming along}?"
-          - "How{'s/ is} life treating you{ this %time/today/3*}?"
-          - "What's up?"
+        "!depressed, !sad":
+          - "How are things {going/coming along}?"
+          - "3*How{ are you/ is it/'s it} {going/coming along/holding up}?"
+          - "How{'s/ is} {life/the world} treating you?"
       shuffle: true
       opts:
         - ["{Not/Not going} good", [sad]]
-        - ["{Stuck/Need help}", [stuck], encourage]
+        - ["$Stuck", [stuck], encourage]
         - ["$Unsure", [unsure], suggest]
-        - ["{Great/Awesome/Doing well/I've got this}!", [happy, motivated, -problem], progress]
+        - ["$Tired", [tired], comfort]
+        - ["{2*Great/2*Awesome/2*Doing well/I've got this}!", [happy, motivated, -problem], progress]
+    # Anything wrong?
+    - templates:
+        "sad?-mood":
+          - "{Anything/Is something/Is anything} {2*wrong/off}?"
+          - "{3*Are y/Y}ou {all /}good?"
+      shuffle: true
+      opts:
+        - ["$Stuck", [stuck], encourage]
+        - ["$Unsure", [unsure], suggest]
+        - ["$Tired", [tired], comfort]
+        - ["$Stressed", [stressed], comfort]
+        - ["{Bored/Nothing to do}", [bored], suggest]
+        - ["{2*Nope/All's good/Doing well}!", [happy, -problem], progress]
 
   comfort:
+    # Suggest improvements for the user
     - templates:
+        "tired":
+          - "2*{Maybe take/Try taking} a $Quick{break/rest} if you're tired{./?}"
+          - "2*{3*Do you want to/Should you} take a $Quick{rest/break}? You{3* seem/'re a bit} tired."
+          - "I {like/enjoy} taking {a small break/small rests/short rests} occasionally{5*when I feel tired/when I feel tired like you/3*}, $TryIt?"
+          - "{I sometimes/Sometimes, I} need to take a $Quick{rest/break} {5*when I feel tired/when I feel tired like you/3*}, $TryIt?"
         "*":
           - "I hope you get better soon"
+      opts:
+    # Be there for the user
 
   encourage:
+    # Push the user to do more
     - templates:
         "*":
           - "Encouragement!"
+    # Celebrate existing achievements
 
   suggest:
     - templates:
@@ -102,7 +169,24 @@ purposes:
           - "Maybe you can do xyz?"
 
 dictionary:
+  Going: "{going/coming along}"
+  Coming: "{going/3*coming along}"
+  ThisDay: " %thistime/ today/ your day/ your %time"
+  Been: "{holding up/going/been/coming along}"
+
   Hi: "Hiya/Heya/Hi/Hello/Hiii"
+  NotBest: "Not {the best/2*good/too good/well/the best}"
   ButSeriously: "But {really/seriously}, how are you{ going/ feeling/}{2*now/right now/3*}?"
-  Unsure: "{Unsure/2*Aimless/2*Undecided/Lost}"
-  Going: "{going/been/coming along}"
+
+  Sleeping: "{Resting/Sleeping}"
+  Working: "{Working hard/Doing things/Achieving}"
+  Chilling: "{Chillaxing/Relaxing}"
+
+  Unsure: "{3*Deciding/Unsure/2*Aimless/2*Undecided/Lost}"
+  Stuck: "{Stuck/Need help/Hit a wall}"
+  Tired: "{Tired/Life's tiring/So tired/Exhausted}"
+  Stressed: "{Stressed/A bit stressed/Anxious/Life's stressful}"
+
+  Quick: "{short /quick /small /2*}"
+  TryIt: "{3*do you want to/3*would you like to/2*maybe you should/I think maybe/maybe just} try it"
+  DoneStuff: "{been productive/gotten stuff done/made progress/made good progress}"
