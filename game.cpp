@@ -29,7 +29,7 @@ MainGame::MainGame() {
     curtxt->setObjectName("curtxt");
     resizeFont(curtxt, 1.25);
     QFontMetrics fm(curtxt->font());
-    curtxt->setFixedHeight(fm.lineSpacing() * 3.6); // 3 lines plus extra space
+    curtxt->setFixedHeight(fm.lineSpacing() * 1.2 * 3); // 3 lines plus extra space
     mlay->addWidget(curtxt);
 
     auto botsect = new QHBoxLayout();

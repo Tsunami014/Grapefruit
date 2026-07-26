@@ -65,13 +65,13 @@ QHash<QString, int> ratios;
 
 void loadRatios() {
     ratios.insert("Randomness", 1);
-    ratios.insert("Importance", 1);
+    ratios.insert("Importance", 2);
     ratios.insert("Urgency", 4);
     ratios.insert("Load", 4);
     ratios.insert("Resonance", 4);
     ratios.insert("Momentum", 2);
     ratios.insert("Variety", 2);
-    ratios.insert("CatVariety", 2);
+    ratios.insert("CatVariety", 1);
 }
 
 /// Out of 1000, higher = more important

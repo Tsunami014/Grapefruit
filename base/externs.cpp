@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <QTime>
 
+void resetExterns() {}
+
 QString getTime() {
     int hour = QTime::currentTime().hour();
     if (hour < 5) {

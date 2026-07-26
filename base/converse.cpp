@@ -81,6 +81,7 @@ Conversation::Conversation(FlowLayout* olay, QLabel* curtxt)
         refresh();
     }
 void Conversation::newTopic() {
+    resetExterns();
     // Remove all context keys unless in keep
     const auto& kp = keeps();
     for (auto it = context.begin();it != context.end();) {
@@ -94,6 +95,10 @@ void Conversation::newTopic() {
 }
 
 void Conversation::onclick(Option o) {
+    if (o.title.isNull()) {
+        refresh();
+        return;
+    }
     if (o.newpurp != "") {
         purpose = o.newpurp;
     }
