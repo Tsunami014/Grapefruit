@@ -100,7 +100,7 @@ void Conversation::onclick(Option o) {
         return;
     }
     if (o.newpurp != "") {
-        purpose = o.newpurp;
+        purpose = polishSentence(QString::fromStdString(o.newpurp)).toStdString();
     }
     const auto& ggp = getgroup();
     const auto& grps = groups();
@@ -125,7 +125,7 @@ const QRegularExpression dictRe("\\$([a-zA-Z0-9_]+)\\$?");
 
 const QRegularExpression polishRe("{([^}]+)}");
 QString Conversation::polishSentence(QString sent) {
-    // Replace synonym choices in {brackets/braces}
+    // Replace dictionary $references
     auto it = dictRe.globalMatch(sent);
     int offs = 0;
     while (it.hasNext()) {
@@ -137,6 +137,7 @@ QString Conversation::polishSentence(QString sent) {
         sent.replace(start, end - start, repl);
         offs += repl.length() - (end - start);
     }
+    // Replace synonym choices in {brackets/braces}
     it = polishRe.globalMatch(sent);
     offs = 0;
     while (it.hasNext()) {

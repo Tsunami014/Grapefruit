@@ -32,9 +32,9 @@
 ### The options
 - The purpose templates are grouped together by the list of user options provided
   - This list contains multiple choices for what set of options to provide and it picks a random one
-  - Each option in the set is a word or phrase and has attached tags and an optional set purpose which if included sets the purpose to that.
+  - Each option in the set is a word or phrase and has attached tags and an optional set purpose (which can use `{/}` or `$word` too) which if included sets the purpose to that.
   - 'Attached tags' are where if the option is selected, the tags are added to the current context, removing others in the same group. Additionally, if a tag is `-group`, it will remove all tags from that group instead.
-- A 'new topic' option is always included (no need to specify) that resets the conversation
+- A 'new topic' option is always automatically included (so no need to specify) that resets the conversation
 - If 'shuffle' is true then will shuffle the options. If false or omitted, will keep in order.
 
 ### The dictionary
@@ -66,7 +66,7 @@ purposes:
       opts:
         - ["A bit sad", [sad], comfort]
         - ["Pretty good", [okay]]
-        - ["Don't know", [-mood]]
+        - ["Don't know", [-mood], "{3*suggest/comfort}"]
 
 dictionary:
   feel: "{feel/start feeling}"
