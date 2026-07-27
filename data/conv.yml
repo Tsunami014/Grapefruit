@@ -30,7 +30,7 @@ purposes:
         "*":
           - "What {10*are /}you up to?"
           - "What {10*are /}you {working on/planning/doing} {right now/now/2*%thistime/today}?"
-          - "What {2*are your plans/is the plan/'s the plan}{/5* for %thistime/2*%thistime}?"
+          - "What {2*are your plans/is the plan/'s the plan}{/5* for %thistime/2* %thistime}?"
       shuffle: true
       opts:
         - ["$Sleeping", [tired], comfort]
