@@ -2,6 +2,7 @@
 #include <QStackedWidget>
 #include "tasks.hpp"
 #include "base/converse.hpp"
+#include "wids/house.hpp"
 
 class MainGame : public QMainWindow {
 public:
@@ -12,6 +13,7 @@ public:
     void toTasks();
 
     Conversation* conv;
+    House* house;
 
 private:
     QStackedWidget* stack;

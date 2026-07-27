@@ -4,6 +4,7 @@ groups:
   uncertainty: [unsure, stuck, motivated]
   time: "time_of_day"
   thistime: "this_time_of_day"
+  scene: "scene"
 
 initial: [sayhi]
 reset: [sayhi, progress]
@@ -28,6 +29,8 @@ purposes:
     # What are you up to?
     - templates:
         "*":
+          - "{$Hi}! I{ was/'m}{ just/} %scene{ right now/}, what about you?"
+          - "{$Hi}! I{ was/'m}{ just/} %scene{ right now/}, what {are/were} you {up to/doing}?"
           - "What {10*are /}you up to?"
           - "What {10*are /}you {working on/planning/doing} {right now/now/2*%thistime/today}?"
           - "What {2*are your plans/is the plan/'s the plan}{/5* for %thistime/2* %thistime}?"
@@ -92,10 +95,10 @@ purposes:
         "*":
           - "How{'s/ is} {your /5*}work {going/coming along/treating you}? $DoneStuff"
           - "Is {your /5*}work {going good/going well/treating you well/being kind to you}{ %thistime/ today/}?"
-          - "Are you managing to {get through stuff/survive the work/do stuff/get stuff done} {%thistime/today}?"
+          - "Are you managing to {get through stuff/survive work/do stuff/get stuff done} {%thistime/today}?"
           - "$DoneStuff"
       opts:
-        - ["{3*Not doing any/3*Got none/No work}", [], "{4*suggest/encourage/checkin}"]
+        - ["{Nothing to do/No work}", [], "{4*suggest/encourage/checkin}"]
         - ["{I wish/}", [unsure], "{2*suggest/comfort/checkin}"]
         - ["{Nope/None/No}", [], "{5*checkin/suggest}"]
         - ["{A bit/Not much}", [], "{2*suggest/comfort/checkin}"]
@@ -176,9 +179,9 @@ purposes:
           - "Maybe you can do xyz?"
 
 dictionary:
-  Going: "{going/coming along}"
+  Going: "{going/coming along/holding up/coming along}"
   ThisDay: " %thistime/ today/ your day/ your %time"
-  Been: "{holding up/going/been/coming along}"
+  Been: "{2*been/2*gone down/gone/held together}"
 
   Hi: "Hiya/Heya/Hi/Hello"
   NotBest: "Not {the best/2*good/too good/well/the best}"
@@ -195,7 +198,7 @@ dictionary:
 
   Quick: "{short /quick /small /2*}"
   TryIt: "{3*do you want to/3*would you like to/2*maybe you should/I think maybe/maybe just} try it"
-  DoneStuff: "Are you {surviving/going well/made progress}{ %thistime/2* today/3*}?"
+  DoneStuff: "Are you {going well/making progress}{ %thistime/2* today/3*}?"
 
   StuckOs: "{suggest/comfort/encourage}"
   AllGoodOs: "{2*progress/2*encourage/suggest}"

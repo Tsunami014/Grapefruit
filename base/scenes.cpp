@@ -66,7 +66,7 @@ std::vector<SceneItem> getSceneItems(QString scene) {
     return gsis(parts.sliced(1), its);
 }
 
-QString randomScene() {
+std::pair<QString, QString> randomScene() {
     auto opts = sconfig()["choices"];
     auto o = opts[QRandomGenerator::global()->bounded(int(opts.size()))];
     QString end = QString::fromStdString(o["base"].as<std::string>());
@@ -80,5 +80,6 @@ QString randomScene() {
             end += "#" + QString::fromStdString(item.as<std::string>());
         }
     }
-    return end;
+    auto nam = o["names"][QRandomGenerator::global()->bounded(int(o["names"].size()))].as<std::string>();
+    return {end, QString::fromStdString(nam)};
 }

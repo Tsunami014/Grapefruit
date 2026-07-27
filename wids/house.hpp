@@ -6,6 +6,7 @@ class House : public QGraphicsView {
 public:
     House(QWidget* parent = nullptr);
     void newScene();
+    QString curScnName() { return curScnNam; }
 
 protected:
 #ifdef DEBUG
@@ -14,4 +15,5 @@ protected:
     void buildScene(QString scene);
 
     QGraphicsScene scn;
+    QString curScnNam;
 };

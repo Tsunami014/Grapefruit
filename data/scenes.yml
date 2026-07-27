@@ -38,6 +38,11 @@ choices:
     extras:
       - eat
       - pizza
+    names:
+      - "eating {some} pizza"
   - base: desk
     extras:
       - [rug, ~]
+    names:
+      - "chilling out"
+      - "relaxing"

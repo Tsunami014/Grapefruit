@@ -76,6 +76,7 @@ dictionary:
 These are used as strings instead of lists of tags under a group name.
 - `"time_of_day"` - e.g. "morning", "afternoon", or "evening"
 - `"this_time_of_day"` - e.g. "this morning", "this afternoon", "tonight"
+- `"scene"` - a randomly chosen name from the current scene (verb)
 
 
 # Scenes - `scenes.yml`
@@ -102,6 +103,7 @@ These are a list of choices, each equally likely. A choice contains:
 - `extras`, which are a list of 'extras' (tags to add to the current scene). An extra can be either;
   - A string - which will be always used
   - A list - from which a random item is picked (can prefix with `x*` which will increase the likelihood of that option by `x` times). Can include blank items (in yaml, that is `~`)
+- `names`, which are a list of names which get randomly chosen to be put in the conversation. The name should be a verb.
 
 # Qualities - `quals.yml`
 This file is a mapping from quality name to a list of conversation context tags that influence it and by how much.

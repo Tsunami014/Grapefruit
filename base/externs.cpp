@@ -1,4 +1,5 @@
 #include "externs.hpp"
+#include "game.hpp"
 #include <QDebug>
 #include <QTime>
 
@@ -27,6 +28,9 @@ QString runExtern(std::string name) {
         QString t = getTime();
         if (t == "night") return "tonight";
         return "this "+t;
+    }
+    if (name == "scene") {
+        return MG->house->curScnName();
     }
     qFatal() << "Unknown external name:" << name;
     return "";
