@@ -78,8 +78,8 @@ purposes:
     - templates:
         "*":
           - "2*How{3* are you/'s it/ is everything} $Going?"
-          - "How{'s/ is} {the work/everything} $Coming?"
-          - "How are your {projects/tasks} $Coming?"
+          - "How{'s/ is} {the work/everything} $Going?"
+          - "How are your {projects/tasks} $Going?"
       opts:
         - ["{Terribly/Poorly}", [depressed], checkin]
         - ["$Stuck", [stuck], "{checkin/comfort}"]
@@ -90,10 +90,12 @@ purposes:
     # Done good work today?
     - templates:
         "*":
-          - "How{'s/ is} {2*your /}work $Going? Have you $DoneStuff{ %thistime/ today/2*}?"
-          - "Has {your /}work{ been good/ gone well/ been going well}{ %thistime/ today/}?"
-          - "Have you $DoneStuff{ %thistime/ today/}?"
+          - "How{'s/ is} {your /5*}work {going/coming along/treating you}? $DoneStuff"
+          - "Is {your /5*}work {going good/going well/treating you well/being kind to you}{ %thistime/ today/}?"
+          - "Are you managing to {get through stuff/survive the work/do stuff/get stuff done} {%thistime/today}?"
+          - "$DoneStuff"
       opts:
+        - ["{3*Not doing any/3*Got none/No work}", [], "{4*suggest/encourage/checkin}"]
         - ["{I wish/}", [unsure], "{2*suggest/comfort/checkin}"]
         - ["{Nope/None/No}", [], "{5*checkin/suggest}"]
         - ["{A bit/Not much}", [], "{2*suggest/comfort/checkin}"]
@@ -149,7 +151,7 @@ purposes:
     # Suggest improvements for the user
     - templates:
         "tired":
-          - "2*{Maybe take/Try taking} a $Quick{break/rest} if you're tired{./?}"
+          - "2*{Maybe take/Try taking} a $Quick{break/rest} if you're tired{2*./?}"
           - "2*{3*Do you want to/Should you} take a $Quick{rest/break}? You{3* seem/'re a bit} tired."
           - "I {like/enjoy} taking {a small break/small rests/short rests} occasionally{5*when I feel tired/when I feel tired like you/3*}, $TryIt?"
           - "{I sometimes/Sometimes, I} need to take a $Quick{rest/break} {5*when I feel tired/when I feel tired like you/3*}, $TryIt?"
@@ -175,7 +177,6 @@ purposes:
 
 dictionary:
   Going: "{going/coming along}"
-  Coming: "{going/3*coming along}"
   ThisDay: " %thistime/ today/ your day/ your %time"
   Been: "{holding up/going/been/coming along}"
 
@@ -194,7 +195,7 @@ dictionary:
 
   Quick: "{short /quick /small /2*}"
   TryIt: "{3*do you want to/3*would you like to/2*maybe you should/I think maybe/maybe just} try it"
-  DoneStuff: "{been productive/done good things/gotten stuff done/made progress/made good progress}"
+  DoneStuff: "Are you {surviving/going well/made progress}{ %thistime/2* today/3*}?"
 
   StuckOs: "{suggest/comfort/encourage}"
   AllGoodOs: "{2*progress/2*encourage/suggest}"
