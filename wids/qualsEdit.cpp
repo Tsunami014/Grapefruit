@@ -42,7 +42,11 @@ void QualityEdit::toggleWord(QString word) {
 }
 
 void QualityEdit::updtxt() {
-    setText(QStringList(words.begin(), words.end()).join("  "));
+    QStringList li(words.begin(), words.end());
+    for (QString &s : li) {
+        if (!s.isEmpty()) s[0] = s[0].toUpper();
+    }
+    setText(li.join("  "));
 
     // Add highlighting!
     QList<QTextEdit::ExtraSelection> sels;
