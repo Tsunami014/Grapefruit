@@ -6,7 +6,8 @@
 
 ### What is there to mention
 - Context tags - a list of context items about the user (e.g. 'sad', 'tired', 'unsure', 'had a long day', 'thinking about project xyz', 'bored') that should be 'interesting', i.e. make an impact on messages sent, so include enough and make them specific so each new option will always change at least something and the conversation doesn't go in circles.
-  - Context tags get mostly reset at the beginning of every conversation (some groups are marked as 'keep' (prefixed with =; the = gets stripped during parsing) (such as projects working on) and they stay but the rest reset)
+  - Context tags get mostly reset at the beginning of every conversation (some groups are marked as 'keep' (prefixed with `=`; the = gets stripped during parsing) (such as projects working on) and they stay but the rest reset)
+  - If a context group is prefixed with `~`, then its group will be cleared before new tags get applied each conversation.
   - Context tags should have groups (e.g. 'mood' contains 'sad' and 'happy') where conflicting tags (e.g. 'happy' and 'sad') should be in the same group and there is only ever at most one tag active per group.
   - Context tags must be unique and are referred to by name and not by group
 

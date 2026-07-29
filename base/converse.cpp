@@ -27,7 +27,10 @@ const std::unordered_map<std::string, std::unordered_set<std::string>>& groups()
             for (const auto& item : entry.second) {
                 conts.insert(item.as<std::string>());
             }
-            gs.insert({entry.first.as<std::string>(), conts});
+            auto nam = entry.first.as<std::string>();
+            if (nam.empty()) continue;
+            if (nam[0] == '=' || nam[0] == '~') nam = nam.substr(1);
+            gs.insert({nam, conts});
         }
         return gs;
     });
@@ -50,13 +53,28 @@ const std::unordered_set<std::string>& keeps() {
         std::unordered_set<std::string> kps;
         for (const auto& entry : cconfig()["groups"]) {
             std::string key = entry.first.as<std::string>();
-            if (key.size() > 0 && key.at(0) == '=' && entry.second.IsSequence()) {
+            if (key.size() > 0 && key.at(0) == '=') {
                 for (const auto& item : entry.second) {
                     kps.insert(item.as<std::string>());
                 }
             }
         }
         return kps;
+    });
+}
+/// A list of all tags to remove at the start of each new conversation
+const std::unordered_set<std::string>& removs() {
+    return cached([]{
+        std::unordered_set<std::string> rms;
+        for (const auto& entry : cconfig()["groups"]) {
+            std::string key = entry.first.as<std::string>();
+            if (key.size() > 0 && key.at(0) == '~') {
+                for (const auto& item : entry.second) {
+                    rms.insert(item.as<std::string>());
+                }
+            }
+        }
+        return rms;
     });
 }
 
@@ -99,6 +117,14 @@ void Conversation::onclick(Option o) {
     if (o.newpurp != "") {
         purpose = polishSentence(QString::fromStdString(o.newpurp)).toStdString();
     }
+    // Remove all context keys in removs
+    const auto& rms = removs();
+    for (auto it = context.begin();it != context.end();) {
+        if (rms.find(*it) != rms.end()) {
+            it = context.erase(it);
+        } else { ++it; }
+    }
+    // Add new context tags
     const auto& ggp = getgroup();
     const auto& grps = groups();
     for (const auto& chng : o.changes) {
@@ -114,6 +140,7 @@ void Conversation::onclick(Option o) {
         }
         if (!clear) context.insert(chng);
     }
+
     refresh();
 }
 
