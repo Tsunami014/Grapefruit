@@ -58,7 +58,6 @@ void FlowLayout::setGeometry(const QRect& rect) {
 
 QSize FlowLayout::sizeHint() const { return minimumSize(); }
 QSize FlowLayout::minimumSize() const {
-    if (lastSze.isValid()) return lastSze;
     QSize size;
     for (const QLayoutItem* item : std::as_const(itemList)) {
         size = size.expandedTo(item->minimumSize());
@@ -66,6 +65,10 @@ QSize FlowLayout::minimumSize() const {
     const QMargins margins = contentsMargins();
     size += QSize(margins.left() + margins.right(), margins.top() + margins.bottom());
     return size;
+}
+QSize FlowLayout::lastSize() const {
+    const QMargins margins = contentsMargins();
+    return _lastSze - QSize(margins.left() + margins.right(), margins.top() + margins.bottom());
 }
 
 struct layoutPart {
@@ -121,7 +124,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
         }
         finishRow();
         int hei = y + lineHeight + bottom;
-        lastSze = QSize(rect.width(), hei);
+        _lastSze = QSize(rect.width(), hei);
         return hei;
     } else {
         std::vector<int> heights;
@@ -165,7 +168,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
             }
             y += heights[i];
         }
-        lastSze = QSize(maxRight + right, y + bottom);
+        _lastSze = QSize(maxRight + right, y + bottom);
         return y;
     }
 }

@@ -26,6 +26,8 @@ public:
     QSize sizeHint() const override;
     QLayoutItem* takeAt(int index) override;
 
+    QSize lastSize() const;
+
 private:
     int doLayout(const QRect& rect, bool testOnly = false) const;
     int smartSpacing(QStyle::PixelMetric pm) const;
@@ -34,7 +36,7 @@ private:
     int hSpace;
     int vSpace;
 
-    mutable QSize lastSze;
+    mutable QSize _lastSze;
 
     /// If maxRows <= 0 then will place elements horizontally, else will place elements vertically
     int maxRows = -1;

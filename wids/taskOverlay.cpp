@@ -324,7 +324,6 @@ void TaskOverlay::generateBot() {
     } else {
         bitsWid = new QWidget(bbar);
         if (quals->hasFocus()) {
-            scrl->setWidgetResizable(true);
             auto* bflow = new FlowLayout(bitsWid, -1, 16, 16);
             bflow->vertical(3);
 
@@ -338,6 +337,10 @@ void TaskOverlay::generateBot() {
                 connect(btn, &QPushButton::clicked, quals, [=](){ quals->toggleWord(k); });
                 bflow->addWidget(btn);
             }
+
+            // Calculate sizes!
+            bflow->activate();
+            bitsWid->setMinimumWidth(bflow->lastSize().width());
         } else {
             auto* bits = new QHBoxLayout(bitsWid);
             bits->setContentsMargins(12,6,12,6);
