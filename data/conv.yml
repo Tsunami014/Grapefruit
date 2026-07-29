@@ -6,8 +6,9 @@ groups:
   thistime: "this_time_of_day"
   scene: "scene"
 
-initial: [sayhi]
-reset: [sayhi, progress]
+initial: [2*sayhi, what2do]
+reset: [sayhi, progress, what2do]
+
 
 purposes:
   sayhi:
@@ -29,15 +30,15 @@ purposes:
     # What are you up to?
     - templates:
         "*":
-          - "{$Hi}! I{ was/'m}{ just/} %scene{ right now/}, what about you?"
-          - "{$Hi}! I{ was/'m}{ just/} %scene{ right now/}, what {are/were} you {up to/doing}?"
+          - "{$Hi}! I{'ve/ have} {just /}been %scene, what about you?"
+          - "{$Hi}! I was {2*%scene/just %scene/%scene just now}, what {are/were} you {up to/doing}?"
           - "What {10*are /}you up to?"
           - "What {10*are /}you {working on/planning/doing} {right now/now/2*%thistime/today}?"
           - "What {2*are your plans/is the plan/'s the plan}{/5* for %thistime/2* %thistime}?"
       shuffle: true
       opts:
         - ["$Sleeping", [tired], comfort]
-        - ["$Working", [motivated], progress]
+        - ["$Working", [motivated], encourage]
         - ["$Chilling", [relaxed], suggest]
         - ["{Nothing/Nothing much/Not much}", [unsure], suggest]
         - ["{2*Struggling/2*Wasting time/2*Getting nowhere/I'm stuck/Avoiding stuff/Procrastinating}", [sad], checkin]
@@ -56,10 +57,9 @@ purposes:
         - ["$NotBest", [sad], checkin]
         - ["Going {poorly/terribly/awfully}", [depressed], checkin]
         - ["$Sleeping", [tired], comfort]
-        - ["$Working", [motivated], "{progress/encourage}"]
+        - ["$Working", [motivated], encourage]
         - ["$Chilling", [relaxed], "{5*progress/comfort}"]
         - ["{The sky/The clouds/30*}", [], haha]
-
   haha:
     # Laugh at a joke
     - templates:
@@ -73,7 +73,7 @@ purposes:
         - ["{Mid/2*Ok/2*Fine/Not bad/3*}", [], "{suggest/encourage}"]
         - ["{Well/Great/Awesome}", [happy], progress]
         - ["$Sleeping", [tired], comfort]
-        - ["$Working", [motivated], "{progress/encourage}"]
+        - ["$Working", [motivated], encourage]
         - ["$Chilling", [relaxed], progress]
 
   progress:
@@ -104,6 +104,28 @@ purposes:
         - ["{A bit/Not much}", [], "{2*suggest/comfort/checkin}"]
         - ["{Yup/Yeah/Yes/Heaps}!", [happy], encourage]
 
+  what2do:
+    # What do you want to do?
+    - templates:
+        "*":
+          - "What do you {want to do/want to accomplish/feel like doing}{/ %thistime/ today/ now}?"
+          - "What{2*'s your goal/'re your goals/ are your goals} {for /}{today/%thistime}?"
+      opts:
+        - ["Nothing", [sad], checkin]
+        - ["{Sleep/Rest/}", [tired], "{8*comfort/checkin}"]
+        - ["{Don't know/Unsure/Deciding}", [sad, unsure], "{comfort/5*checkin}"]
+        - ["{2*Work/2*Productivity/Good things}", [motivated], "{encourage/progress}"]
+
+    # Is there anything you want to do?
+    - templates:
+        "*":
+          - "{6*Is there a/A}nything you {want/would like} to {2*do/accomplish/achieve}{/ %thistime/ today/ now}?"
+      opts:
+        - ["{No/Not really/Nope}", [sad], checkin]
+        - ["{Sleep/Rest/}", [tired], "{8*comfort/checkin}"]
+        - ["{Don't know/Unsure/Deciding}", [sad, unsure], "{comfort/5*checkin}"]
+        - ["{Yes/Yep/Definately!}", [motivated], encourage]
+
   checkin:
     # Why are you sad?
     - templates:
@@ -133,7 +155,7 @@ purposes:
         - ["{Not/Not going} good", [sad]]
         - ["$Stuck", [stuck], "$StuckOs"]
         - ["$Unsure", [unsure], suggest]
-        - ["$Tired", [tired], comfort]
+        - ["$Tired", [tired], "{suggest/comfort}"]
         - ["{2*Great/2*Awesome/2*Doing well/I've got this}!", [happy, -problem], "$AllGoodOs"]
 
     # Anything wrong?
@@ -151,24 +173,79 @@ purposes:
         - ["{2*Nope/All's good/Doing well}!", [happy, -problem], "$AllGoodOs"]
 
   comfort:
-    # Suggest improvements for the user
+    # Suggest specific improvements for the user
     - templates:
         "tired":
-          - "2*{Maybe take/Try taking} a $Quick{break/rest} if you're tired{2*./?}"
-          - "2*{3*Do you want to/Should you} take a $Quick{rest/break}? You{3* seem/'re a bit} tired."
-          - "I {like/enjoy} taking {a small break/small rests/short rests} occasionally{5*when I feel tired/when I feel tired like you/3*}, $TryIt?"
-          - "{I sometimes/Sometimes, I} need to take a $Quick{rest/break} {5*when I feel tired/when I feel tired like you/3*}, $TryIt?"
-        "*":
-          - "I hope you get better soon"
+          - "3*{Maybe take/Try taking} a $Quick{break/rest} if you're tired{./?}"
+          - "3*$WantBreak?"
+        "stressed?depressed":
+          - "2*$WantBreak{? It might make you feel better./, it may help?/?}"
+      opts:
+        - ["{3*Sure/I guess}", [], rest]
+        - ["Maybe", [], rest]
+        - ["{Won't help/Not helpful/Unhelpful/2*Useless}", [], stillTired]
+        - ["{Don't want to/2*No/No thanks/Not now}", [], "$RecommendOs"]
+    - templates:
+        "stressed":
+          - "3*TODO"
+    - templates:
+        "stuck":
+          - "3*TODO"
+    - templates:
+        "depressed":
+          - "2*TODO"
+
+    # Be there for the user (generic)
+    - templates:
+        "+":
+          - "$Aw$I'm {so /9*}sorry{ ❤️/ :(/}"
+          - "$Aw$It's {going to be /}ok{!/8*.}"
       opts:
 
-    # Be there for the user
+    # Redirect if not applicable
+    - templates:
+        "=": ["> $RecommendOs"]
+
+  rest:
+    - templates:
+          "*":
+            - "2*... (Come back after you've had a {break/rest})"
+            - "... (Come back after you've rested)"
+      opts:
+        - ["Done", [], afterRest]
+        - ["Still tired", [], stillTired]
+  afterRest:
+    - templates:
+        "*":
+          - "2*{4*Are y/Y}ou feeling {any /}better{2*/ than before}?"
+      opts:
+        - ["{Yeah/Yes}", [-tired], what2do]
+        - ["$ABit", [-tired], what2do]
+        - ["{Still tired/Tired again/Tired}", [], stillTired]
+        - ["{No/Not much}", [-tired, sad], "{5*checkin/stillTired}"]
+    - templates:
+        "*":
+          - "{Feel like you w/W}ant to do {something/something now/stuff now/anything}?"
+          - "Are you {feeling /}{well/good/ok} enough to do something{3* now/}?"
+      opts:
+        - ["{Yeah/Yes/Sure}", [-tired], "$RecommendOs"]
+        - ["$ABit", [-tired], what2do]
+        - ["{Still tired/Tired again/Tired}", [], stillTired]
+        - ["{No/Not much}", [-tired, sad], "{8*checkin/stillTired}"]
+
+  stillTired:
+    - templates:
+        "*":
+          - "That's {fine/ok}, TODO"
 
   encourage:
-    # Push the user to do more
     - templates:
         "*":
           - "Encouragement!"
+
+    # You can do more, I believe in you!
+
+    # You've got this!
 
     # Celebrate existing achievements
 
@@ -178,6 +255,7 @@ purposes:
           - "What do you want to do next?"
           - "Maybe you can do xyz?"
 
+
 dictionary:
   Going: "{going/coming along/holding up/coming along}"
   ThisDay: " %thistime/ today/ your day/ your %time"
@@ -185,7 +263,10 @@ dictionary:
 
   Hi: "Hiya/Heya/Hi/Hello"
   NotBest: "Not {the best/2*good/too good/well/the best}"
-  ButSeriously: "But {really/seriously}, how are you{ going/ feeling/}{2*now/right now/3*}?"
+  ButSeriously: "But {really/seriously}, how are you{ going/ feeling/}?"
+  Aw: "{Aw... /Aw, /10*}"
+
+  ABit: "{A bit/A little/Slightly/Somewhat}"
 
   Sleeping: "{Resting/Sleeping}"
   Working: "{Working hard/Doing things/Achieving}"
@@ -197,8 +278,9 @@ dictionary:
   Stressed: "{Stressed/A bit stressed/Anxious/Life's stressful}"
 
   Quick: "{short /quick /small /2*}"
-  TryIt: "{3*do you want to/3*would you like to/2*maybe you should/I think maybe/maybe just} try it"
   DoneStuff: "Are you {going well/making progress}{ %thistime/2* today/3*}?"
+  WantBreak: "{Do you want/Would you like}{ to take/ to have/4*} a $Quick{break/rest}"
 
   StuckOs: "{suggest/comfort/encourage}"
   AllGoodOs: "{2*progress/2*encourage/suggest}"
+  RecommendOs: "{suggest/what2do}"

@@ -22,7 +22,7 @@ std::pair<std::string, int> choose(const std::vector<std::string>& opts) {
     int ln = choices.size();
     if (ln == 0) return {{}, -1};
     int out = QRandomGenerator::global()->bounded(ln);
-    return {opts[out].substr(choices[out].second), choices[out].first};
+    return {opts[choices[out].first].substr(choices[out].second), choices[out].first};
 }
 
 const QRegularExpression chooseReQ(R"(^((\d+) ?\*).*)");

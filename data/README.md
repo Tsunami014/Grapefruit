@@ -20,8 +20,9 @@
     - +group - must have a tag from the group
     - -group - matches when no tag from that group is active
     - = - matches when no other sentence has matched yet (matches are evaluated first-last)
+    - + - matches when another sentence has already matched (opposite of =)
+    - * - matches everything
     - rule?rule... - can match any of the provided rules
-  - A rule of `*` by itself means match everything
   - Only applicable templates are chosen from (e.g. if one group doesn't have the active tag it isn't avaliable)
   - Each template can also define synonyms (e.g. "I hope you {feel/get} better") or use context groups (e.g. %mood or %time)
     - But adding a context group to a template also adds the requirement that that group must have a tag active to that template

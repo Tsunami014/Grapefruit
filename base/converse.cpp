@@ -77,7 +77,7 @@ const std::unordered_set<std::string>& keeps() {
 Conversation::Conversation(FlowLayout* olay, QLabel* curtxt)
     : olay(olay), curtxt(curtxt) {
         auto ppses = cconfig()["initial"].as<std::vector<std::string>>();
-        purpose = ppses[QRandomGenerator::global()->bounded(uint(ppses.size()))];
+        purpose = choose(ppses).first;
         refresh();
     }
 void Conversation::newTopic() {
@@ -90,7 +90,7 @@ void Conversation::newTopic() {
         } else { ++it; }
     }
     auto ppses = cconfig()["reset"].as<std::vector<std::string>>();
-    purpose = ppses[QRandomGenerator::global()->bounded(uint(ppses.size()))];
+    purpose = choose(ppses).first;
     refresh();
 }
 
@@ -125,21 +125,24 @@ const QRegularExpression dictRe("\\$([a-zA-Z0-9_]+)\\$?");
 
 const QRegularExpression polishRe("{([^}]+)}");
 QString Conversation::polishSentence(QString sent) {
-    // Replace dictionary $references
-    auto it = dictRe.globalMatch(sent);
-    int offs = 0;
-    while (it.hasNext()) {
-        auto m = it.next();
-        QString repl = QString::fromStdString(cconfig()["dictionary"][m.captured(1).toStdString()].as<std::string>());
+    // Replace dictionary $references (allows some references in references)
+    for (int i = 0; i < 2; i++) {
+        auto it = dictRe.globalMatch(sent);
+        if (!it.hasNext()) break;
+        int offs = 0;
+        while (it.hasNext()) {
+            auto m = it.next();
+            QString repl = QString::fromStdString(cconfig()["dictionary"][m.captured(1).toStdString()].as<std::string>());
 
-        int start = m.capturedStart(0) + offs;
-        int end = m.capturedEnd(0) + offs;
-        sent.replace(start, end - start, repl);
-        offs += repl.length() - (end - start);
+            int start = m.capturedStart(0) + offs;
+            int end = m.capturedEnd(0) + offs;
+            sent.replace(start, end - start, repl);
+            offs += repl.length() - (end - start);
+        }
     }
     // Replace synonym choices in {brackets/braces}
-    it = polishRe.globalMatch(sent);
-    offs = 0;
+    {auto it = polishRe.globalMatch(sent);
+    int offs = 0;
     while (it.hasNext()) {
         auto m = it.next();
         auto opts = m.captured(1).split('/');
@@ -149,9 +152,10 @@ QString Conversation::polishSentence(QString sent) {
         int end = m.capturedEnd(0) + offs;
         sent.replace(start, end - start, repl);
         offs += repl.length() - (end - start);
-    }
-    it = groupsRe.globalMatch(sent);
-    offs = 0;
+    }}
+    // Replace %taggroups
+    {auto it = groupsRe.globalMatch(sent);
+    int offs = 0;
     const auto& exts = externs();
     while (it.hasNext()) {
         auto m = it.next();
@@ -174,7 +178,7 @@ QString Conversation::polishSentence(QString sent) {
         int end = m.capturedEnd(0) + offs;
         sent.replace(start, end - start, repl);
         offs += repl.length() - (end - start);
-    }
+    }}
     return sent;
 }
 
@@ -188,10 +192,12 @@ void Conversation::refresh() {
     /// [(sentence, idx of options in opts list), ...]
     std::vector<std::pair<std::string, uint>> sents;
     auto matches = [&](const std::string& req) {
-        if (req == "=") {
-            return sents.empty();
-        } else if (req == "*" || req == "") {
+        if (req == "*" || req == "") {
             return true;
+        } else if (req == "=") {
+            return sents.empty();
+        } else if (req == "+") {
+            return !sents.empty();
         } else { switch (req[0]) {
             case '+': {
                 // Only match if any key from this group is present
