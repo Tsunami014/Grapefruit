@@ -69,6 +69,12 @@ void QualityEdit::updtxt() {
         }
     }
     setExtraSelections(sels);
+
+    auto cursor = textCursor();
+    cursor.select(QTextCursor::Document);
+    auto fmt = cursor.blockFormat();
+    fmt.setLineHeight(150, QTextBlockFormat::ProportionalHeight);
+    cursor.setBlockFormat(fmt);
 }
 
 void QualityEdit::mousePressEvent(QMouseEvent* event) {
