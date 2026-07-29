@@ -249,13 +249,29 @@ void Conversation::refresh() {
                 return context.find(req) != context.end();
         }}
     };
+    auto parseSentenceMatch = [&](QString sent) {
+        auto idx = sent.lastIndexOf('#');
+        if (idx == -1) return sent;
+        uint ln = 1;
+        if (idx > 0 && sent.at(idx-1) == ' ') { idx--; ln++; }
+        for (const QString& req : sent.mid(idx+ln).split(", ")) {
+            bool good = false;
+            for (const QString& tok : req.split('?')) {
+                good |= matches(tok.toStdString());
+            }
+            if (!good) return QString();
+        }
+        return sent.left(idx);
+    };
     std::vector<optList> opts;
     uint idx = 0;
     for (const auto& opt : ppse) {
         // Compile the options into a list
         optList outopts;
         for (const auto& item : opt["opts"]) {
-            QString title = polishSentence(QString::fromStdString(item[0].as<std::string>()));
+            auto o = parseSentenceMatch(QString::fromStdString(item[0].as<std::string>()));
+            if (o.isNull()) continue;
+            QString title = polishSentence(o);
             if (title.isEmpty()) continue;
             std::string npurp = "";
             if (item.size() > 2) npurp = item[2].as<std::string>();
@@ -284,7 +300,7 @@ void Conversation::refresh() {
                 std::stringstream ss(req);
                 std::string token;
                 while (!good && std::getline(ss, token, '?')) {
-                    good = matches(token);
+                    good |= matches(token);
                 }
                 if (next == std::string::npos) break;
             }
@@ -304,7 +320,8 @@ void Conversation::refresh() {
     std::vector<QString> outsents;
     std::vector<uint> outoptidxs;
     for (const auto& sent : sents) {
-        auto qstr = QString::fromStdString(sent.first);
+        auto qstr = parseSentenceMatch(QString::fromStdString(sent.first));
+        if (qstr.isNull()) continue;
         // Check all context group tags exist
         auto it = groupsRe.globalMatch(qstr);
         bool good = true;

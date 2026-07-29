@@ -24,8 +24,9 @@
     - * - matches everything
     - rule?rule... - can match any of the provided rules
   - Only applicable templates are chosen from (e.g. if one group doesn't have the active tag it isn't avaliable)
-  - Each template can also define synonyms (e.g. "I hope you {feel/get} better") or use context groups and external variables (e.g. %mood or %time)
+  - Each template can also define synonyms (e.g. "I hope you {feel/get} better"), use dictionary words (e.g. $feel) or use context groups and external variables (e.g. %mood or %time)
     - But adding a context group to a template also adds the requirement that that group must have a tag active to that template
+  - Templates and options can also use rules by ending the item with `#rule` (or multiple; `#rule, rule`) which adds those requirements to that template (although `*`, `+` and `=` will work, they are pointless to use)
   - Starting a sentence with `x*` (optional space after) where x is a number 'repeats' the sentence x times, making it x times more likely to appear.
 - One avaliable template is chosen at random from all avaliable in the current purpose
 - If a sentence is in the format `> purpose` then it will set the purpose to the one specified and use a sentence from that instead.
@@ -55,14 +56,14 @@ purposes:
   checkup_mood:
     - templates:
         "sad":
-          - "2* I hope you $feel better soon."
+          - "2*I hope you $feel better soon."
           - "That sounds really tough."
         "=, +mood":
           - "You seem to be doing well!"
         "-mood":
           - "How are you doing today?"
         "*":
-          - "2* How's your %time{ going/}?"
+          - "2*How's your %time{ going/}?"
       shuffle: true
       opts:
         - ["A bit sad", [sad], comfort]
