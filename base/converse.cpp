@@ -6,6 +6,7 @@
 #include <QRandomGenerator>
 #include <QRegularExpression>
 #include <QFile>
+#include <QTimer>
 
 template<typename F> const auto& cached(F&& init) {
     static const auto value = init();
@@ -83,7 +84,7 @@ Conversation::Conversation(FlowLayout* olay, QLabel* curtxt)
     : olay(olay), curtxt(curtxt) {
         auto ppses = cconfig()["initial"].as<std::vector<std::string>>();
         purpose = choose(ppses).first;
-        refresh();
+        QTimer::singleShot(0, [this](){ refresh(); });
     }
 void Conversation::newTopic() {
     resetExterns();
@@ -129,13 +130,18 @@ void Conversation::onclick(Option o) {
     const auto& ggp = getgroup();
     const auto& grps = groups();
     for (const auto& chng : o.changes) {
+        if (chng.at(0) == '~') {
+            if (auto it = context.find(chng.substr(1)); it != context.end()) {
+                context.erase(it); break;
+            }
+            continue;
+        }
         std::string g;
         bool clear = chng.at(0) == '-';
         if (clear) { g = chng.substr(1); }
         else { g = ggp.at(chng); }
         for (const auto& val : grps.at(g)) {
-            auto it = context.find(val);
-            if (it != context.end()) {
+            if (auto it = context.find(val); it != context.end()) {
                 context.erase(it); break;
             }
         }

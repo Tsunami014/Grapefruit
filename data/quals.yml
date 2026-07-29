@@ -10,10 +10,10 @@ fun:
 mindless:
   2: [tired, bored]
   1: [depressed, sad]
-  -2: [motivated, excited]
+  -2: [motivated, happy, relaxed]
 
 creative:
-  2: [motivated, excited, happy]
+  2: [motivated, happy]
   1: [relaxed, unsure]
   -2: [stressed, tired]
 
@@ -26,35 +26,35 @@ analytical:
 small:
   2: [stuck, depressed, unsure]
   1: [bored, sad, tired]
-  -1: [motivated, excited]
+  -1: [motivated, relaxed]
 
 extensive:
-  2: [motivated, excited, relaxed]
+  2: [motivated, relaxed]
   -1: [unsure, bored]
   -2: [stressed, tired, depressed]
 
 cozy:
   2: [sad, depressed, tired]
   1: [relaxed, bored]
-  -1: [excited, motivated]
+  -1: [motivated]
 
 overwhelming:
-  2: [motivated, excited]
+  2: [motivated, happy]
   -1: [unsure, bored]
   -3: [stressed, tired, depressed]
 
 social:
-  2: [happy, excited, motivated]
+  2: [happy, motivated]
   -1: [bored, relaxed]
   -3: [depressed, sad, stressed]
 
 grounding:
   2: [stressed, stuck, depressed]
   1: [sad, unsure]
-  -1: [excited, bored]
+  -1: [happy, relaxed]
 
 distracting:
   2: [sad, depressed, bored]
   1: [stressed, unsure]
-  -2: [motivated, excited]
+  -2: [motivated, happy]
 
