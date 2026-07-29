@@ -1,5 +1,6 @@
 #include "taskload.hpp"
 #include "task.hpp"
+#include "importance.hpp"
 #include "font.hpp"
 #include "wids/confirm.hpp"
 #include "wids/taskbbl.hpp"
@@ -250,3 +251,24 @@ void loadTasks() {
     sortTasks(true);
 }
 void saveTasks() {}
+
+std::shared_ptr<Task> best = nullptr;
+std::shared_ptr<Task> getBestTask() {
+    if (!best) {
+        best = nullptr;
+        int highsco = std::numeric_limits<int>::min();
+
+        for (const auto& [key, tasks] : alltasks) {
+            for (const auto& tsk : tasks) {
+                if (!tsk) continue;
+                int sco = score(tsk);
+                if (sco > highsco) {
+                    highsco = sco;
+                    best = tsk;
+                }
+            }
+        }
+    }
+    return best;
+}
+void resetBest() { best = nullptr; }

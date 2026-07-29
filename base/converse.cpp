@@ -24,10 +24,8 @@ const std::unordered_map<std::string, std::unordered_set<std::string>>& groups()
         std::unordered_map<std::string, std::unordered_set<std::string>> gs;
         for (const auto& entry : cconfig()["groups"]) {
             std::unordered_set<std::string> conts;
-            if (entry.second.IsSequence()) {
-                for (const auto& item : entry.second) {
-                    conts.insert(item.as<std::string>());
-                }
+            for (const auto& item : entry.second) {
+                conts.insert(item.as<std::string>());
             }
             gs.insert({entry.first.as<std::string>(), conts});
         }
@@ -44,18 +42,6 @@ const std::unordered_map<std::string, std::string>& getgroup() {
             }
         }
         return ggp;
-    });
-}
-/// A list of external groups
-const std::unordered_map<std::string, std::string>& externs() {
-    return cached([]{
-        std::unordered_map<std::string, std::string> gs;
-        for (const auto& entry : cconfig()["groups"]) {
-            if (!entry.second.IsSequence()) {
-                gs.insert({entry.first.as<std::string>(), entry.second.as<std::string>()});
-            }
-        }
-        return gs;
     });
 }
 /// A list of all tags to keep on reset
@@ -90,7 +76,18 @@ void Conversation::newTopic() {
         } else { ++it; }
     }
     auto ppses = cconfig()["reset"].as<std::vector<std::string>>();
-    purpose = choose(ppses).first;
+    auto sze = ppses.size();
+    if (sze == 0) {
+        purpose = "blank";
+    } else if (sze == 1) {
+        purpose = ppses.at(0);
+    } else {
+        // Don't new topic onto the current purpose if possible
+        if (auto it = std::find(ppses.begin(), ppses.end(), purpose); it != ppses.end()) {
+            ppses.erase(it);
+        }
+        purpose = choose(ppses).first;
+    }
     refresh();
 }
 
@@ -156,14 +153,13 @@ QString Conversation::polishSentence(QString sent) {
     // Replace %taggroups
     {auto it = groupsRe.globalMatch(sent);
     int offs = 0;
-    const auto& exts = externs();
     while (it.hasNext()) {
         auto m = it.next();
         std::string group = m.captured(1).toStdString();
         QString repl;
-        auto it = exts.find(group);
-        if (it != exts.end()) {
-            repl = runExtern(it->second);
+        auto it = externList.find(group);
+        if (it != externList.end()) {
+            repl = runExtern(group);
         } else {
             // Find first context tag applied in the group
             repl = m.captured(0);
@@ -277,7 +273,6 @@ void Conversation::refresh() {
         idx++;
     }
 
-    const auto& exts = externs();
     std::vector<QString> outsents;
     std::vector<uint> outoptidxs;
     for (const auto& sent : sents) {
@@ -288,7 +283,7 @@ void Conversation::refresh() {
         while (it.hasNext() && good) {
             auto m = it.next();
             std::string group = m.captured(1).toStdString();
-            if (exts.find(group) == exts.end()) { // Ensure the group is not external
+            if (externList.find(group) == externList.end()) { // Ensure the group is not external
                 good = false;
                 const auto& grps = groups();
                 const auto& it2 = grps.find(group);

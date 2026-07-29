@@ -8,7 +8,6 @@
 - Context tags - a list of context items about the user (e.g. 'sad', 'tired', 'unsure', 'had a long day', 'thinking about project xyz', 'bored') that should be 'interesting', i.e. make an impact on messages sent, so include enough and make them specific so each new option will always change at least something and the conversation doesn't go in circles.
   - Context tags get mostly reset at the beginning of every conversation (some groups are marked as 'keep' (prefixed with =; the = gets stripped during parsing) (such as projects working on) and they stay but the rest reset)
   - Context tags should have groups (e.g. 'mood' contains 'sad' and 'happy') where conflicting tags (e.g. 'happy' and 'sad') should be in the same group and there is only ever at most one tag active per group.
-  - There are some context tags that are auto generated, and only the group should be used to refer to them. These will be auto-kept whether or not they are prefixed with = because they are not dependent on the conversation (although some are dependent on other context, in which case they will be updated).
   - Context tags must be unique and are referred to by name and not by group
 
 ## Realisation (generating the output)
@@ -24,7 +23,7 @@
     - * - matches everything
     - rule?rule... - can match any of the provided rules
   - Only applicable templates are chosen from (e.g. if one group doesn't have the active tag it isn't avaliable)
-  - Each template can also define synonyms (e.g. "I hope you {feel/get} better") or use context groups (e.g. %mood or %time)
+  - Each template can also define synonyms (e.g. "I hope you {feel/get} better") or use context groups and external variables (e.g. %mood or %time)
     - But adding a context group to a template also adds the requirement that that group must have a tag active to that template
   - Starting a sentence with `x*` (optional space after) where x is a number 'repeats' the sentence x times, making it x times more likely to appear.
 - One avaliable template is chosen at random from all avaliable in the current purpose
@@ -46,7 +45,6 @@ I do not recommend to use the contents of this example, it only exists to demons
 ```yaml
 groups:
   mood: [sad, okay, happy]
-  time: "time_of_day"
 
 initial: [checkup_mood]
 reset: [checkup_mood, checkup_progress]
@@ -73,11 +71,13 @@ dictionary:
   feel: "{feel/start feeling}"
 ```
 
-## Auto generated context groups
-These are used as strings instead of lists of tags under a group name.
-- `"time_of_day"` - e.g. "morning", "afternoon", or "evening"
-- `"this_time_of_day"` - e.g. "this morning", "this afternoon", "tonight"
-- `"scene"` - a randomly chosen name from the current scene (verb)
+## Externals
+These are utilised the same way as regular context groups; with `%name`
+- `time` - e.g. "morning", "afternoon", or "evening"
+- `thistime` - e.g. "this morning", "this afternoon", "tonight"
+- `scene` - a randomly chosen name from the current scene (verb)
+- `RSB` - ReSet Best - when this is used, it resets the 'best task' calculation and picks a new one (this is so you can use the old suggestion in the same conversation multiple times before moving on if needed), returning a blank string. **This should be read from often when dealing with best task calculations**.
+- `best_name` - the name of the currently deemed 'best task' to do
 
 
 # Scenes - `scenes.yml`

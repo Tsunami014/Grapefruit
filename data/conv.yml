@@ -2,9 +2,7 @@ groups:
   mood: [depressed, sad, relaxed, happy]
   problem: [tired, stressed, bored, excited]
   uncertainty: [unsure, stuck, motivated]
-  time: "time_of_day"
-  thistime: "this_time_of_day"
-  scene: "scene"
+
 
 initial: [2*sayhi, what2do]
 reset: [sayhi, progress, what2do]
@@ -98,7 +96,7 @@ purposes:
           - "Are you managing to {get through stuff/survive work/do stuff/get stuff done} {%thistime/today}?"
           - "$DoneStuff"
       opts:
-        - ["{Nothing to do/No work}", [], "{4*suggest/encourage/checkin}"]
+        - ["{Nothing to do/Got no work/Nothing on}", [], "{4*suggest/encourage/checkin}"]
         - ["{I wish/}", [unsure], "{2*suggest/comfort/checkin}"]
         - ["{Nope/None/No}", [], "{5*checkin/suggest}"]
         - ["{A bit/Not much}", [], "{2*suggest/comfort/checkin}"]
@@ -252,8 +250,8 @@ purposes:
   suggest:
     - templates:
         "*":
-          - "What do you want to do next?"
-          - "Maybe you can do xyz?"
+          - "%RSB%What do you want to do next?"
+          - "%RSB%Maybe you can do '%best_name'?"
 
 
 dictionary:

@@ -1,5 +1,6 @@
 #include "externs.hpp"
 #include "game.hpp"
+#include "taskload.hpp"
 #include <QDebug>
 #include <QTime>
 
@@ -21,10 +22,10 @@ QString getTime() {
 }
 
 QString runExtern(std::string name) {
-    if (name == "time_of_day") {
+    if (name == "time") {
         return getTime();
     }
-    if (name == "this_time_of_day") {
+    if (name == "thistime") {
         QString t = getTime();
         if (t == "night") return "tonight";
         return "this "+t;
@@ -32,6 +33,17 @@ QString runExtern(std::string name) {
     if (name == "scene") {
         return MG->house->curScnName();
     }
+    if (name == "RSB") {
+        resetBest();
+        return "";
+    }
+    if (name == "best_name") {
+        return getBestTask()->name;
+    }
     qFatal() << "Unknown external name:" << name;
     return "";
 }
+
+const std::unordered_set<std::string> externList = {
+    "time", "thistime", "scene", "RSB", "best_name"
+};

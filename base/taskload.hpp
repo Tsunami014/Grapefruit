@@ -16,5 +16,9 @@ std::shared_ptr<Task> newtask();
 std::shared_ptr<Task> newtask(QString cat);
 
 void loadTasks();
+/// Sorting tasks does not affect getBestTask
 void sortTasks(bool all = false);
 void saveTasks();
+
+std::shared_ptr<Task> getBestTask();
+void resetBest();
