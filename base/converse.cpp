@@ -1,6 +1,7 @@
 #include "converse.hpp"
 #include "externs.hpp"
 #include "choose.hpp"
+#include "taskload.hpp"
 #include <yaml-cpp/yaml.h>
 #include <QRandomGenerator>
 #include <QRegularExpression>
@@ -330,11 +331,16 @@ void Conversation::refresh() {
         display("No sentences avaliable!");
         return;
     }
-    if (out.first.startsWith("> ")) {
-        purpose = polishSentence(out.first.sliced(2)).toStdString();
+    auto sent = out.first;
+    if (sent.startsWith("> ")) {
+        purpose = polishSentence(sent.sliced(2)).toStdString();
         return refresh();
     }
-    display(polishSentence(out.first), opts.at(outoptidxs.at(out.second)));
+    if (sent.startsWith("@ ")) {
+        resetBest();
+        sent = sent.sliced(2);
+    }
+    display(polishSentence(sent), opts.at(outoptidxs.at(out.second)));
 }
 
 void Conversation::display(QString title, optList opts) {

@@ -33,10 +33,6 @@ QString runExtern(std::string name) {
     if (name == "scene") {
         return MG->house->curScnName();
     }
-    if (name == "RSB") {
-        resetBest();
-        return "";
-    }
     if (name == "best_name") {
         return getBestTask()->name;
     }
@@ -45,5 +41,5 @@ QString runExtern(std::string name) {
 }
 
 const std::unordered_set<std::string> externList = {
-    "time", "thistime", "scene", "RSB", "best_name"
+    "time", "thistime", "scene", "best_name"
 };

@@ -168,7 +168,7 @@ purposes:
         - ["$Tired", [tired], comfort]
         - ["$Stressed", [stressed], comfort]
         - ["{Bored/Nothing to do}", [bored], suggest]
-        - ["{2*Nope/All's good/Doing well}!", [happy, -problem], "$AllGoodOs"]
+        - ["{All's good/Doing well}!", [happy, -problem], "$AllGoodOs"]
 
   comfort:
     # Suggest specific improvements for the user
@@ -207,8 +207,8 @@ purposes:
   rest:
     - templates:
           "*":
-            - "2*... (Come back after you've had a {break/rest})"
-            - "... (Come back after you've rested)"
+            - "2*(Come back after you've had a {break/rest})"
+            - "(Come back after you've rested)"
       opts:
         - ["Done", [], afterRest]
         - ["Still tired", [], stillTired]
@@ -250,8 +250,8 @@ purposes:
   suggest:
     - templates:
         "*":
-          - "%RSB%What do you want to do next?"
-          - "%RSB%Maybe you can do '%best_name'?"
+          - "@ What do you want to do next?"
+          - "@ Maybe you can do '%best_name'?"
 
 
 dictionary:

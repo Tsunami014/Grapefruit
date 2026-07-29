@@ -29,6 +29,7 @@
   - Starting a sentence with `x*` (optional space after) where x is a number 'repeats' the sentence x times, making it x times more likely to appear.
 - One avaliable template is chosen at random from all avaliable in the current purpose
 - If a sentence is in the format `> purpose` then it will set the purpose to the one specified and use a sentence from that instead.
+- If a sentence begins with `@ `, then it will reset the currently recommended task. **DO NOT FORGET TO DO THIS!!**
 
 ### The options
 - The purpose templates are grouped together by the list of user options provided
@@ -77,7 +78,6 @@ These are utilised the same way as regular context groups; with `%name`
 - `time` - e.g. "morning", "afternoon", or "evening"
 - `thistime` - e.g. "this morning", "this afternoon", "tonight"
 - `scene` - a randomly chosen name from the current scene (verb)
-- `RSB` - ReSet Best - when this is used, it resets the 'best task' calculation and picks a new one (this is so you can use the old suggestion in the same conversation multiple times before moving on if needed), returning a blank string. **This should be read from often when dealing with best task calculations**.
 - `best_name` - the name of the currently deemed 'best task' to do
 
 
