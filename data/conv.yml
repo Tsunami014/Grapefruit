@@ -3,9 +3,10 @@ groups:
   problem: [tired, stressed, bored]
   uncertainty: [unsure, stuck, motivated]
 
-  ~workstatus: [justworked]
   ~reststatus: [justrested, nottired, stilltired]
   ~comforttry: [tryrest, trytask, nogeneric]
+  ~workstatus: [justworked, starting]
+  suggeststate: [resuggested]
 
 
 initial: [2*sayhi, what2do]
@@ -55,7 +56,7 @@ purposes:
       shuffle: true
       opts:
         - ["{Going pretty/2*Going/2*Pretty} {well/good/great}", [happy], "{2*progress/encourage}"]
-        - ["{Nothing much/Not much/}", [], "{suggest/encourage}"]
+        - ["{Nothing much/2*Not much/3*Nothing/Nothing new}", [], suggest]
         - ["$NotBest", [sad], checkin]
         - ["Going {poorly/terribly/awfully}", [depressed], checkin]
         - ["$Sleeping", [tired], comfort]
@@ -88,6 +89,7 @@ purposes:
       opts:
         - ["{Terribly/Poorly}", [depressed], checkin]
         - ["{No work/2*Aimless/2*Undecided/Lost}", [unsure], suggest]
+        - ["Bored", [bored], suggest]
         - ["$Stuck", [stuck], comfort]
         - ["$NotBest", [sad], checkin]
         - ["{2*Ok/2*Alright/Meh/Getting there}", [], checkin]
@@ -109,6 +111,7 @@ purposes:
       opts:
         - ["{Nothing to do/Got no work/Nothing on}", [], suggest]
         - ["{I wish/}", [unsure], "{2*suggest/comfort}"]
+        - ["{Bored/5*}", [bored], suggest]
         - ["{Nope/None/No}", [], "{5*checkin/suggest}"]
         - ["{A bit/Not much}", [], "{2*suggest/comfort/checkin}"]
         - ["{Yup/Yeah/Yes/Heaps}!", [happy], encourage]
@@ -331,13 +334,25 @@ purposes:
 
   suggest:
     - templates:
-        "*":
-          - "@ Maybe you can do '%best_name'?"
+        "!resuggested":
+          - "@ Maybe you could {do/try/aim for} '%best_name'?"
+          - "@ How about {doing/trying/aiming for} '%best_name'?"
+      opts:
+        - ["{Sure/Ok/Yeah/Alright}!", [starting], encourage]
+        - ["Maybe", [], maybe]
+        - ["Why?", [], whynot]
+        - ["{No/Not really/No thanks/Not feeling it}", [resuggested], suggest]
 
-  whynot:
     - templates:
-        "*":
-          - ""
+        "resuggested":
+          - "@ {Ok{ then/}, h/H}ow about '%best_name'{ instead/}?"
+          - "@ {That's {fine/ok}{,/. So,} w/W}hat about '%best_name'{ instead/}?"
+          - "@ {What/How} about '%best_name'{ instead/}?"
+      opts:
+        - ["{Sure/Ok/Yeah/Alright}!", [starting], encourage]
+        - ["Maybe", [], maybe]
+        - ["Why?", [], whynot]
+        - ["{No/Not really/No thanks/Not feeling it}", [], checkin]
 
 
 dictionary:

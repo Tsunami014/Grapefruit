@@ -81,6 +81,7 @@ These are utilised the same way as regular context groups; with `%name`
 - `thistime` - e.g. "this morning", "this afternoon", "tonight"
 - `scene` - a randomly chosen name from the current scene (verb)
 - `best_name` - the name of the currently deemed 'best task' to do
+- `best_qual` - the best quality of the best task
 
 
 # Scenes - `scenes.yml`
@@ -112,7 +113,8 @@ These are a list of choices, each equally likely. A choice contains:
 # Qualities - `quals.yml`
 This file is a mapping from quality name to a list of conversation context tags that influence it and by how much.
 
-Each quality contains a mapping containing a score, and a list of all the quality keys which can give this score. All the scores will be tallied and the quality will be given an "overall score", which is 0 if negative, 1 if zero or 2 if positive. All qualities on a task will have their overall scores summed together and normalised between 0 and 1 for its overall score
+Each quality contains a mapping containing a score, and a list of all the quality keys which can give this score. All the scores will be tallied and the quality will be given an "overall score", which is 0 if negative, 1 if zero or 2 if positive. All qualities on a task will have their overall scores summed together and normalised between 0 and 1 for its overall score.
+Although, the quality list's 'best quality' is based on the total score sum, not the "overall score" (with a +-1 point randomness on each).
 
 For example:
 ```

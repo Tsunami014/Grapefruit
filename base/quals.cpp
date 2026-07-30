@@ -2,6 +2,7 @@
 #include "game.hpp"
 #include <yaml-cpp/yaml.h>
 #include <QFile>
+#include <QRandomGenerator>
 
 std::unordered_map<QString, qualityTyp> _quals() {
     QFile file(":/data/quals.yml");
@@ -57,4 +58,28 @@ double scoreQualities(std::set<QString> quals) {
     }
     if (numscos == 0) return 0.5;
     return (sco/numscos)+0.5;
+}
+
+QString bestQuality(std::set<QString> quals) {
+    if (MG == nullptr) return {};
+    auto ctx = MG->conv->getContext();
+    auto allquals = qualities();
+    QString best;
+    int bestsco;
+    for (const auto& q : quals) {
+        int tsco = QRandomGenerator::global()->bounded(1, -1);
+        for (const auto& [k, li] : allquals.at(q)) {
+            for (const auto& it : li) {
+                if (ctx.find(it) != ctx.end()) {
+                    tsco += k;
+                    break;
+                }
+            }
+        }
+        if (best.isNull() || tsco > bestsco) {
+            best = q;
+            bestsco = tsco;
+        }
+    }
+    return best;
 }

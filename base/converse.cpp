@@ -223,8 +223,9 @@ void Conversation::refresh() {
         display("Purpose '"+QString::fromStdString(purpose)+"' does not exist!");
         return;
     }
-    /// [(sentence, idx of options in opts list), ...]
-    std::vector<std::pair<std::string, uint>> sents;
+    resetExterns();
+    std::vector<QString> sents;
+    std::vector<uint> optidxs;
     auto matches = [&](const std::string& req) {
         if (req == "*" || req == "") {
             return true;
@@ -273,6 +274,29 @@ void Conversation::refresh() {
         }
         return sent.left(idx);
     };
+    auto checkSent = [&](std::string sent) {
+        auto qstr = parseSentenceMatch(QString::fromStdString(sent));
+        if (qstr.isNull()) return QString();
+        // Check all context group tags exist
+        auto it = groupsRe.globalMatch(qstr);
+        while (it.hasNext()) {
+            auto m = it.next();
+            std::string group = m.captured(1).toStdString();
+            if (externList.find(group) != externList.end()) {
+                if (!evalExtern(group)) return QString();
+            } else {
+                bool good = false;
+                const auto& grps = groups();
+                const auto& it2 = grps.find(group);
+                if (it2 == grps.end()) break;
+                for (const auto& val : it2->second) {
+                    if (context.find(val) != context.end()) good = true; break;
+                }
+                if (!good) return QString();
+            }
+        }
+        return qstr;
+    };
     std::vector<optList> opts;
     uint idx = 0;
     for (const auto& opt : ppse) {
@@ -316,10 +340,16 @@ void Conversation::refresh() {
             }
             if (good) {
                 if (tmpl.second.IsScalar()) {
-                    sents.push_back({tmpl.second.as<std::string>(), idx});
+                    if (auto ns = checkSent(tmpl.second.as<std::string>()); !ns.isNull()) {
+                        sents.push_back(ns);
+                        optidxs.push_back(idx);
+                    }
                 } else {
                     for (const auto& it : tmpl.second) {
-                        sents.push_back({it.as<std::string>(), idx});
+                        if (auto ns = checkSent(it.as<std::string>()); !ns.isNull()) {
+                            sents.push_back(ns);
+                            optidxs.push_back(idx);
+                        }
                     }
                 }
             }
@@ -327,33 +357,7 @@ void Conversation::refresh() {
         idx++;
     }
 
-    std::vector<QString> outsents;
-    std::vector<uint> outoptidxs;
-    for (const auto& sent : sents) {
-        auto qstr = parseSentenceMatch(QString::fromStdString(sent.first));
-        if (qstr.isNull()) continue;
-        // Check all context group tags exist
-        auto it = groupsRe.globalMatch(qstr);
-        bool good = true;
-        while (it.hasNext() && good) {
-            auto m = it.next();
-            std::string group = m.captured(1).toStdString();
-            if (externList.find(group) == externList.end()) { // Ensure the group is not external
-                good = false;
-                const auto& grps = groups();
-                const auto& it2 = grps.find(group);
-                if (it2 == grps.end()) break;
-                for (const auto& val : it2->second) {
-                    if (context.find(val) != context.end()) good = true; break;
-                }
-            }
-        }
-        if (!good) { continue; }
-        outsents.push_back(qstr);
-        outoptidxs.push_back(sent.second);
-    }
-
-    auto out = choose(outsents);
+    auto out = choose(sents);
     if (out.second == -1) {
         display("No sentences avaliable!");
         return;
@@ -367,7 +371,7 @@ void Conversation::refresh() {
         resetBest();
         sent = sent.sliced(2);
     }
-    display(polishSentence(sent), opts.at(outoptidxs.at(out.second)));
+    display(polishSentence(sent), opts.at(optidxs.at(out.second)));
 }
 
 void Conversation::display(QString title, optList opts) {

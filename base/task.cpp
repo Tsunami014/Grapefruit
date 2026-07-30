@@ -1,5 +1,6 @@
 #include "task.hpp"
 #include "dbug.hpp"
+#include "quals.hpp"
 #include "extra/itemopts.hpp"
 #include "extra/date.hpp"
 #include <QList>
@@ -21,6 +22,10 @@ bool Task::operator<(const Task& oth) const {
     // Swapping the values (like done for import) virtually reverses it
     return std::tie(oth.import, name) < std::tie(import, oth.name);
 #endif
+}
+
+QString Task::bestQual() {
+    return bestQuality(quals);
 }
 
 progress Task::Progress() {

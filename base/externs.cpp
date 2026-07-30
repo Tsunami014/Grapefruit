@@ -19,6 +19,14 @@ QString getTime() {
     }
 }
 
+QString bestQ;
+bool hasBQ = false;
+
+void resetExterns() {
+    bestQ = {};
+    hasBQ = false;
+}
+
 QString runExtern(std::string name) {
     if (name == "time") {
         return getTime();
@@ -34,8 +42,32 @@ QString runExtern(std::string name) {
     if (name == "best_name") {
         return getBestTask()->name;
     }
+    if (name == "best_qual") {
+        return bestQ;
+    }
+    return {};
+}
+
+bool evalExtern(std::string name) {
+    if (name == "time" ||
+        name == "thistime" ||
+        name == "scene") {
+        return true;
+    }
+    if (name == "best_name") {
+        return getBestTask() != nullptr;
+    }
+    if (name == "best_qual") {
+        if (!hasBQ) {
+            hasBQ = true;
+            auto bt = getBestTask();
+            if (bt == nullptr) return false;
+            bestQ = bt->bestQual();
+        }
+        return !bestQ.isNull();
+    }
     qFatal() << "Unknown external name:" << name;
-    return "";
+    return false;
 }
 
 const std::unordered_set<std::string> externList = {

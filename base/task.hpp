@@ -32,6 +32,7 @@ public:
     std::set<QString> quals;
     QString reasons;
 
+    QString bestQual();
     progress Progress();
 
     QString bottom();
