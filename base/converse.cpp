@@ -155,7 +155,8 @@ void Conversation::onclick(Option o) {
 const QRegularExpression groupsRe("%([a-zA-Z_]+)%?");
 const QRegularExpression dictRe("\\$([a-zA-Z0-9_]+)\\$?");
 
-const QRegularExpression polishRe("{([^}]+)}");
+const QRegularExpression synnmRe("{((?:[^{}]+|(?R))*)}");
+const QRegularExpression synnmInnrRe("(?:{[^{}]*+(?:(?R)[^{}]*+)*+})(*SKIP)(*F)|\\/");
 QString Conversation::polishSentence(QString sent) {
     // Replace dictionary $references (allows some references in references)
     for (int i = 0; i < 2; i++) {
@@ -197,19 +198,21 @@ QString Conversation::polishSentence(QString sent) {
         sent.replace(start, end - start, repl);
         offs += repl.length() - (end - start);
     }}
-    // Replace synonym choices in {brackets/braces}
-    {auto it = polishRe.globalMatch(sent);
-    int offs = 0;
-    while (it.hasNext()) {
-        auto m = it.next();
-        auto opts = m.captured(1).split('/');
-        QString repl = choose(opts).first;
+    // Replace synonym choices in {brackets/braces} (allows some recursion)
+    for (int i = 0; i < 2; i++) {
+        auto it = synnmRe.globalMatch(sent);
+        int offs = 0;
+        while (it.hasNext()) {
+            auto m = it.next();
+            auto opts =  m.captured(1).split(synnmInnrRe);
+            QString repl = choose(opts).first;
 
-        int start = m.capturedStart(0) + offs;
-        int end = m.capturedEnd(0) + offs;
-        sent.replace(start, end - start, repl);
-        offs += repl.length() - (end - start);
-    }}
+            int start = m.capturedStart(0) + offs;
+            int end = m.capturedEnd(0) + offs;
+            sent.replace(start, end - start, repl);
+            offs += repl.length() - (end - start);
+        }
+    }
     return sent;
 }
 
