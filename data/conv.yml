@@ -332,8 +332,12 @@ purposes:
   suggest:
     - templates:
         "*":
-          - "@ What do you want to do next? TODO: All this"
           - "@ Maybe you can do '%best_name'?"
+
+  whynot:
+    - templates:
+        "*":
+          - ""
 
 
 dictionary:

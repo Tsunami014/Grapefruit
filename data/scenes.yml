@@ -39,7 +39,7 @@ choices:
       - eat
       - pizza
     names:
-      - "eating {some} pizza"
+      - "eating {some /}pizza"
   - base: desk
     extras:
       - [rug, ~]

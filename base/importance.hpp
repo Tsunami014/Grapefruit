@@ -2,6 +2,9 @@
 #include "task.hpp"
 #include "dbug.hpp"
 
+void resetVariety();
+void justSuggested(std::shared_ptr<Task> task);
+
 extern QHash<QString, int> ratios;
 void loadRatios();
 

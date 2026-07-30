@@ -2,6 +2,7 @@
 #include "externs.hpp"
 #include "choose.hpp"
 #include "taskload.hpp"
+#include "importance.hpp"
 #include <yaml-cpp/yaml.h>
 #include <QRandomGenerator>
 #include <QRegularExpression>
@@ -87,7 +88,7 @@ Conversation::Conversation(FlowLayout* olay, QLabel* curtxt)
         QTimer::singleShot(0, [this](){ refresh(); });
     }
 void Conversation::newTopic() {
-    resetExterns();
+    resetVariety();
     // Remove all context keys unless in keep
     const auto& kp = keeps();
     for (auto it = context.begin();it != context.end();) {
@@ -171,19 +172,6 @@ QString Conversation::polishSentence(QString sent) {
             offs += repl.length() - (end - start);
         }
     }
-    // Replace synonym choices in {brackets/braces}
-    {auto it = polishRe.globalMatch(sent);
-    int offs = 0;
-    while (it.hasNext()) {
-        auto m = it.next();
-        auto opts = m.captured(1).split('/');
-        QString repl = choose(opts).first;
-
-        int start = m.capturedStart(0) + offs;
-        int end = m.capturedEnd(0) + offs;
-        sent.replace(start, end - start, repl);
-        offs += repl.length() - (end - start);
-    }}
     // Replace %taggroups
     {auto it = groupsRe.globalMatch(sent);
     int offs = 0;
@@ -203,6 +191,19 @@ QString Conversation::polishSentence(QString sent) {
                 }
             }
         }
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        sent.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }}
+    // Replace synonym choices in {brackets/braces}
+    {auto it = polishRe.globalMatch(sent);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        auto opts = m.captured(1).split('/');
+        QString repl = choose(opts).first;
 
         int start = m.capturedStart(0) + offs;
         int end = m.capturedEnd(0) + offs;

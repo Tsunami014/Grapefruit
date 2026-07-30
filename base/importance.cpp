@@ -1,4 +1,5 @@
 #include "importance.hpp"
+#include "taskload.hpp"
 #include "quals.hpp"
 #include <QRandomGenerator>
 #include <QHash>
@@ -6,6 +7,7 @@
 double Randomness(std::shared_ptr<Task> task) {
     return QRandomGenerator::global()->generateDouble();
 }
+
 double Importance(std::shared_ptr<Task> task) {
     return double(task->import)/5;
 }
@@ -14,7 +16,7 @@ constexpr double k = 14.0; // Number of days until it becomes half as important
 constexpr double s = 10.0; // The 'speed' of the change - each increase makes it take an extra day to reach the same value (relative to k)
 double datesigm(QDate date, double max, double min) {
     if (date.isNull()) return min;
-    return (max-min) / (1.0 + std::exp((QDate::currentDate().daysTo(date) - k) / s)) + min;
+    return (max-min) / (1.0 + std::exp((double(QDate::currentDate().daysTo(date)) - k) / s)) + min;
 }
 double Urgency(std::shared_ptr<Task> task) {
     auto p = task->Progress();
@@ -24,8 +26,8 @@ double Urgency(std::shared_ptr<Task> task) {
 constexpr double a = 7.0; // The 'speed' of the change (or slope of the middle)
 constexpr double b = 6.0; // Number of hours until it becomes twice as load-y (when c is 1)
 constexpr double c = 0.22; // Initial dampening (takes longer to get started)
-double timesigm(float time, double max, double min) {
-    return (max-min) * std::pow(1+std::pow(double(time)/b, -a), -c) + min;
+double timesigm(double time, double max, double min) {
+    return (max-min) * std::pow(1+std::pow(time/b, -a), -c) + min;
 }
 double Load(std::shared_ptr<Task> task) {
     auto p = task->Progress();
@@ -33,17 +35,39 @@ double Load(std::shared_ptr<Task> task) {
     return (timesigm(p.nextTime, 7, 1) * datesigm(p.nextDue, 1, 0.5) +
         timesigm(p.totTime, 3, 0.5) * datesigm(p.nextDue, 1, 0.5))/10;
 }
+
 double Resonance(std::shared_ptr<Task> task) {
     return scoreQualities(task->quals);
 }
-double Momentum(std::shared_ptr<Task> task) {
-    return 0.1;
+
+uint vidx = 0;
+std::unordered_map<std::shared_ptr<Task>, uint> varietymap;
+std::unordered_map<QString, uint> catvarietymap;
+void resetVariety() {
+    vidx = 0;
+    varietymap.clear();
+    catvarietymap.clear();
+}
+void justSuggested(std::shared_ptr<Task> task) {
+    varietymap[task] = vidx;
+    catvarietymap[taskCategory(task)] = vidx;
+    vidx++;
+}
+constexpr double m = -0.4; // The gradient of the slope
+double varietysigm(double variet) {
+    return std::exp(m*variet);
 }
 double Variety(std::shared_ptr<Task> task) {
-    return 0.1;
+    if (auto it = varietymap.find(task); it != varietymap.end()) {
+        return varietysigm(vidx - it->second);
+    }
+    return 1.0;
 }
 double CatVariety(std::shared_ptr<Task> task) {
-    return 0.1;
+    if (auto it = catvarietymap.find(taskCategory(task)); it != catvarietymap.end()) {
+        return varietysigm(vidx - it->second);
+    }
+    return 1.0;
 }
 
 
@@ -55,7 +79,6 @@ _ratioNamesTyp _ratioNames() {
     rn.insert("Urgency", Urgency);
     rn.insert("Load", Load);
     rn.insert("Resonance", Resonance);
-    rn.insert("Momentum", Momentum);
     rn.insert("Variety", Variety);
     rn.insert("CatVariety", CatVariety);
     return rn;
@@ -68,10 +91,9 @@ void loadRatios() {
     ratios.insert("Importance", 2);
     ratios.insert("Urgency", 4);
     ratios.insert("Load", 4);
-    ratios.insert("Resonance", 4);
-    ratios.insert("Momentum", 2);
-    ratios.insert("Variety", 2);
-    ratios.insert("CatVariety", 1);
+    ratios.insert("Resonance", 3);
+    ratios.insert("Variety", 3);
+    ratios.insert("CatVariety", 2);
 }
 
 /// Out of 1000, higher = more important

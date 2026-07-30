@@ -157,6 +157,15 @@ bool deleteCategory(QWidget* parent) {
 }
 
 
+QString taskCategory(std::shared_ptr<Task> task) {
+    for (auto& [key, list] : alltasks) {
+        if (std::find(list.begin(), list.end(), task) != list.end()) {
+            return key;
+        }
+    }
+    return {};
+}
+
 void removeTask(std::shared_ptr<Task> task, bool trycurfirst) {
     // Most likely to be in the current category, so try there first
     QString cur;
@@ -268,6 +277,7 @@ std::shared_ptr<Task> getBestTask() {
                 }
             }
         }
+        if (best != nullptr) justSuggested(best);
     }
     return best;
 }
