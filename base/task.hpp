@@ -22,6 +22,9 @@ public:
         std::set<QString> quals = {},
         const QString& reasons = "");
     bool operator<(const Task& other) const;
+    bool operator==(const Task& other) const;
+
+    const uint id;
 
     QString name;
     QString items;

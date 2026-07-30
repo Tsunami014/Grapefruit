@@ -41,7 +41,7 @@ double Resonance(std::shared_ptr<Task> task) {
 }
 
 uint vidx = 0;
-std::unordered_map<std::shared_ptr<Task>, uint> varietymap;
+std::unordered_map<uint, uint> varietymap;
 std::unordered_map<QString, uint> catvarietymap;
 void resetVariety() {
     vidx = 0;
@@ -49,16 +49,16 @@ void resetVariety() {
     catvarietymap.clear();
 }
 void justSuggested(std::shared_ptr<Task> task) {
-    varietymap[task] = vidx;
+    varietymap[task->id] = vidx;
     catvarietymap[taskCategory(task)] = vidx;
     vidx++;
 }
 constexpr double m = -0.4; // The gradient of the slope
 double varietysigm(double variet) {
-    return std::exp(m*variet);
+    return std::clamp(1.0 - std::exp(m*variet), 0.0, 1.0);
 }
 double Variety(std::shared_ptr<Task> task) {
-    if (auto it = varietymap.find(task); it != varietymap.end()) {
+    if (auto it = varietymap.find(task->id); it != varietymap.end()) {
         return varietysigm(vidx - it->second);
     }
     return 1.0;

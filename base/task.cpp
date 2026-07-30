@@ -8,8 +8,11 @@
 #include "importance.hpp"
 #endif
 
+uint nxtid = 0;
+
 Task::Task(const QString& nam, const QString& conts, int import, std::set<QString> quals, const QString& reasons)
-    : name(nam), items(conts), import(import), quals(quals), reasons(reasons) {}
+    : id(nxtid++), name(nam), items(conts), import(import), quals(quals), reasons(reasons) {}
+bool Task::operator==(const Task& oth) const { return id == oth.id; }
 bool Task::operator<(const Task& oth) const {
     // If this is less than oth it will be higher in the list
 #ifdef DEBUG
