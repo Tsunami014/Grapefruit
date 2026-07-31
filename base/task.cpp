@@ -1,9 +1,9 @@
 #include "task.hpp"
 #include "dbug.hpp"
-#include "quals.hpp"
 #include "extra/itemopts.hpp"
 #include "extra/date.hpp"
 #include <QList>
+#include <QRegularExpression>
 
 #ifdef DEBUG
 #include "importance.hpp"
@@ -24,8 +24,24 @@ bool Task::operator<(const Task& oth) const {
 #endif
 }
 
-QString Task::bestQual() {
-    return bestQuality(quals);
+const QRegularExpression normlSpaces(R"(^\s*\n|\n\s*$|[ \t]+(?=\n)|\s+(?=\n[ \t]*\n))");
+QString normaliseSpaces(QString txt) {
+    auto it = normlSpaces.globalMatch(txt);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        txt.remove(start, end - start);
+        offs -= (end - start);
+    }
+    return txt;
+}
+void Task::setReasons(QString newrs) {
+    reasons = normaliseSpaces(newrs);
+}
+void Task::setItems(QString newits) {
+    items = normaliseSpaces(newits);
 }
 
 progress Task::Progress() {

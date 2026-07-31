@@ -60,12 +60,12 @@ double scoreQualities(std::set<QString> quals) {
     return (sco/numscos)+0.5;
 }
 
-QString bestQuality(std::set<QString> quals) {
+std::pair<std::vector<QString>, int> bestQualities(std::set<QString> quals) {
     if (MG == nullptr) return {};
     auto ctx = MG->conv->getContext();
     auto allquals = qualities();
-    QString best;
-    int bestsco;
+    std::vector<QString> best;
+    int bestsco = std::numeric_limits<int>::min();
     for (const auto& q : quals) {
         int tsco = QRandomGenerator::global()->bounded(1, -1);
         for (const auto& [k, li] : allquals.at(q)) {
@@ -76,10 +76,13 @@ QString bestQuality(std::set<QString> quals) {
                 }
             }
         }
-        if (best.isNull() || tsco > bestsco) {
-            best = q;
+        if (tsco > bestsco) {
+            best.clear();
             bestsco = tsco;
         }
+        if (tsco >= bestsco) {
+            best.push_back(q);
+        }
     }
-    return best;
+    return {best, bestsco};
 }

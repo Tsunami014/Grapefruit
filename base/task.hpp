@@ -27,14 +27,20 @@ public:
     const uint id;
 
     QString name;
-    QString items;
     int import;
     std::set<QString> quals;
-    QString reasons;
 
-    QString bestQual();
+    inline QString getItems() const { return items; }
+    void setItems(QString newits);
+    inline QString getReasons() const { return reasons; }
+    void setReasons(QString newrs);
+
     progress Progress();
 
     QString bottom();
     bool isNew() { return name == "New Task" && items.isEmpty() && quals.empty() && reasons.isEmpty(); }
+
+protected:
+    QString reasons;
+    QString items;
 };

@@ -7,4 +7,4 @@ const std::unordered_map<QString, qualityTyp>& qualities();
 const std::set<QString>& qualkeys();
 
 double scoreQualities(std::set<QString> quals);
-QString bestQuality(std::set<QString> quals);
+std::pair<std::vector<QString>, int> bestQualities(std::set<QString> quals);

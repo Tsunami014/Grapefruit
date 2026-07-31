@@ -4,7 +4,8 @@ tiring:
   -1: [bored, sad]
 
 fun:
-  1: [unsure, stuck, bored]
+  2: [unsure]
+  1: [stuck, bored]
   -1: [stressed]
 
 mindless:

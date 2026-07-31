@@ -82,6 +82,7 @@ These are utilised the same way as regular context groups; with `%name`
 - `scene` - a randomly chosen name from the current scene (verb)
 - `best_name` - the name of the currently deemed 'best task' to do
 - `best_qual` - the best quality of the best task
+- `best_reason` - a random reason why the user wants to to the best task
 
 
 # Scenes - `scenes.yml`

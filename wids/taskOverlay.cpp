@@ -209,7 +209,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
                 resizeFont(labl, 1.2);
                 reasonsLay->addWidget(labl);}
 
-                reasons = new TxtEdit(task->reasons, reasonsWid);
+                reasons = new TxtEdit(task->getReasons(), reasonsWid);
                 reasonsLay->addWidget(reasons);
             qualsWid = new QWidget(this);
             qualsWid->setContentsMargins(0,0,0,0);
@@ -230,8 +230,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             resizeFont(labl, 1.2);
             editLay->addWidget(labl);}
 
-            edit = new HlTxtEdit(editWid);
-            edit->setPlainText(task->items);
+            edit = new HlTxtEdit(task->getItems(), editWid);
             edit->highlight();
             editLay->addWidget(edit);
     lay->addLayout(mlay);
@@ -246,12 +245,12 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
     connect(reasons, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
     connect(quals, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
     connect(edit, &QTextEdit::textChanged, [=](){
-        task->items = edit->toPlainText();
+        task->setItems(edit->toPlainText());
         edit->highlight();
         saveTasks();
     });
     connect(reasons, &QTextEdit::textChanged, [=](){
-        task->reasons = reasons->toPlainText();
+        task->setReasons(reasons->toPlainText());
         saveTasks();
     });
     connect(quals, &QTextEdit::textChanged, [=](){
@@ -363,6 +362,11 @@ void TaskOverlay::generateBot() {
         for (auto* w : parts) w->show();
         editWid->show(); midwid->show();
         qualsWid->show(); reasonsWid->show();
+
+        // Update the text edits from formatting
+        edit->setPlainText(task->getItems());
+        edit->highlight();
+        reasons->setPlainText(task->getReasons());
     } else {
         for (auto* w : parts) w->hide();
         if (isedit) {

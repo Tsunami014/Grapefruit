@@ -152,6 +152,8 @@ void Conversation::onclick(Option o) {
     refresh();
 }
 
+constexpr int maxRecursion = 5;
+
 const QRegularExpression groupsRe("%([a-zA-Z_]+)%?");
 const QRegularExpression dictRe("\\$([a-zA-Z0-9_]+)\\$?");
 
@@ -159,7 +161,7 @@ const QRegularExpression synnmRe("{((?:[^{}]+|(?R))*)}");
 const QRegularExpression synnmInnrRe("(?:{[^{}]*+(?:(?R)[^{}]*+)*+})(*SKIP)(*F)|\\/");
 QString Conversation::polishSentence(QString sent) {
     // Replace dictionary $references (allows some references in references)
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < maxRecursion; i++) {
         auto it = dictRe.globalMatch(sent);
         if (!it.hasNext()) break;
         int offs = 0;
@@ -199,7 +201,7 @@ QString Conversation::polishSentence(QString sent) {
         offs += repl.length() - (end - start);
     }}
     // Replace synonym choices in {brackets/braces} (allows some recursion)
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < maxRecursion; i++) {
         auto it = synnmRe.globalMatch(sent);
         int offs = 0;
         while (it.hasNext()) {
