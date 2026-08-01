@@ -115,5 +115,5 @@ bool evalExtern(std::string name) {
 }
 
 const std::unordered_set<std::string> externList = {
-    "time", "thistime", "scene", "best_name"
+    "time", "thistime", "scene", "best_name", "best_qual", "best_reason"
 };

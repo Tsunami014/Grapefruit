@@ -67,7 +67,7 @@ std::pair<std::vector<QString>, int> bestQualities(std::set<QString> quals) {
     std::vector<QString> best;
     int bestsco = std::numeric_limits<int>::min();
     for (const auto& q : quals) {
-        int tsco = QRandomGenerator::global()->bounded(1, -1);
+        int tsco = QRandomGenerator::global()->bounded(-1, 1);
         for (const auto& [k, li] : allquals.at(q)) {
             for (const auto& it : li) {
                 if (ctx.find(it) != ctx.end()) {

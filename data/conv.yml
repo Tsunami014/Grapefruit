@@ -426,7 +426,7 @@ purposes:
     - templates:
         "*":
           - "{Well, w/W}hat if you {just /instead /}did '%best_name' for {a short time/{5/10} minutes}{ instead/}?"
-          - "2*{2*{There's n/N}o {pressure/need}/You don't have} to {finish/do} {it all/the whole thing/everything}, {what/how} about just {starting/doing/} the first {small/}{bit/part} of '%best_name'?"
+          - "2*{2*{There's n/N}o {pressure/need}/You don't have} to {finish/do} {it all/the whole thing/everything}, {what/how} about just {starting/doing/} the first {small /}{bit/part} of '%best_name'?"
           - "What about just {starting/working on} a small {section/part/bit} of '%best_name'? It'll be %best_qual."
       opts:
         - ["{Sure/Ok/I guess/Alright/Doable}", [starting], encourage]
