@@ -4,7 +4,7 @@ groups:
   uncertainty: [unsure, stuck, motivated]
 
   ~reststatus: [justrested, nottired, stilltired]
-  ~comforttry: [tryrest, trytask, nogeneric]
+  ~comforttry: [docomfort, tryrest, trytask, nogeneric]
   ~workstatus: [justworked, starting]
   suggeststate: [resuggested]
 
@@ -188,13 +188,26 @@ purposes:
         - ["{Bored/Nothing to do}", [bored], suggest]
         - ["{All's good/Doing well}!", [happy, -problem], "$AllGoodOs"]
 
+  checkintask:
+    # All good?
+    - templates:
+        "*":
+          - "{Is e/E}verything {ok/alright}, or do you {just /}want something {else/different}{ instead/}?"
+          - "Is {something up/anything the matter}, or are you {just /}{2*{looking/searching} for/wanting} something {else/different}{ instead/}?"
+      shuffle: true
+      opts:
+        - ["$Stuck", [stuck, -suggeststate], comfort]
+        - ["$Tired", [tired, -suggeststate], comfort]
+        - ["$Stressed", [stressed, -suggeststate], comfort]
+        - ["{I'm ok/Nothing wrong/Still {looking/searching}/Keep suggesting}", [], suggest]
+
   comfort:
     # Maybe take a break?
     - templates:
         "tired":
           - "3*{Maybe take/Try taking} a $Quick{break/rest} if you're tired{./?}"
           - "3*$WantBreak?"
-        "stressed?depressed":
+        "stressed?depressed?docomfort":
           - "2*$WantBreak{? It might make you feel better./, it may help?/?}"
           - "Sounds like you need a break{. It might make you feel better./, it may help./, want one?/.}"
         "stressed?stuck":
@@ -209,7 +222,7 @@ purposes:
     - templates:
         "stuck":
           - "3*$AhNotBest Want {a different goal/something else} to {2*help /}$ClearMind?"
-        "depressed?stressed":
+        "depressed?stressed?docomfort":
           - "2*{Sounds like/6*Do} you need something {new/different/more fun} to help $ClearMind?"
       opts:
         - ["{3*Sure/I guess}", [], "$RecommendOs"]
@@ -334,10 +347,14 @@ purposes:
 
   suggest:
     - templates:
+        "*":
+          - "@ {Maybe/How about/Try} '%best_name'?"
         "!resuggested":
           - "@ Maybe you could {do/try/aim for} '%best_name'?"
           - "@ How about {doing/trying/aiming for} '%best_name'?"
         "resuggested":
+          - "@ {What/How} about {this time/instead}{,/ try} '%best_name'?"
+          - "@ {What/How} about try '%best_name' {this time/instead}?"
           - "@ {Ok{ then/}, h/H}ow about '%best_name'{ instead/}?"
           - "@ {That's {fine/ok}{,/. So,} w/W}hat about '%best_name'{ instead/}?"
           - "@ {What/How} about '%best_name'{ instead/}?"
@@ -346,44 +363,75 @@ purposes:
         - ["{Sure/Ok/Yeah/Alright}!", [starting], encourage]
         - ["Maybe{/?/...}", [], "{3*maybe/whynot}"]
         - ["Why?", [], whynot]
-        - ["{$NoToTask}#!resuggested", [resuggested], "{3*whynot/suggest}"]
-        - ["{Still no/$NoToTask}#resuggested", [], whynot]
+        - ["{$NoToTask}#!resuggested", [resuggested], "{4*whynot/2*maybe/suggest}"]
+        - ["{Still no/$NoToTask}#resuggested", [], "{3*whynot/maybe}"]
 
     # Combine the whynot with the suggestion!
     - templates:
+        "*":
+          - "2*@ {Maybe/2*{How/2*What} about} the %best_qual '%best_name'?"
+          - "@ {Maybe/How about} '%best_name'? It{'s/ is} %best_qual?"
+          - "@ Maybe '%best_name' would help {because/since} it{'s/ is} %best_qual?"
+          - "3*@ %best_reason So {why not/how about} {try/do/aim for} '%best_name'?"
+        "!resuggested":
+          - "@ You could try '%best_name', since it{'s/ is} %best_qual?"
         "resuggested":
-          - "@ What about '%best_name'{ instead/}? It's %best_qual?"
+          - "@ What about '%best_name'{ instead/}? It{'s/ is} %best_qual?"
       opts:
         - ["$ChosenAlready", [starting], encourage]
         - ["{Sure/Ok/Yeah/Alright}!", [starting], encourage]
         - ["Maybe{/?/...}", [], maybe]
         - ["{$NoToTask}#!resuggested", [resuggested], suggest]
-        - ["{Still no/$NoToTask}#resuggested", [unsure], checkin]
+        - ["{Still no/$NoToTask}#resuggested", [], checkintask]
 
   whynot:
+    # Just try it!/Really?
     - templates:
-        "!resuggested":
-          - "{But w/W}hy not? '%best_name' is %best_qual{?/.}"
+        "*":
+          - "{2*{But w/W}hy not/Are you sure}? '%best_name' is %best_qual{?/.}"
+          - "{2*{But w/W}hy not/Are you sure}? %best_reason"
           - "{Come on/Well}, just give it a try{! I/, i}t's %best_qual!"
+          - "{Come on/Well}, just give it a try! %best_reason"
         "resuggested":
-          - "{Come on,/Really? But} '%best_name' is %best_qual!"
+          - "2*{Come on,/Really? But/Are you sure?} '%best_name' is %best_qual!"
+          - "2*{Come on!/Really?/Are you sure?} %best_reason!"
       opts:
         - ["$ChosenAlready", [starting], encourage]
         - ["{Sure/Ok/Fine/I guess/Alright/Fair enough}", [starting], encourage]
         - ["Maybe{2*/?}", [], maybe]
         - ["{Still no/$NoToTask}#!resuggested", [resuggested], suggest]
-        - ["{Still no/$NoToTask}#resuggested", [unsure], checkin]
+        - ["{Still no/$NoToTask}#resuggested", [unsure], checkintask]
+
+    # What makes you against ...?
+    - templates:
+        "*":
+          - "{Why are you against/What's putting you off} '%best_name'{2* when it{'s/ is} %best_qual/}?"
+          - "{Why are you against/What's putting you off} '%best_name'? %best_reason"
+          - "2*What makes '%best_name' feel off{2* when it{'s/ is} %best_qual}?"
+        shuffle: true
+      opts:
+        - ["$ChosenAlready", [starting], encourage]
+        - ["{Sure/Ok/Fine/I guess/Alright/Fair enough}", [starting], encourage]
+        - ["{{Dunno/Don't know/No idea}/$NotBest}", [sad, docomfort], comfort]
+        - ["Going {poorly/terribly/awfully}", [depressed], comfort]
+        - ["$Unsure", [], maybe]
+        - ["$Tired", [tired], comfort]
+        - ["$Stuck", [stuck], comfort]
+        - ["$Stressed", [stressed, -suggeststate], comfort]
+        - ["{Still no/$NoToTask}#!resuggested", [resuggested], suggest]
+        - ["{Still no/$NoToTask}#resuggested", [unsure], checkintask]
 
   maybe:
     # What about only doing a short amount of time?
     - templates:
         "*":
-          - "{Well, w/W}hat if you just did %best_name for {a short time/5 min/10 min}?"
-          - "{{There's n/N}o pressure/You don't have} to {finish/do} {it all/the whole thing/everything}, what about just {starting/the first bit}?"
+          - "{Well, w/W}hat if you {just /instead /}did '%best_name' for {a short time/{5/10} minutes}{ instead/}?"
+          - "2*{2*{There's n/N}o {pressure/need}/You don't have} to {finish/do} {it all/the whole thing/everything}, {what/how} about just {starting/doing/} the first {small/}{bit/part} of '%best_name'?"
+          - "What about just {starting/working on} a small {section/part/bit} of '%best_name'? It'll be %best_qual."
       opts:
         - ["{Sure/Ok/I guess/Alright/Doable}", [starting], encourage]
         - ["{Still no/$NoToTask}#!resuggested", [resuggested], suggest]
-        - ["{Still no/$NoToTask}#resuggested", [unsure], checkin]
+        - ["{Still no/$NoToTask}#resuggested", [unsure], checkintask]
 
 
 dictionary:

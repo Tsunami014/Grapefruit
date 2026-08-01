@@ -157,8 +157,6 @@ constexpr int maxRecursion = 5;
 const QRegularExpression groupsRe("%([a-zA-Z_]+)%?");
 const QRegularExpression dictRe("\\$([a-zA-Z0-9_]+)\\$?");
 
-const QRegularExpression synnmRe("{((?:[^{}]+|(?R))*)}");
-const QRegularExpression synnmInnrRe("(?:{[^{}]*+(?:(?R)[^{}]*+)*+})(*SKIP)(*F)|\\/");
 QString Conversation::polishSentence(QString sent) {
     // Replace dictionary $references (allows some references in references)
     for (int i = 0; i < maxRecursion; i++) {
@@ -202,18 +200,36 @@ QString Conversation::polishSentence(QString sent) {
     }}
     // Replace synonym choices in {brackets/braces} (allows some recursion)
     for (int i = 0; i < maxRecursion; i++) {
-        auto it = synnmRe.globalMatch(sent);
-        int offs = 0;
-        while (it.hasNext()) {
-            auto m = it.next();
-            auto opts =  m.captured(1).split(synnmInnrRe);
-            QString repl = choose(opts).first;
-
-            int start = m.capturedStart(0) + offs;
-            int end = m.capturedEnd(0) + offs;
-            sent.replace(start, end - start, repl);
-            offs += repl.length() - (end - start);
+        // Custom parser because it's too complex with recursion
+        QString end;
+        qsizetype it = 0;
+        QString part;
+        QStringList opts;
+        uint indent = 0;
+        while (it < sent.length()) {
+            QChar c = sent.at(it++);
+            if (c == '{') {
+                if (indent++ > 0) { part += c; }
+                else {
+                    end += part;
+                    part = {};
+                }
+            } else if (indent > 0 && c == '}') {
+                if (--indent > 0) { part += c; }
+                else {
+                    opts.push_back(part);
+                    end += choose(opts).first;
+                    part = {};
+                    opts = {};
+                }
+            } else if (indent == 1 && c == '/') {
+                opts.push_back(part);
+                part = {};
+            } else { part += c; }
         }
+        opts.push_back(part);
+        end += choose(opts).first;
+        sent = end;
     }
     return sent;
 }
