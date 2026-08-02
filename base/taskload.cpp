@@ -239,32 +239,13 @@ void sortTasks(bool all) {
 }
 
 
-void defTasks() {
-    tasklist test;
-    test.emplace_back(std::make_shared<Task>("Sample task 1"));
-    test.emplace_back(std::make_shared<Task>("Sample task 2"));
-    alltasks["Test"] = test;
-
-    tasklist hi;
-    hi.emplace_back(std::make_shared<Task>("Hello, world!", QString(
-        "+1.5h Task 1\n"
-        "%1+2.5h Do something cool!\n"
-        "+0.5h Isn't this so cool? @%2\n"
-        "+0h NEXT TASK\n"
-        "+1.5h Achieve hiness @%3"
-    ).arg(donePref)
-        .arg(QDate::currentDate().addDays(3).toString("yyyy-MM-dd"))
-        .arg(QDate::currentDate().addDays(16).toString("yyyy-MM-dd"))
-    ));
-    alltasks["Hello"] = hi;
-}
-
 QString datapth() {
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir d(path);
     if (!d.exists()) d.mkpath(path);
     return path + "/data.sav";
 }
+void defTasks(); // Defined at bottom for convenience
 void loadTasks() {
     for (auto& [_, tasks] : alltasks) { tasks.clear(); }
     alltasks.clear();
@@ -339,3 +320,24 @@ std::shared_ptr<Task> getBestTask() {
     return best;
 }
 void resetBest() { best = nullptr; }
+
+
+void defTasks() {
+    tasklist test;
+    test.emplace_back(std::make_shared<Task>("Sample task 1"));
+    test.emplace_back(std::make_shared<Task>("Sample task 2"));
+    alltasks["Test"] = test;
+
+    tasklist hi;
+    hi.emplace_back(std::make_shared<Task>("Hello, world!", QString(
+        "+1.5h Task 1\n"
+        "%1+2.5h Do something cool!\n"
+        "+0.5h Isn't this so cool? @%2\n"
+        "+0h NEXT TASK\n"
+        "+1.5h Achieve hiness @%3"
+    ).arg(donePref)
+        .arg(QDate::currentDate().addDays(3).toString("yyyy-MM-dd"))
+        .arg(QDate::currentDate().addDays(16).toString("yyyy-MM-dd"))
+    ));
+    alltasks["Hello"] = hi;
+}
