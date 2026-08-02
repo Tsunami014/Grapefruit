@@ -232,11 +232,12 @@ purposes:
     # Be there for the user (generic)
     - templates:
         "+, !depressed, !nogeneric":
-          - "I'm {so /9*}sorry{ ❤️/ :(/8*./8*/!}"
-          - "It's {going to be /}ok{!/8*.}"
+          - "{I'm {so /9*}sorry{ ❤️/ :(/8*./8*/!}/It's {going to be /}ok{!/8*.}}"
       opts:
         - ["{2*Thanks/2*I appreciate it/Ok/2*Yeah/Yeah, probably/2*Probably}", [], what2do]
-        - ["{It's n/N}ot ok", [nogeneric]]
+        - ["{So... what/So what now/What now}{?/}", [nogeneric]]
+        - ["{It's n/N}ot ok#depressed", [nogeneric]]
+        - ["{It's n/N}ot ok#!depressed", [sad, nogeneric]]
 
     # Fallback redirect
     - templates: { "=": ["> $RecommendOs"] }

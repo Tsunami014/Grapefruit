@@ -18,6 +18,8 @@
 
         <file>assets/UI/up.svg</file>
         <file>assets/UI/down.svg</file>
+        <file>assets/UI/above.svg</file>
+        <file>assets/UI/below.svg</file>
         <file>assets/UI/erase.svg</file>
         <file>assets/UI/addtime.svg</file>
         <file>assets/UI/subtime.svg</file>

@@ -32,6 +32,19 @@ void swapBlocks(QTextCursor& cur, const QTextBlock& block, const QTextBlock& nex
     cur.setPosition(next.position() + qBound(0, column, next.length() - 1));
 }
 
+void addBlock(QTextCursor& cur, bool after) {
+    cur.beginEditBlock();
+    cur.setPosition(cur.block().position());
+    if (after) {
+        cur.movePosition(QTextCursor::EndOfBlock);
+    }
+    cur.insertBlock();
+    if (!after) {
+        cur.movePosition(QTextCursor::PreviousBlock);
+    }
+    cur.endEditBlock();
+}
+
 void setBlockText(QTextCursor& cur, const QTextBlock& block, const QString& text, int coloffs = 0, int minoffs = 0) {
     if (!block.isValid()) return;
 
@@ -111,12 +124,11 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
         btn->setIcon(QIcon(ico));
         btn->setIconSize(QSize(40, 40));
         btn->setFocusPolicy(Qt::NoFocus);
-        parent->connect(btn, &QPushButton::clicked, slot);
+        parent->connect(btn, &QPushButton::clicked, edit, slot);
         lay->addWidget(btn);
     };
 
     mkbtn(":/assets/UI/up.svg", [=](){
-        if (!edit) return;
         QTextCursor cur = edit->textCursor();
         QTextBlock block = cur.block();
         swapBlocks(cur, block, block.previous());
@@ -126,6 +138,16 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
         QTextCursor cur = edit->textCursor();
         QTextBlock block = cur.block();
         swapBlocks(cur, block, block.next());
+        edit->setTextCursor(cur);
+    });
+    mkbtn(":/assets/UI/above.svg", [=](){
+        QTextCursor cur = edit->textCursor();
+        addBlock(cur, false);
+        edit->setTextCursor(cur);
+    });
+    mkbtn(":/assets/UI/below.svg", [=](){
+        QTextCursor cur = edit->textCursor();
+        addBlock(cur, true);
         edit->setTextCursor(cur);
     });
     lay->addSpacing(16);
