@@ -17,7 +17,7 @@ struct progress {
 class Task {
 public:
     Task(const QString& name = "New Task",
-        const QString& conts = "",
+        const QString& items = "",
         int import = 1,
         std::set<QString> quals = {},
         const QString& reasons = "");
@@ -30,15 +30,18 @@ public:
     int import;
     std::set<QString> quals;
 
-    inline QString getItems() const { return items; }
-    void setItems(QString newits);
     inline QString getReasons() const { return reasons; }
     void setReasons(QString newrs);
+    inline QString getItems() const { return items; }
+    void setItems(QString newits);
 
     progress Progress();
 
     QString bottom();
     bool isNew() { return name == "New Task" && items.isEmpty() && quals.empty() && reasons.isEmpty(); }
+
+    QString toSave();
+    static Task* fromSaved(QString saved);
 
 protected:
     QString reasons;

@@ -6,5 +6,6 @@
  * Changes the bottom task text to state the task's score
  * Sorts tasks in task list instead by task end score
  * Add a redo button to conversations
+ * Logs the location of the data on the drive whenever it loads it
  */
 #define DEBUG // Comment to disable

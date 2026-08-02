@@ -2,6 +2,7 @@
 #include "task.hpp"
 #include "importance.hpp"
 #include "font.hpp"
+#include "saveesc.hpp"
 #include "wids/confirm.hpp"
 #include "wids/taskbbl.hpp"
 #include "extra/itemopts.hpp"
@@ -10,6 +11,8 @@
 #include <QMessageBox>
 #include <QStyle>
 #include <QLabel>
+#include <QStandardPaths>
+#include <QDir>
 
 using tasklist = std::vector<std::shared_ptr<Task>>;
 std::map<QString, tasklist> alltasks;
@@ -255,11 +258,65 @@ void defTasks() {
     ));
     alltasks["Hello"] = hi;
 }
-void loadTasks() {
-    defTasks();
-    sortTasks(true);
+
+QString datapth() {
+    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir d(path);
+    if (!d.exists()) d.mkpath(path);
+    return path + "/data.sav";
 }
-void saveTasks() {}
+void loadTasks() {
+    for (auto& [_, tasks] : alltasks) { tasks.clear(); }
+    alltasks.clear();
+#ifdef DEBUG
+    qDebug() << "Loading data from" << datapth();
+#endif
+
+    QFile file(datapth());
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        // File does not exist, so MAKE IT EXIST
+        defTasks();
+        sortTasks(true);
+        return;
+    }
+    QTextStream in(&file);
+    QString line = in.readLine();
+    QString title;
+    tasklist tl;
+    while (!line.isNull()) {
+        if (line == "") { continue; }
+        if (line[0] == '\4') {
+            if (!tl.empty()) {
+                alltasks[title] = tl;
+                tl = {};
+            }
+            title = deescape(line.mid(1));
+        } else {
+            tl.push_back(std::shared_ptr<Task>(Task::fromSaved(line)));
+        }
+        line = in.readLine();
+    }
+    if (!tl.empty()) {
+        alltasks[title] = tl;
+    }
+    file.close();
+}
+void saveTasks() {
+    QFile file(datapth());
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { // This *should* never fail but it's still good to check
+        qFatal() << "Failed writing to data file!";
+        return;
+    }
+    QTextStream out(&file);
+    for (const auto& [key, tasks] : alltasks) {
+        out << "\4" << escape(key) << "\n";
+        for (const auto& tsk : tasks) {
+            if (!tsk) continue;
+            out << tsk->toSave() << "\n";
+        }
+    }
+    file.close();
+}
 
 std::shared_ptr<Task> best = nullptr;
 std::shared_ptr<Task> getBestTask() {

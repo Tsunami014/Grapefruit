@@ -6,6 +6,7 @@
 MainGame* MG = nullptr;
 
 int main(int argc, char* argv[]) {
+    QCoreApplication::setApplicationName("Grapefruit");
     QApplication app(argc, argv);
 
     QFont font = QApplication::font();

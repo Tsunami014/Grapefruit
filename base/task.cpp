@@ -1,5 +1,6 @@
 #include "task.hpp"
 #include "dbug.hpp"
+#include "saveesc.hpp"
 #include "extra/itemopts.hpp"
 #include "extra/date.hpp"
 #include <QList>
@@ -11,8 +12,8 @@
 
 uint nxtid = 0;
 
-Task::Task(const QString& nam, const QString& conts, int import, std::set<QString> quals, const QString& reasons)
-    : id(nxtid++), name(nam), items(conts), import(import), quals(quals), reasons(reasons) {}
+Task::Task(const QString& nam, const QString& items, int import, std::set<QString> quals, const QString& reasons)
+    : id(nxtid++), name(nam), items(items), import(import), quals(quals), reasons(reasons) {}
 bool Task::operator==(const Task& oth) const { return id == oth.id; }
 bool Task::operator<(const Task& oth) const {
     // If this is less than oth it will be higher in the list
@@ -22,6 +23,33 @@ bool Task::operator<(const Task& oth) const {
     // Swapping the values (like done for import) virtually reverses it
     return std::tie(oth.import, name) < std::tie(import, oth.name);
 #endif
+}
+
+QString Task::toSave() {
+    QStringList qualsOut;
+    for (const auto& q : quals) {
+        qualsOut << escape(q);
+    }
+    return
+        escape(name)+';'+
+        escape(items)+';'+
+        QString::number(import)+';'+
+        qualsOut.join('-')+';'+
+        escape(reasons)
+    ;
+}
+Task* Task::fromSaved(QString saved) {
+    auto conts = saved.split(';');
+    QString nam = deescape(conts.at(0));
+    QString items = deescape(conts.at(1));
+    int impt = conts.at(2).toInt();
+    std::set<QString> quals;
+    for (const auto& q : conts.at(3).split('-')) {
+        if (!q.isEmpty())
+            quals.insert(deescape(q));
+    }
+    QString reasons = deescape(conts.at(4));
+    return new Task(nam, items, impt, quals, reasons);
 }
 
 const QRegularExpression normlSpaces(R"(^\s*\n|\n\s*$|[ \t]+(?=\n)|\s+(?=\n[ \t]*\n))");

@@ -10,6 +10,7 @@ set(CORE
     base/choose.cpp
     base/task.cpp
     base/taskload.cpp
+    base/saveesc.cpp
     base/options.cpp
     base/converse.cpp
     base/externs.cpp
