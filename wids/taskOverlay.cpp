@@ -258,7 +258,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
         saveTasks();
     });
     connect(titl, &QLineEdit::textChanged, [=](){
-        task->name = titl->text();
+        task->name = titl->text().trimmed();
         saveTasks();
         updateBot();
     });

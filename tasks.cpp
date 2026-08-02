@@ -80,7 +80,7 @@ TaskView::TaskView() {
             {auto plus = addBtn(":/assets/UI/plus.svg");
             connect(plus, &QPushButton::clicked, this, [this](){
                 overlay = new RenameOverlay("New category", "", [this](QString s){
-                    newCategory(this, s);
+                    newCategory(this, s.trimmed());
                     redoTasks();
                 });
                 tlay->addWidget(overlay, 0, 0);
@@ -92,7 +92,7 @@ TaskView::TaskView() {
             connect(rnam, &QPushButton::clicked, this, [this](){
                 QString cur = getCurrent();
                 overlay = new RenameOverlay("Rename category '" + cur + "'", cur, [this](QString s){
-                    if (renameCategory(this, s)) redoTasks();
+                    if (renameCategory(this, s.trimmed())) redoTasks();
                 });
                 tlay->addWidget(overlay, 0, 0);
             });
