@@ -1,6 +1,7 @@
 #include "task.hpp"
-#include "dbug.hpp"
+#include "quals.hpp"
 #include "saveesc.hpp"
+#include "dbug.hpp"
 #include "extra/itemopts.hpp"
 #include "extra/date.hpp"
 #include <QList>
@@ -44,9 +45,11 @@ Task* Task::fromSaved(QString saved) {
     QString items = deescape(conts.at(1));
     int impt = conts.at(2).toInt();
     std::set<QString> quals;
+    const auto& qks = qualkeys();
     for (const auto& q : conts.at(3).split('-')) {
         if (!q.isEmpty())
-            quals.insert(deescape(q));
+        if (QString txt = deescape(q); qks.find(txt) != qks.end())
+            quals.insert(txt);
     }
     QString reasons = deescape(conts.at(4));
     return new Task(nam, items, impt, quals, reasons);
