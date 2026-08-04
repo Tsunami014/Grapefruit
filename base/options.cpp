@@ -14,7 +14,7 @@ void setOptsLay(QLayout* lay, std::vector<Option> opts, std::function<void(Optio
         auto* btn = new QPushButton(o.title, parent);
         btn->setProperty("fancy", true);
         btn->setProperty("optbtn", true);
-        resizeFont(btn, 1.2);
+        //resizeFont(btn, 1.0);
         lay->connect(btn, &QPushButton::clicked, lay, [=](){ func(o); });
         lay->addWidget(btn);
     }
@@ -22,7 +22,7 @@ void setOptsLay(QLayout* lay, std::vector<Option> opts, std::function<void(Optio
     auto* btn = new QPushButton("REDO", parent);
     btn->setProperty("fancy", true);
     btn->setProperty("optbtn", true);
-    resizeFont(btn, 1);
+    resizeFont(btn, 0.7);
     lay->connect(btn, &QPushButton::clicked, lay, [=](){ func({}); });
     lay->addWidget(btn);
 #endif
