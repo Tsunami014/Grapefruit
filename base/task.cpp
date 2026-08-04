@@ -87,7 +87,7 @@ progress Task::Progress() {
         if (line.isEmpty() || line.startsWith(donePref)) continue;
         {auto m = timeRe.match(line);
         if (m.hasMatch()) {
-            time += m.captured(1).toFloat();
+            time += parseStrTime(m.captured(1));
             if (fst) nxttime = time;
         }}
         amnt++;
@@ -106,20 +106,21 @@ progress Task::Progress() {
 }
 
 QString Task::bottom() {
+    QString suff = "  "+QString("!").repeated(import);
 #ifdef DEBUG
-    QString pref = QString("!").repeated(import)+"  ";
-    pref += "$"+QString::number(basescore(*this))+"  ";
+    suff += "  $"+QString::number(basescore(*this));
 #endif
     auto ps = Progress();
-    if (ps.isEmpty()) return pref+"No task items";
+    if (ps.isEmpty()) return "No task items"+suff;
 
     if (ps.nextDue.isNull()) {
-        return pref + QString("%1 tasks (%2)").arg(ps.totTasks).arg(parseTime(ps.totTime, true));
+        return QString("%1 tasks (%2)").arg(ps.totTasks).arg(strTime(ps.totTime, true)) + suff;
     }
-    pref += QString("%1 due %2")
-        .arg(parseTime(ps.nextTime, true)).arg(parseDate(ps.nextDue, true));
+    QString txt = QString("%1 due %2")
+        .arg(strTime(ps.nextTime, true)).arg(parseDate(ps.nextDue, true));
 
-    if (ps.lastDue == ps.nextDue) return pref;
-    return pref + QString(", Total %1 due %2")
-        .arg(parseTime(ps.totTime, true)).arg(parseDate(ps.lastDue, true));
+    if (ps.lastDue == ps.nextDue) return txt + suff;
+    return txt + QString(", Total %1 due %2")
+        .arg(strTime(ps.totTime, true)).arg(parseDate(ps.lastDue, true))
+        + suff;
 }

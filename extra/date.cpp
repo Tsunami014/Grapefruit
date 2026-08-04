@@ -265,11 +265,15 @@ QDate getDate(const QDate& initial) {
     return {};
 }
 
-QString parseTime(float hours, bool brief) {
-    if (hours <= 0) return brief ? "0m" : "0 mins";
-    if (hours <= 0.5) return brief ? "~30m" : "~30 mins";
-    if (hours == 1) return brief ? "~1h" : "~1 hr";
-    return "~" + QString::number(hours) + (brief ? "h" : " hrs");
+QString strTime(int mins, bool brief) {
+    qDebug() << mins;
+    if (mins <= 0) return brief ? "0m" : "0 mins";
+    if (mins < 60) return "~" + QString::number(mins) + (brief ? "m" : " mins");
+    int hours = std::floor(mins/60);
+    int realmins = mins % 60;
+    QString hrstxt = "~" + QString::number(hours) + (brief ? "h" : (hours == 1? " hr":" hrs"));
+    if (realmins == 0) return hrstxt;
+    return hrstxt + " " + QString::number(realmins) + (brief ? "m" : " mins");
 }
 QString parseDate(const QDate& date, bool brief) {
     auto cur = QDate::currentDate();

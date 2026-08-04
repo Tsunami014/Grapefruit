@@ -6,11 +6,44 @@
 #include <QTextBlock>
 #include <QTimer>
 
-const QRegularExpression timeRe(R"((?<=^|[ \n<>])\+([0-9]+(?:\.5)?)h(?=[ \n<>]|$))");
-const QString baseTime = "+0.5h ";
-const QString timeFmt = "+%1h";
+const QRegularExpression timeRe(R"((?<=^|[ \n<>])\+([0-9]+(?:(?:\.[0-9])?h|m))(?=[ \n<>]|$))");
+const QString timeFmt = "+%1";
 const QString donePref = "✔ ";
 const QRegularExpression dateRe(R"((?<=^|[ \n<>])@(\d{4}([.\/\-])\d{2}\2\d{2})(?=[ \n<>]|$))");
+
+int parseStrTime(QString time) {
+    if (time.endsWith('h')) {
+        auto parts = time.left(time.length()-1).split('.');
+        if (parts.length() == 1 || parts[1] == "0") return parts[0].toInt()*60;
+        auto dec = parts[1];
+        return parts[0].toInt()*60 + (
+            dec=="1"? 5 :
+            dec=="2"? 10 :
+            dec=="3"? 20 :
+            dec=="4"? 25 :
+            dec=="5"? 30 :
+            dec=="6"? 35 :
+            dec=="7"? 40 :
+            dec=="8"? 50 :
+            55
+        );
+    }
+    return time.left(time.length()-1).toInt();
+}
+
+const QStringList strtimes{
+    "2m", "5m", "10m", "15m", "20m", "30m", "45m",
+    "1h", "1.3h", "1.7h", "2h", "2.3h", "2.7h",
+    "3h", "3.5h", "4h"
+};
+const QList<int> _getTimes() {
+    QList<int> ts;
+    for (const auto& t : strtimes) {
+        ts.push_back(parseStrTime(t));
+    }
+    return ts;
+}
+const QList<int> times = _getTimes();
 
 void swapBlocks(QTextCursor& cur, const QTextBlock& block, const QTextBlock& next) {
     if (!next.isValid()) return;
@@ -61,26 +94,34 @@ void setBlockText(QTextCursor& cur, const QTextBlock& block, const QString& text
     cur.setPosition(blockPos + qBound(0, column, text.size()));
 }
 
-void addTime(QTextEdit* edit, float diff) {
+void addTime(QTextEdit* edit, int add) {
     QTextCursor cur = edit->textCursor();
     QTextBlock block = cur.block();
     QString line = block.text();
 
     auto m = timeRe.match(line);
     if (m.hasMatch()) {
-        float namnt = m.captured(1).toFloat() + diff;
-        if (namnt < 0 || (diff > 0 && namnt >= 10)) return;
-        QString repl = timeFmt.arg(namnt);
+        int curamnt = parseStrTime(m.captured(1));
+        int idx = 0;
+        for (const auto& t : times) {
+            if (t >= curamnt) break;
+            idx++;
+        }
+        if (idx >= times.length()) return;
+        idx += add;
+        if (idx >= times.length() || idx < 0) return;
+        QString repl = timeFmt.arg(strtimes.at(idx));
 
         int start = m.capturedStart(0);
         line.replace(start, m.capturedEnd(0) - start, repl);
         int origln = m.captured(0).length();
         setBlockText(cur, block, line, repl.length()-origln, start);
     } else {
+        QString bt = timeFmt.arg(strtimes.at(0))+" ";
         if (line.startsWith(donePref)) {
-            setBlockText(cur, block, donePref+baseTime+line.sliced(donePref.length()), baseTime.length(), donePref.length());
+            setBlockText(cur, block, donePref+bt+line.sliced(donePref.length()), bt.length(), donePref.length());
         } else {
-            setBlockText(cur, block, baseTime+line, baseTime.length());
+            setBlockText(cur, block, bt+line, bt.length());
         }
     }
     edit->setTextCursor(cur);
@@ -163,8 +204,8 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
             }
             edit->setTextCursor(cur);
         });
-        mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 0.5); });
-        mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -0.5); });
+        mkbtn(":/assets/UI/addtime.svg", [=](){ addTime(edit, 1); });
+        mkbtn(":/assets/UI/subtime.svg", [=](){ addTime(edit, -1); });
         mkbtn(":/assets/UI/calendar.svg", [=](){ setDate(edit); });
 
         lay->addSpacing(32);

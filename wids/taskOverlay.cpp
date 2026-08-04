@@ -118,8 +118,7 @@ QString labelTxt(QTextEdit* edit) {
 
     {auto m = timeRe.match(line);
     if (m.hasMatch()) {
-        float time = m.captured(1).toFloat();
-        out += QString(done? "spent" : "will spend") + " " + parseTime(time);
+        out += QString(done? "spent" : "will take") + " " + strTime(parseStrTime(m.captured(1)));
     }}
 
     {auto m = dateRe.match(line);
