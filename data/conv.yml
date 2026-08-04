@@ -370,14 +370,7 @@ purposes:
     # Combine the whynot with the suggestion!
     - templates:
         "*":
-          - "2*@ {Maybe/2*{How/2*What} about} the %best_qual '%best_name'?"
-          - "@ {Maybe/How about} '%best_name'? It{'s/ is} %best_qual?"
-          - "@ Maybe '%best_name' would help {because/since} it{'s/ is} %best_qual?"
           - "3*@ %best_reason So {why not/how about} {try/do/aim for} '%best_name'?"
-        "!resuggested":
-          - "@ You could try '%best_name', since it{'s/ is} %best_qual?"
-        "resuggested":
-          - "@ What about '%best_name'{ instead/}? It{'s/ is} %best_qual?"
       opts:
         - ["$ChosenAlready", [starting], encourage]
         - ["{Sure/Ok/Yeah/Alright}!", [starting], encourage]
@@ -389,12 +382,9 @@ purposes:
     # Just try it!/Really?
     - templates:
         "*":
-          - "{2*{But w/W}hy not/Are you sure}? '%best_name' is %best_qual{?/.}"
           - "{2*{But w/W}hy not/Are you sure}? %best_reason"
-          - "{Come on/Well}, just give it a try{! I/, i}t's %best_qual!"
           - "{Come on/Well}, just give it a try! %best_reason"
         "resuggested":
-          - "2*{Come on,/Really? But/Are you sure?} '%best_name' is %best_qual!"
           - "2*{Come on!/Really?/Are you sure?} %best_reason!"
       opts:
         - ["$ChosenAlready", [starting], encourage]
@@ -406,9 +396,7 @@ purposes:
     # What makes you against ...?
     - templates:
         "*":
-          - "{Why are you against/What's putting you off} '%best_name'{2* when it{'s/ is} %best_qual/}?"
           - "{Why are you against/What's putting you off} '%best_name'? %best_reason"
-          - "2*What makes '%best_name' feel off{2* when it{'s/ is} %best_qual}?"
         shuffle: true
       opts:
         - ["$ChosenAlready", [starting], encourage]

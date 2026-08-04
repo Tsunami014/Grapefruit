@@ -1,35 +1,29 @@
 tiring:
-  good: false
   2: [motivated, happy, relaxed]
   -1: [bored, sad]
   -2: [tired, stressed]
 
 fun:
-  good: true
   2: [unsure]
   1: [stuck, bored]
   -1: [stressed, motivated]
 
 repetitive:
-  good: false
   2: [bored]
   1: [depressed, sad]
   -2: [motivated, happy, relaxed]
 
 interesting:
-  good: true
   2: [bored, unsure]
   1: [sad, relaxed]
   -1: [motivated, depressed, stressed]
 
 small:
-  good: true
   2: [stuck, depressed, unsure]
   1: [bored, sad, tired]
   -1: [motivated, relaxed]
 
 time-consuming:
-  good: false
   2: [motivated]
   1: [relaxed, happy]
   -1: [sad]
@@ -37,78 +31,66 @@ time-consuming:
   -3: [tired]
 
 overwhelming:
-  good: false
   2: [motivated, happy, relaxed]
   -1: [unsure, bored]
   -3: [stressed, stuck, tired, depressed]
 
 distracting:
-  good: false
   2: [sad, depressed]
   1: [stressed, unsure, bored]
   -2: [motivated, happy]
 
 irritating:
-  good: false
   2: [motivated, happy, relaxed]
   -1: [unsure, bored]
   -2: [sad]
   -3: [stressed, stuck, tired, depressed]
 
 boring:
-  good: false
   2: [motivated, happy, relaxed]
   -1: [unsure, bored]
   -2: [sad]
   -3: [stressed, stuck, tired, depressed]
 
 energising:
-  good: true
   2: [depressed, tired, stressed]
   1: [stuck, sad]
   -1: [happy]
   -2: [relaxed, motivated]
 
 frustrating:
-  good: false
   2: [motivated]
   1: [relaxed, happy]
   -1: [sad]
   -2: [stuck, depressed, tired]
 
 complex:
-  good: false
   2: [motivated, relaxed, happy]
   -2: [stuck, depressed, tired]
 
 immersive:
-  good: true
   2: [sad, stuck]
   1: [unsure]
   -1: [depressed, relaxed, happy]
   -2: [motivated]
 
 satisfying:
-  good: true
   2: [depressed, stuck]
   1: [sad, tired, unsure]
   -1: [relaxed, happy]
   -2: [motivated]
 
 impactful:
-  good: true
   2: [sad, stuck, unsure]
   -1: [depressed]
   -2: [motivated]
 
 straightforward:
-  good: true
   2: [depressed, sad, tired, stuck]
   1: [unsure]
   -1: [motivated, relaxed]
 
 empowering:
-  good: true
   3: [depressed, stressed, stuck]
   2: [sad]
   -2: [relaxed, happy, motivating]

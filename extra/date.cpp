@@ -266,7 +266,6 @@ QDate getDate(const QDate& initial) {
 }
 
 QString strTime(int mins, bool brief) {
-    qDebug() << mins;
     if (mins <= 0) return brief ? "0m" : "0 mins";
     if (mins < 60) return "~" + QString::number(mins) + (brief ? "m" : " mins");
     int hours = std::floor(mins/60);
