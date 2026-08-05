@@ -152,7 +152,7 @@ void Conversation::onclick(Option o) {
     refresh();
 }
 
-constexpr int maxRecursion = 5;
+constexpr int maxRecursion = 10;
 
 const QRegularExpression groupsRe("%([a-zA-Z_]+)%?");
 const QRegularExpression dictRe("\\$([a-zA-Z0-9_]+)\\$?");
