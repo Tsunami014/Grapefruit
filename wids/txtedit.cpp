@@ -4,11 +4,17 @@
 #include <QScrollBar>
 #include <QScroller>
 #include <QKeyEvent>
+#include <QMimeData>
+#include <QPainter>
+#include <QTextBlock>
+#include <QAbstractTextDocumentLayout>
 
-TxtEdit::TxtEdit(QWidget* parent) : QTextEdit(parent) { init(); }
-TxtEdit::TxtEdit(const QString& text, QWidget* parent) : QTextEdit(text, parent) { init(); }
+TxtEdit::TxtEdit(QWidget* parent, bool bullets)
+    : QTextEdit(parent) { init(bullets); }
+TxtEdit::TxtEdit(const QString& text, QWidget* parent, bool bullets)
+    : QTextEdit(text, parent) { init(bullets); }
 
-void TxtEdit::init() {
+void TxtEdit::init(bool bullets) {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     viewport()->setAutoFillBackground(false);
     setFrameStyle(QFrame::NoFrame);
@@ -21,6 +27,14 @@ void TxtEdit::init() {
 
     auto* drag = new DragScroll(viewport(), verticalScrollBar());
     drag->installOn(this);
+
+    if (bullets) {
+        barea = new BulletArea(this);
+        setViewportMargins(bulletMarginWidth, 0, 0, 0);
+        // Repaint the gutter whenever the things that affect it change
+        connect(this, &QTextEdit::textChanged, this, [this] { barea->update(); });
+        connect(verticalScrollBar(), &QScrollBar::valueChanged, this, [this] { barea->update(); });
+    }
 }
 
 void TxtEdit::focusInEvent(QFocusEvent* e) {
@@ -45,4 +59,41 @@ void TxtEdit::keyPressEvent(QKeyEvent* e) {
         }
     }
     QTextEdit::keyPressEvent(e);
+}
+
+void TxtEdit::insertFromMimeData(const QMimeData* source) {
+    // Only allow text
+    if (source->hasText()) {
+        insertPlainText(source->text());
+    }
+}
+
+void TxtEdit::resizeEvent(QResizeEvent *event) {
+    QTextEdit::resizeEvent(event);
+    if (barea == nullptr) return;
+    QRect cr = contentsRect();
+    barea->setGeometry(cr.left(), cr.top(), bulletMarginWidth, cr.height());
+}
+void BulletArea::paintEvent(QPaintEvent* event) {
+    QPainter painter(this);
+
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBrush(Qt::black);
+    painter.setPen(Qt::NoPen);
+
+    QTextDocument* doc = edit->document();
+    const int scrollY = edit->verticalScrollBar()->value();
+
+    for (QTextBlock block = doc->begin(); block.isValid(); block = block.next()) {
+        if (!block.isVisible() || block.text().isEmpty()) {
+            continue;
+        }
+
+        QRectF brect = doc->documentLayout()->blockBoundingRect(block);
+        qreal linehei = block.layout()->lineAt(0).height();
+        painter.drawEllipse(QPointF(
+                bulletMarginWidth / 2.0,
+                brect.top() - scrollY + linehei / 2.0
+            ), bulletRadi, bulletRadi);
+    }
 }

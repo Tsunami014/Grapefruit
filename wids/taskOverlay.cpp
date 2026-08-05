@@ -38,7 +38,7 @@ void HlTxtEdit::paintEvent(QPaintEvent* event) {
         painter.fillRect(r, QColor("#AAA"));
     }
 
-    QTextEdit::paintEvent(event);
+    TxtEdit::paintEvent(event);
 }
 
 void HlTxtEdit::highlight() {

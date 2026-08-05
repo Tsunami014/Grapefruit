@@ -3,7 +3,7 @@
 #include <QTextBlock>
 
 QualityEdit::QualityEdit(std::set<QString> words, QWidget* parent)
-    : TxtEdit(parent), words(words) {
+    : TxtEdit(parent, false), words(words) {
     setFocusPolicy(Qt::NoFocus); // We manually focus ourselves
     setTextInteractionFlags(Qt::NoTextInteraction); // No selecting text
     setReadOnly(true);
