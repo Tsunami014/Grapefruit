@@ -5,10 +5,11 @@ groups:
 
   ~reststatus: [justrested, nottired, stilltired]
   ~maybestate: [justmaybied]
+  ~checkstate: [justchecked]
   ~committed: [juststarted, startedelse]
   suggeststate: [resuggested]
   comforttry: [triedrest, triedtask, triedsmaller, triedlater]
-  ~comfortstate: [nogeneric]
+  ~comfortstate: [nogeneric, tryany, forcegeneric]
 
 
 initial: [2*sayhi, what2do]
@@ -121,7 +122,7 @@ purposes:
           - "Anything you feel like {doing/aiming for}{ today/ %thistime/}?"
           - "{Got/Have} {something/anything} in mind {for/to do} {today/%thistime/now}?"
       opts:
-        - ["{Nothing/Not much}", [], suggest]
+        - ["{Nothing/Not much}", [], what2do]
         - ["$Struggle", [sad, stuck], checkin]
         - ["{Sleep/Rest/}", [tired], comfort]
         - ["$Unsure", [unsure], suggest]
@@ -150,13 +151,13 @@ purposes:
       opts:
         - ["$Unsure", [unsure], suggest]
         - ["{Sleep/Rest/}", [tired], comfort]
-        - ["{Got plans/I know/2*Already {know/chosen}}", [motivated], "{2*progress/goingwell}"]
+        - ["{Got plans/I know/2*Already {know/chosen}}", [motivated, startedelse], goingwell]
         - ["$Struggle", [sad, stuck], checkin]
 
   checkin:
     # Why are you sad?
     - templates:
-        "!happy, !relaxed":
+        "!happy, !relaxed, +mood":
           - "{What's/Anything} wrong?"
           - "Anything {troubling/bothering} you{right now/6*}?"
           - "2*{What's/Anything/What is} {the matter/on your mind}?"
@@ -164,40 +165,39 @@ purposes:
           - "5*What{'s/ is} {3*troubling/3*bothering/saddening/2*upsetting} you?"
       shuffle: true
       opts:
-        - ["$Tired", [tired], comfort]
-        - ["$Stressed", [stressed], comfort]
-        - ["{Bored/Nothing to do}", [bored], suggest]
-        - ["$Unsure", [unsure], suggest]
-        - ["$Stuck", [stuck], comfort]
-        - ["{Nothing/Nothing's wrong/I'm good/All good/All's good}", [-mood, -uncertainty], "$AllGoodOs"]
+        - ["$Tired", [tired, justchecked], comfort]
+        - ["$Stressed", [stressed, justchecked], comfort]
+        - ["{Bored/Nothing to do}", [bored, justchecked], suggest]
+        - ["$Unsure", [unsure, justchecked], suggest]
+        - ["$Stuck", [stuck, justchecked], comfort]
+        - ["{Nothing/Nothing's wrong/I'm good/All good/All's good}", [-mood, -uncertainty, justchecked], "$AllGoodOs"]
+
+    # Anything wrong?
+    - templates:
+        "sad?+problem":
+          - "{Anything/Is something/Is anything} {2*wrong/off}?"
+          - "{3*Are y/Y}ou {all /}good?"
+      shuffle: true
+      opts:
+        - ["$Stuck", [stuck, justchecked], comfort]
+        - ["$Unsure", [unsure, justchecked], suggest]
+        - ["$Tired", [tired, justchecked], comfort]
+        - ["$Stressed", [stressed, justchecked], comfort]
+        - ["{Bored/Nothing to do}", [bored, justchecked], suggest]
+        - ["{All's good/Doing well}!", [happy, -problem, justchecked], "$AllGoodOs"]
 
     # How are you going?
     - templates:
-        "!depressed, !sad, !unsure":
+        "!depressed, !sad":
           - "How are things {going/coming along}?"
           - "3*How{ are you/ is it/'s it} {going/coming along/holding up}?"
           - "How{'s/ is} {life/the world/everything} treating you?"
       shuffle: true
       opts:
-        - ["{Not/Not going} good", [sad]]
+        - ["{Not/Not going} good", [sad]] # Leads to one of the other ones with more options
         - ["$Stuck", [stuck], comfort]
-        - ["$Unsure", [unsure], suggest]
-        - ["$Tired", [tired], "{suggest/comfort}"]
-        - ["{2*Great/2*Awesome/2*Doing well/I've got this}!", [happy, -problem], "$AllGoodOs"]
-
-    # Anything wrong?
-    - templates:
-        "sad?unsure?-mood":
-          - "{Anything/Is something/Is anything} {2*wrong/off}?"
-          - "{3*Are y/Y}ou {all /}good?"
-      shuffle: true
-      opts:
-        - ["$Stuck", [stuck], comfort]
-        - ["$Unsure", [unsure], suggest]
-        - ["$Tired", [tired], comfort]
-        - ["$Stressed", [stressed], comfort]
-        - ["{Bored/Nothing to do}", [bored], suggest]
-        - ["{All's good/Doing well}!", [happy, -problem], "$AllGoodOs"]
+        - ["$Unsure", [unsure, justchecked], suggest]
+        - ["{2*Great/2*Awesome/2*Doing well/I've got this}!", [happy, -problem, justchecked], "$AllGoodOs"]
 
   checkintask:
     # All good?
@@ -210,7 +210,7 @@ purposes:
         - ["$Stuck", [stuck], comfort]
         - ["$Tired", [tired], comfort]
         - ["$Stressed", [stressed], comfort]
-        - ["{I'm ok/Nothing wrong/Still {looking/searching}/Keep suggesting}", [], suggest]
+        - ["{I'm ok/Nothing wrong/Still {looking/searching}/Keep suggesting}", [justchecked], suggest]
 
   comfort:
     # Maybe take a break?
@@ -224,7 +224,7 @@ purposes:
         "stressed?stuck, !triedrest":
           - "2*$AhNotBest Want a $Quick{break/rest} to help $ClearMind?"
           - "A $Quick{break/rest} might help {clear your head/{make /3*}you feel less stuck}, {want/feel like} one?"
-        "+comforttry, !triedrest":
+        "+comforttry?tryany, !triedrest":
           - "$WantBreak?"
           - "{Well, w/W}hat about a $Quick{break/rest}?"
       opts:
@@ -242,7 +242,7 @@ purposes:
         "depressed?stressed, !triedtask":
           - "2*{Sounds like/6*Do} you need something {new/different/more fun} to help $ClearMind?"
           - "Would something {{2*completely/totally} /}different {help/2*{be/feel} better} {3*right /}now?"
-        "+comforttry, !triedtask":
+        "+comforttry?tryany, !triedtask":
           - "What about having {a different goal/something else} to work on to {help /}$ClearMind?"
           - "{2*Do you w/W}ant {a different goal/something else} to {help /}$ClearMind?"
       opts:
@@ -257,7 +257,7 @@ purposes:
           - "{2*Even/Just} a {small/tiny} $PartOfDoing {2*would be fine/is enough}, {2*if that helps/no need for more}."
         "stuck?stressed?tired, !triedsmaller":
           - "Want to {just /only /}do a {smaller/shorter} $PartOfDoing{,/} instead of the {whole/entire} thing?"
-        "+comforttry, !triedsmaller":
+        "+comforttry?tryany, !triedsmaller":
           - "{Want/{Well, h/H}ow about} just do a {smaller/shorter} $PartOfDoing instead?"
       opts:
         - ["{Yeah/Ok/Sure/I guess}", [-comforttry], suggest]
@@ -272,7 +272,7 @@ purposes:
           - "{No pressure/You don't have} to finish anything right now, do you want to {{just /} {leave/pause} whatever is stressing you for now/come back to whatever is stressing you later} and {2*focus on/do} something else{3* to $ClearMind/ for now/}?"
         "stuck?stressed?tired?depressed, !triedlater":
           - "You can always {come back to $WhateverDoing/pick up $WhateverDoing again} later, want to {leave/put} it aside for now?"
-        "+comforttry, !triedlater":
+        "+comforttry?tryany, !triedlater":
           - "Want to just {leave/put} $WhateverDoing aside for {now/later/another time} instead?"
           - "{How/What} about coming back to $WhateverDoing {later/another time} instead?"
       opts:
@@ -283,7 +283,7 @@ purposes:
 
     # Be there for the user (generic)
     - templates:
-        "+, !depressed, !nogeneric":
+        "+?forcegeneric, -comforttry, !nogeneric":
           - "{I'm {so /9*}sorry{ ❤️/ :(/8*./8*/!}/It's {going to be /}ok{!/8*.}}"
       opts:
         - ["{2*Thanks/2*I appreciate it/Ok/2*Yeah/Yeah, probably/2*Probably}", [], what2do]
@@ -297,17 +297,17 @@ purposes:
   comfortend:
     # Nothing worked
     - templates:
-        "tryrest":
-          - "2*Is there {anything/something} {troubling you{ in particular/}/on your mind}{, or {is everything ok/2*are you {all good/ok{ay/}}}/}?"
-          - "2*{Are you {all good/ok{ay/}}? /}{Is/Was} there {just /}something in particular you were thinking of?"
-          - "You're not liking the suggestions, which is {totally /completely /}fine{!/.} Is there something on your mind?"
+        "*":
+          - "Is there {anything/something} {troubling you{ in particular/}/on your mind}{, or {is everything ok/2*are you {all good/ok{ay/}}}/}?"
+          - "{Are you {all good/ok{ay/}}? /}{Is/Was} there {just /}something in particular you were thinking of?"
       shuffle: true
       opts:
-        - ["$Tired", [tired], rest]
-        - ["$Stressed", [stressed], comfort]
-        - ["{Bored/Nothing to do}", [bored], suggest]
-        - ["$Unsure", [unsure], suggest]
-        - ["$Stuck", [stuck], comfort]
+        - ["$Tired#!tired", [tired], rest]
+        - ["$Stressed#!stressed", [stressed], comfort]
+        - ["{Bored/Nothing to do}#!bored", [bored], suggest]
+        - ["$Unsure#!unsure", [unsure], suggest]
+        - ["$Stuck#!stuck", [stuck], comfort]
+        - ["{Nothing's working/Not working/Something else}", [tryany], comfort]
         - ["{No/Nope/Nothing/Not bad}", [], "$AllGoodOs"]
 
   rest:
@@ -316,7 +316,7 @@ purposes:
             - "{Have a rest/Take a break} and come back {later/when you feel better}{!/.}"
       opts:
         - ["Done", [], afterRest]
-        - ["{Still tired/2*$Unhelpful}", [justrested], stillTired]
+        - ["{Still tired/2*$Unhelpful}", [tired, justrested], "{stillTired/comfort}"]
   afterRest:
     - templates:
         "*":
@@ -324,8 +324,8 @@ purposes:
       opts:
         - ["{Yeah/Yes}", [~tired], what2do]
         - ["$ABit", [~tired], what2do]
-        - ["{Still tired/Tired again}", [justrested], stillTired]
-        - ["{No/Not much/Not really}", [~tired, sad, justrested], "{2*checkin/stillTired}"]
+        - ["{Still tired/Tired again}", [tired, justrested], "{stillTired/comfort}"]
+        - ["{No/Not much/Not really}", [~tired, sad, justrested, tryany], "{2*checkin/{stillTired/comfort}}"]
     - templates:
         "*":
           - "{Feel like you w/W}ant to do {something/something now/stuff now/anything}?"
@@ -333,8 +333,8 @@ purposes:
       opts:
         - ["{Yeah/Yes/Sure}", [~tired], "{suggest/what2do}"]
         - ["$ABit", [~tired], what2do]
-        - ["{Still tired/Tired again}", [justrested], stillTired]
-        - ["{No/Not much/Not really}", [~tired, sad, justrested], "{3*checkin/stillTired}"]
+        - ["{Still tired/Tired again}", [tired, justrested], "{stillTired/comfort}"]
+        - ["{No/Not much/Not really}", [~tired, sad, justrested], "{3*checkin/{stillTired/comfort}}"]
 
   stillTired:
     - templates:
@@ -379,7 +379,8 @@ purposes:
           - "{2*Well, I'm g/Well, g/2*I'm g/G}lad {it's/you're/everything's} going {well/great/nicely}{2*!/.}"
       opts:
         - ["{Thanks/Yeah}!", [], what2do]
-        - ["{Maybe/Hopefully/I hope}{.../?/}", [], checkin]
+        - ["$IHope#!justchecked", [], checkin]
+        - ["$IHope#justchecked", [forcegeneric], comfort]
         - ["{Actually, not really/Not great}", [sad], checkin]
 
     # Just committed to a task
@@ -398,7 +399,8 @@ purposes:
           - "4*%best_reason"
       opts:
         - ["{Thanks/Thanks/Ok}{!/}", [], working]
-        - ["{Maybe/Hopefully/I hope}{.../?/}", [], checkin]
+        - ["$IHope#!justchecked", [], checkin]
+        - ["$IHope#justchecked", [forcegeneric], comfort]
         - ["{I can't/I'm not/3*Not {doing/going} {well/good}}", [sad], checkin]
 
   working:
@@ -467,7 +469,7 @@ purposes:
         - ["{{Still m/M}aybe/{Still d/D}on't know}{/?/...}#-maybestate", [justmaybied], maybe]
         - ["{Still don't know/Not helping/{Maybe t/T}ry another}#+maybestate, !resuggested", [], suggest]
         - ["{Still don't know/Not helping}#+maybestate, resuggested", [unsure, -suggeststate], checkintask]
-        - ["{$NoToTask}#justmaybied, !resuggested", [resuggested], suggest]
+        - ["{$NoToTask}#!resuggested", [resuggested], suggest]
         - ["{Still no/$NoToTask}#resuggested", [unsure, -suggeststate], checkintask]
 
 
@@ -506,5 +508,6 @@ dictionary:
   ChosenAlready: "{Other plans/4*{Chosen/Decided} {something{3*/ else}/already}/{Got my o/O}wn plan{s/}}"
   NoToTask: "No/Not really/No thanks/Not feeling it/Don't want to/Not now"
   Unhelpful: "{Won't help/Not helpful/Unhelpful/Useless}"
+  IHope: "{Maybe{.../?/}/Hopefully{..././}/I hope{./}}"
 
   AllGoodOs: "{progress/what2do}"
