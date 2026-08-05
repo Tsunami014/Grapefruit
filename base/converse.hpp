@@ -8,6 +8,7 @@ public:
     Conversation(FlowLayout* olay, QLabel* curtxt);
     void newTopic();
     std::unordered_set<std::string> getContext() { return context; }
+    virtual void onclick(Option o);
 
 protected:
     std::string purpose;
@@ -20,5 +21,4 @@ protected:
 
     void refresh();
     void display(QString txt, optList opts = {});
-    virtual void onclick(Option o);
 };

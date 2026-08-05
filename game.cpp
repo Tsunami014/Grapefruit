@@ -29,7 +29,22 @@ MainGame::MainGame() {
     resizeFont(curtxt, 1.25);
     QFontMetrics fm(curtxt->font());
     curtxt->setFixedHeight(fm.lineSpacing() * 1.2 * 3); // 3 lines plus extra space
+#ifdef DEBUG
+    {
+        auto* btn = new QPushButton("REDO", this);
+        btn->setProperty("fancy", true);
+        btn->setProperty("optbtn", true);
+        resizeFont(btn, 0.7);
+        connect(btn, &QPushButton::clicked, this, [=](){ conv->onclick({}); });
+
+        auto* lay = new QHBoxLayout();
+        lay->addWidget(curtxt);
+        lay->addWidget(btn);
+        mlay->addLayout(lay);
+    }
+#else
     mlay->addWidget(curtxt);
+#endif
 
     auto botsect = new QHBoxLayout();
         auto optcontnr = new QWidget(main);

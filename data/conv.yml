@@ -144,7 +144,7 @@ purposes:
     # What would make now worth it?
     - templates:
         "*":
-          - "What{'d/2* would} make {the next {5/10} minutes/right now} {feel /seem /} worth{ it/2*while}?"
+          - "What{'d/2* would} make {the next {5/10} minutes/right now} {feel /seem /}worth{ it/2*while}?"
           - "What would it take for {the next {3/5/10} minutes/right now} to feel worth{ it/while/ doing}?"
       shuffle: true
       opts:
