@@ -1,13 +1,12 @@
 #include "task.hpp"
 #include "quals.hpp"
 #include "saveesc.hpp"
-#include "dbug.hpp"
 #include "extra/itemopts.hpp"
 #include "extra/date.hpp"
 #include <QList>
 #include <QRegularExpression>
 
-#ifdef DEBUG
+#ifdef APP_DEBUG
 #include "importance.hpp"
 #endif
 
@@ -107,7 +106,7 @@ progress Task::Progress() {
 
 QString Task::bottom() {
     QString suff = "  "+QString("!").repeated(import);
-#ifdef DEBUG
+#ifdef APP_DEBUG
     suff += "  $"+QString::number(basescore(*this));
 #endif
     auto ps = Progress();

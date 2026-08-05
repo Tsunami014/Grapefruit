@@ -1,4 +1,3 @@
-#include "dbug.hpp"
 #include <QGraphicsView>
 #include <QGraphicsScene>
 
@@ -9,7 +8,7 @@ public:
     QString curScnName() { return curScnNam; }
 
 protected:
-#ifdef DEBUG
+#ifdef APP_DEBUG
     void keyPressEvent(QKeyEvent* event) override;
 #endif
     void buildScene(QString scene);

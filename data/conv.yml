@@ -118,7 +118,7 @@ purposes:
           - "What do you {want to do/want to accomplish/feel like doing}{/ %thistime/ today/ now}?"
           - "What{'s your goal/ are your goals} for {today/%thistime}?"
           - "Anything you{'d like/ want} $WantDone{ today/ %thistime/}?"
-          - "Anything you feel like {doing/trying/aiming for}{ today/ %thistime/}?"
+          - "Anything you feel like {doing/aiming for}{ today/ %thistime/}?"
           - "{Got/Have} {something/anything} in mind {for/to do} {today/%thistime/now}?"
       opts:
         - ["{Nothing/Not much}", [], suggest]

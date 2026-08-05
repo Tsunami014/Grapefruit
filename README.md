@@ -13,4 +13,11 @@ A convenient command that does everything is
 make debug && ./run.sh i r l
 ```
 
-**NOTE**: in `dbug.hpp` there is a debug flag to assist in debugging with information about its usage.
+### Debugging
+Including `-DENABLE_DEBUG=ON` when building (or running `make debug`) will include the following debug features:
+- Allows dragging objects in the main scene
+- Press `p` in the main scene to debug log all the positions of objects in the main scene
+- Changes the bottom task text to state the task's score
+- Sorts tasks in task list instead by task end score
+- Add a redo button to conversations
+- Logs the location of the data on the drive whenever it loads it

@@ -1,6 +1,5 @@
 #include "game.hpp"
 #include "font.hpp"
-#include "dbug.hpp"
 #include "wids/icobtn.hpp"
 #include "wids/flow.hpp"
 #include <QBoxLayout>
@@ -23,13 +22,14 @@ MainGame::MainGame() {
 
     auto* curtxt = new QLabel(main);
     curtxt->setWordWrap(true);
+    curtxt->setAlignment(Qt::AlignCenter);
     curtxt->setStyleSheet("background-color: #CC88CC;");
     curtxt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     curtxt->setObjectName("curtxt");
-    resizeFont(curtxt, 1.25);
+    resizeFont(curtxt, 1.2);
     QFontMetrics fm(curtxt->font());
-    curtxt->setFixedHeight(fm.lineSpacing() * 1.2 * 3); // 3 lines plus extra space
-#ifdef DEBUG
+    curtxt->setMinimumHeight(fm.lineSpacing() * 1.2 * 2); // 2 lines plus extra space
+#ifdef APP_DEBUG
     {
         auto* btn = new QPushButton("REDO", this);
         btn->setProperty("fancy", true);
@@ -105,7 +105,7 @@ void MainGame::keyPressEvent(QKeyEvent* event) {
     QWidget::keyPressEvent(event);
 }
 void MainGame::toTasks() {
-#ifdef DEBUG
+#ifdef APP_DEBUG
     tasks->redoTasks();
 #endif
     stack->setCurrentWidget(tasks);

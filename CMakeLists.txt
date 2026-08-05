@@ -58,3 +58,8 @@ target_link_libraries(${APP_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Xml Qt6::Svg Q
 target_include_directories(${APP_NAME} PUBLIC ${CMAKE_SOURCE_DIR})
 
 set_property(TARGET ${APP_NAME} PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+
+option(ENABLE_DEBUG "Enable extra debug mode features" OFF)
+if(ENABLE_DEBUG)
+    target_compile_definitions(${APP_NAME} PRIVATE APP_DEBUG)
+endif()

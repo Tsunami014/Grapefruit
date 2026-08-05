@@ -111,7 +111,7 @@ int score(std::shared_ptr<Task> t) {
     if (totRatio == 0) return 0;
     return int((tot / totRatio) * 1000);
 }
-#ifdef DEBUG
+#ifdef APP_DEBUG
 int basescore(const Task& task) {
     auto t = std::make_shared<Task>(task);
     double tot = 0.0;

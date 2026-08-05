@@ -39,7 +39,7 @@ release: setup-qt
 
 # Use regular cmake, and compile for desktop
 debug: setup-qt
-	$(QT_HOST_DIR)/bin/qt-cmake -B desktop -S . $(DESKTOP_FLAGS) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug
+	$(QT_HOST_DIR)/bin/qt-cmake -B desktop -S . $(DESKTOP_FLAGS) -DENABLE_DEBUG=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug
 	cmake --build desktop --parallel
 
 clean:

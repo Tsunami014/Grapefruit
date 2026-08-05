@@ -1,5 +1,4 @@
 #include "bgitem.hpp"
-#include "dbug.hpp"
 #include "wids/house.hpp"
 #include <QFile>
 #include <QDomDocument>
@@ -33,7 +32,7 @@ void loadFile(QString fle) {
     fileCache.insert(fle, out);
 }
 
-#ifdef DEBUG
+#ifdef APP_DEBUG
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 class SvgItem : public QGraphicsSvgItem {

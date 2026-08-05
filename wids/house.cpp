@@ -23,7 +23,7 @@ void House::buildScene(QString scene) {
     auto its = getSceneItems(scene);
     for (const auto& it : its) {
         auto* item = bgItem(it.name);
-#ifdef DEBUG
+#ifdef APP_DEBUG
         item->setFlag(QGraphicsItem::ItemIsMovable);
         item->setData(0, it.name);
         item->setData(1, it.flip);
@@ -39,7 +39,7 @@ void House::buildScene(QString scene) {
     }
 }
 
-#ifdef DEBUG
+#ifdef APP_DEBUG
 #include <QKeyEvent>
 void House::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_P) {

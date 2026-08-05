@@ -249,7 +249,7 @@ void defTasks(); // Defined at bottom for convenience
 void loadTasks() {
     for (auto& [_, tasks] : alltasks) { tasks.clear(); }
     alltasks.clear();
-#ifdef DEBUG
+#ifdef APP_DEBUG
     qDebug() << "Loading data from" << datapth();
 #endif
 
