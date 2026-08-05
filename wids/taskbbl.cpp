@@ -31,7 +31,7 @@ TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(paren
     main = new QVBoxLayout(this);
     main->setSpacing(0);
 
-    {auto labl = new CutoffLabel(t->name, this);
+    {auto labl = new CutoffLabel(t->top(), this);
     labl->setAlignment(Qt::AlignCenter);
     labl->setProperty("bubble", "top");
     main->addWidget(labl);}

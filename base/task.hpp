@@ -37,6 +37,7 @@ public:
 
     progress Progress();
 
+    QString top();
     QString bottom();
     bool isNew() { return name == "New Task" && items.isEmpty() && quals.empty() && reasons.isEmpty(); }
 

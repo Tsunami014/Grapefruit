@@ -104,22 +104,25 @@ progress Task::Progress() {
     return {nxtamnt, amnt, nxttime, time, nxtdue, due};
 }
 
-QString Task::bottom() {
-    QString suff = "  "+QString("!").repeated(import);
+QString Task::top() {
+    return name
+        + "  "+QString("!").repeated(import)
 #ifdef APP_DEBUG
-    suff += "  $"+QString::number(basescore(*this));
+        + "  $"+QString::number(basescore(*this));
 #endif
+    ;
+}
+QString Task::bottom() {
     auto ps = Progress();
-    if (ps.isEmpty()) return "No task items"+suff;
+    if (ps.isEmpty()) return "No task items";
 
     if (ps.nextDue.isNull()) {
-        return QString("%1 tasks (%2)").arg(ps.totTasks).arg(strTime(ps.totTime, true)) + suff;
+        return QString("%1 tasks (%2)").arg(ps.totTasks).arg(strTime(ps.totTime, true));
     }
     QString txt = QString("%1 due %2")
         .arg(strTime(ps.nextTime, true)).arg(parseDate(ps.nextDue, true));
 
-    if (ps.lastDue == ps.nextDue) return txt + suff;
+    if (ps.lastDue == ps.nextDue) return txt;
     return txt + QString(", Total %1 due %2")
-        .arg(strTime(ps.totTime, true)).arg(parseDate(ps.lastDue, true))
-        + suff;
+        .arg(strTime(ps.totTime, true)).arg(parseDate(ps.lastDue, true));
 }
