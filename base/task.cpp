@@ -17,7 +17,7 @@ Task::Task(const QString& nam, const QString& items, int import, std::set<QStrin
 bool Task::operator==(const Task& oth) const { return id == oth.id; }
 bool Task::operator<(const Task& oth) const {
     // If this is less than oth it will be higher in the list
-#ifdef DEBUG
+#ifdef APP_DEBUG
     return basescore(oth) < basescore(*this);
 #else
     // Swapping the values (like done for import) virtually reverses it
@@ -105,12 +105,12 @@ progress Task::Progress() {
 }
 
 QString Task::top() {
-    return name
-        + "  "+QString("!").repeated(import)
+    QString out = name + "  "+QString("!").repeated(import);
 #ifdef APP_DEBUG
-        + "  $"+QString::number(basescore(*this));
+    auto sco = basescore(*this);
+    out += "  $"+QString::number(sco)+" - $"+QString::number(sco+baseextra());
 #endif
-    ;
+    return out;
 }
 QString Task::bottom() {
     auto ps = Progress();
