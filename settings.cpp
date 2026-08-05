@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "font.hpp"
+#include "base/taskload.hpp"
 #include "wids/secret.hpp"
 #include <QLabel>
 #include <QBoxLayout>
@@ -24,17 +25,24 @@ void MainGame::generateSettings() {
         topsect->addWidget(labl);}
     slay->addLayout(topsect);
 
-    {auto opts = new QVBoxLayout();
-        {auto labl = new QLabel("Bottom section");
+    {auto sp = new Spoiler("Title", this);
+    auto opts = new QVBoxLayout();
+        {auto labl = new QLabel("Bottom section", sp);
         opts->addWidget(labl);}
-    auto sp = new Spoiler("Title");
     sp->setContentLayout(*opts);
     slay->addWidget(sp);}
 
-    {auto opts = new QVBoxLayout();
-        {auto labl = new QLabel("Bottom section2");
-        opts->addWidget(labl);}
-    auto sp = new Spoiler("Title2");
+    {auto sp = new Spoiler("Debug", this);
+    auto opts = new QVBoxLayout();
+        auto labl = new QLabel("--Task info--", sp);
+        opts->addWidget(labl);
+
+        auto btn = new QPushButton("Reload", sp);
+        btn->connect(btn, &QPushButton::pressed, labl, [=](){
+            labl->setText(getAllTasksDebugInfo());
+            sp->updateHeights();
+        });
+        opts->addWidget(btn);
     sp->setContentLayout(*opts);
     slay->addWidget(sp);}
 

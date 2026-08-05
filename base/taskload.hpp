@@ -20,6 +20,7 @@ void loadTasks();
 /// Sorting tasks does not affect getBestTask
 void sortTasks(bool all = false);
 void saveTasks();
+QString getAllTasksDebugInfo();
 
 std::shared_ptr<Task> getBestTask();
 void resetBest();

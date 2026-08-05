@@ -41,6 +41,7 @@ Spoiler::Spoiler(const QString& title, QWidget* parent) : QWidget(parent) {
     toggleButton.setCheckable(true);
     toggleButton.setChecked(false);
 
+    contentArea.setObjectName("contentArea");
     contentArea.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     // start out collapsed
     contentArea.setMaximumHeight(0);
@@ -75,4 +76,27 @@ void Spoiler::setContentLayout(QLayout& contentLayout) {
     contentAnimation->setDuration(animationDuration);
     contentAnimation->setStartValue(0);
     contentAnimation->setEndValue(contentHeight);
+}
+
+void Spoiler::updateHeights() {
+    if (!contentArea.layout()) return;
+    contentArea.layout()->activate();
+
+    const int newhei = contentArea.layout()->sizeHint().height();
+    auto* anim = static_cast<QPropertyAnimation*>(
+        toggleAnimation.animationAt(toggleAnimation.animationCount() - 1)
+    );
+
+    const int oldhei = anim->endValue().toInt();
+    // How far open are we right now? (0 = closed, 1 = open)
+    double t;
+    if (oldhei > 0) {
+        t = double(contentArea.maximumHeight()) / oldhei;
+    } else { t = 0.0; }
+
+    anim->setEndValue(newhei);
+    // Instantly set to the right height
+    contentArea.setMaximumHeight(qRound(t*newhei));
+
+    updateGeometry();
 }

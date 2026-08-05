@@ -299,6 +299,18 @@ void saveTasks() {
     file.close();
 }
 
+QString getAllTasksDebugInfo() {
+    QString out;
+    for (const auto& [key, tasks] : alltasks) {
+        out += "--" + key + "--\n";
+        for (const auto& tsk : tasks) {
+            if (!tsk) continue;
+            out += "  " + tsk->name + " - " + QString::number(basescore(*tsk)) + '\n';
+        }
+    }
+    return out.trimmed();
+}
+
 std::shared_ptr<Task> best = nullptr;
 std::shared_ptr<Task> getBestTask() {
     if (!best) {

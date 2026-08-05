@@ -1,7 +1,6 @@
 // Thanks in part to https://stackoverflow.com/a/37119983 !
 #include <QVBoxLayout>
 #include <QParallelAnimationGroup>
-#include <QScrollArea>
 #include <QToolButton>
 
 class HeaderButton : public QToolButton {
@@ -27,9 +26,10 @@ class Spoiler : public QWidget {
 public:
     explicit Spoiler(const QString& title = "", QWidget* parent = 0);
     void setContentLayout(QLayout& contentLayout);
+    void updateHeights();
 private:
     QVBoxLayout mainLayout;
     HeaderButton toggleButton;
     QParallelAnimationGroup toggleAnimation;
-    QScrollArea contentArea;
+    QWidget contentArea;
 };

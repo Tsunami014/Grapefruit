@@ -52,16 +52,16 @@ Spoiler QToolButton {
     qproperty-lineColour: #555;
     qproperty-lineWidth: 3px;
 }
-Spoiler QScrollArea {
+Spoiler QToolButton:pressed {
+    background-color: #72A791;
+    border-style: inset;
+}
+Spoiler #contentArea {
     background-color: #D7E6DF;
     border-style: solid;
     border-width: 2px;
     border-radius: 5px;
     border-color: #B2CDBA;
-}
-Spoiler QToolButton:pressed {
-    background-color: #72A791;
-    border-style: inset;
 }
 
 TaskBubble { background: transparent; }
