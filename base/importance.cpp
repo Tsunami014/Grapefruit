@@ -117,13 +117,23 @@ int basescore(const Task& task) {
     int totRatio = 0;
     for (auto it = ratioNames.constBegin(); it != ratioNames.constEnd(); it++) {
         const QString& name = it.key();
-        if (name == "Randomness") continue;
-        const auto& func = it.value();
-
         int weight = ratios.value(name, 0);
-        tot += func(t) * weight;
         totRatio += weight;
+        if (name == "Randomness") continue;
+        tot += it.value()(t) * weight;
     }
     if (totRatio == 0) return 0;
     return int((tot / totRatio) * 1000);
+}
+int baseextra() {
+    float extraRatio = 0;
+    float totRatio = 0;
+    for (auto it = ratioNames.constBegin(); it != ratioNames.constEnd(); it++) {
+        const QString& name = it.key();
+        int weight = ratios.value(name, 0);
+        totRatio += weight;
+        if (name == "Randomness") extraRatio += weight;
+    }
+    if (totRatio == 0) return 0;
+    return int((extraRatio / totRatio) * 1000);
 }

@@ -300,15 +300,23 @@ void saveTasks() {
 }
 
 QString getAllTasksDebugInfo() {
-    QString out;
+    QString out = "=== Tasks ===";
+    const auto extra = baseextra();
     for (const auto& [key, tasks] : alltasks) {
-        out += "--" + key + "--\n";
+        out += "\n--- " + key + " ---";
+        std::vector<std::pair<int, std::shared_ptr<Task>>> scored;
         for (const auto& tsk : tasks) {
-            if (!tsk) continue;
-            out += "  " + tsk->name + " - " + QString::number(basescore(*tsk)) + '\n';
+            if (tsk) scored.emplace_back(basescore(*tsk), tsk);
+        }
+        std::sort(scored.begin(), scored.end(),
+            [](const auto& a, const auto& b) {
+                return a.first > b.first;
+            });
+        for (const auto& [score, tsk] : scored) {
+            out += "\n  " + tsk->name + "  " + QString::number(score) + " - " + QString::number(score+extra);
         }
     }
-    return out.trimmed();
+    return out;
 }
 
 std::shared_ptr<Task> best = nullptr;

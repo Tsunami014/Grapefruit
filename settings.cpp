@@ -34,7 +34,7 @@ void MainGame::generateSettings() {
 
     {auto sp = new Spoiler("Debug", this);
     auto opts = new QVBoxLayout();
-        auto labl = new QLabel("--Task info--", sp);
+        auto labl = new QLabel("Task info...", sp);
         opts->addWidget(labl);
 
         auto btn = new QPushButton("Reload", sp);
