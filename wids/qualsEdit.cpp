@@ -3,7 +3,7 @@
 #include <QTextBlock>
 
 QualityEdit::QualityEdit(std::set<QString> words, QWidget* parent)
-    : TxtEdit(parent, false), words(words) {
+    : TxtEdit(parent), words(words) {
     setFocusPolicy(Qt::NoFocus); // We manually focus ourselves
     setTextInteractionFlags(Qt::NoTextInteraction); // No selecting text
     setReadOnly(true);
@@ -12,10 +12,9 @@ QualityEdit::QualityEdit(std::set<QString> words, QWidget* parent)
     }
     // Setup fonts
     QFont prev = font();
-    resizeFont(this, 1.8);
+    resizeFont(this, 1.4);
     selfnt = font();
     setFont(prev);
-    resizeFont(this, 1.2);
     regfnt = font();
 }
 
@@ -46,7 +45,7 @@ void QualityEdit::updtxt() {
     for (QString &s : li) {
         if (!s.isEmpty()) s[0] = s[0].toUpper();
     }
-    setText(li.join("  "));
+    setText(li.join('\n'));
 
     // Add highlighting!
     QList<QTextEdit::ExtraSelection> sels;
