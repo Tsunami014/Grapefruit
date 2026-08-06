@@ -122,7 +122,7 @@ purposes:
           - "Anything you feel like {doing/aiming for}{ today/ %thistime/}?"
           - "{Got/Have} {something/anything} in mind {for/to do} {today/%thistime/now}?"
       opts:
-        - ["{Nothing/Not much}", [], what2do]
+        - ["{Nothing/Not much}", [], suggest]
         - ["$Struggle", [sad, stuck], checkin]
         - ["{Sleep/Rest/}", [tired], comfort]
         - ["$Unsure", [unsure], suggest]
@@ -149,7 +149,7 @@ purposes:
           - "What would it take for {the next {3/5/10} minutes/right now} to feel worth{ it/while/ doing}?"
       shuffle: true
       opts:
-        - ["$Unsure", [unsure], suggest]
+        - ["{Dunno/Don't know/Unsure}", [], suggest]
         - ["{Sleep/Rest/}", [tired], comfort]
         - ["{Got plans/I know/2*Already {know/chosen}}", [motivated, startedelse], goingwell]
         - ["$Struggle", [sad, stuck], checkin]
@@ -461,6 +461,8 @@ purposes:
           - "Think {for a {bit/while}/}about how you would {try/go for} '%best_name' the {3*same /}way you{'d/ would} approach $SomethingFun."
           - "{What if you treated/How about try treating} '%best_name' {like/the same as/as} $SomethingFun instead of {work/a task/a chore}?"
           - "{Try approaching/Approach/How about try/Try/Try going for/Go for} '%best_name' the same way you{'d/ would} {approach/try/go about} $SomethingFun."
+        # Something related instead
+          - "2*{Is there/Maybe there's} something {related to/that you could do instead for} '%best_name' {3*that /}you{'d/ would/} {rather do/enjoy more/3*find more {fun/interesting/engaging}}?"
         # User entered reason
           - "4*%best_reason"
           - "5*%best_reason {But remember, there's no pressure/No pressure though/But no pressure}."

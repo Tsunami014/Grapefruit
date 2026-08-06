@@ -89,10 +89,10 @@ QHash<QString, int> ratios;
 void loadRatios() {
     ratios.insert("Randomness", 1);
     ratios.insert("Importance", 2);
-    ratios.insert("Urgency", 6);
+    ratios.insert("Urgency", 5);
     ratios.insert("Load", 4);
     ratios.insert("Resonance", 4);
-    ratios.insert("Variety", 3);
+    ratios.insert("Variety", 6);
     ratios.insert("CatVariety", 2);
 }
 
