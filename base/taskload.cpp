@@ -243,7 +243,6 @@ QString datapth() {
     if (!d.exists()) d.mkpath(path);
     return path + "/data.sav";
 }
-void defTasks(); // Defined at bottom for convenience
 void loadTasks() {
     for (auto& [_, tasks] : alltasks) { tasks.clear(); }
     alltasks.clear();
@@ -295,6 +294,19 @@ void saveTasks() {
         }
     }
     file.close();
+}
+
+void delAllTasks() {
+    for (auto& [_, tasks] : alltasks) { tasks.clear(); }
+    alltasks.clear();
+    saveTasks();
+}
+void resetTasks() {
+    for (auto& [_, tasks] : alltasks) { tasks.clear(); }
+    alltasks.clear();
+    defTasks();
+    sortTasks(true);
+    saveTasks();
 }
 
 QString getAllTasksDebugInfo() {

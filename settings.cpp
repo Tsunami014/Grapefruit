@@ -2,6 +2,7 @@
 #include "font.hpp"
 #include "base/taskload.hpp"
 #include "wids/secret.hpp"
+#include "wids/confirm.hpp"
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
@@ -25,10 +26,37 @@ void MainGame::generateSettings() {
         topsect->addWidget(labl);}
     slay->addLayout(topsect);
 
-    {auto sp = new Spoiler("Title", this);
-    auto opts = new QVBoxLayout();
-        {auto labl = new QLabel("Bottom section", sp);
-        opts->addWidget(labl);}
+    auto addbtn = [=](QString txt, QBoxLayout* opts, QWidget* parent){
+        auto btn = new QPushButton(txt, parent);
+        btn->setProperty("fancy", true);
+        btn->setProperty("settbtn", true);
+        auto wrap = new QWidget(parent);
+        auto wraplay = new QHBoxLayout(wrap);
+        wraplay->setContentsMargins(8,8,8,8);
+        wraplay->addWidget(btn);
+        opts->addWidget(wrap);
+        return btn;
+    };
+
+    {auto sp = new Spoiler("Reset", this);
+    auto opts = new QHBoxLayout();
+        {auto btn = addbtn("Delete All Tasks", opts, sp);
+        btn->connect(btn, &QPushButton::pressed, [=](){
+            btn->clearFocus();
+            if (confirm(setts, "Are you sure you want to delete all your tasks?", Conf_YESNO)
+                == QDialogButtonBox::YesRole) {
+                    delAllTasks();
+                }
+        });}
+
+        {auto btn = addbtn("Reset Tasks", opts, sp);
+        btn->connect(btn, &QPushButton::pressed, [=](){
+            btn->clearFocus();
+            if (confirm(setts, "Are you sure you want to reset all your tasks with the defaults?", Conf_YESNO)
+                == QDialogButtonBox::YesRole) {
+                    resetTasks();
+                }
+        });}
     sp->setContentLayout(*opts);
     slay->addWidget(sp);}
 
@@ -37,12 +65,11 @@ void MainGame::generateSettings() {
         auto labl = new QLabel("Task info...", sp);
         opts->addWidget(labl);
 
-        auto btn = new QPushButton("Reload", sp);
+        {auto btn = addbtn("Reload", opts, sp);
         btn->connect(btn, &QPushButton::pressed, labl, [=](){
             labl->setText(getAllTasksDebugInfo());
             sp->updateHeights();
-        });
-        opts->addWidget(btn);
+        });}
     sp->setContentLayout(*opts);
     slay->addWidget(sp);}
 
