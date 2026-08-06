@@ -36,9 +36,10 @@ overwhelming:
   -3: [stressed, stuck, tired, depressed]
 
 distracting:
-  2: [sad, depressed]
-  1: [stressed, unsure, bored]
-  -2: [motivated, happy]
+  2: [sad, depressed, stressed, stuck]
+  1: [bored]
+  -1: [happy]
+  -2: [relaxed, motivated]
 
 irritating:
   2: [motivated, happy, relaxed]

@@ -3,9 +3,9 @@
 #include "importance.hpp"
 #include "font.hpp"
 #include "saveesc.hpp"
+#include "tasklist.hpp"
 #include "wids/confirm.hpp"
 #include "wids/taskbbl.hpp"
-#include "extra/itemopts.hpp"
 #include <memory>
 #include <QPushButton>
 #include <QMessageBox>
@@ -14,8 +14,6 @@
 #include <QStandardPaths>
 #include <QDir>
 
-using tasklist = std::vector<std::shared_ptr<Task>>;
-std::map<QString, tasklist> alltasks;
 QString current;
 QString getCurrent() {
     if (alltasks.empty()) return {};
@@ -340,24 +338,3 @@ std::shared_ptr<Task> getBestTask() {
     return best;
 }
 void resetBest() { best = nullptr; }
-
-
-void defTasks() {
-    tasklist test;
-    test.emplace_back(std::make_shared<Task>("Sample task 1"));
-    test.emplace_back(std::make_shared<Task>("Sample task 2"));
-    alltasks["Test"] = test;
-
-    tasklist hi;
-    hi.emplace_back(std::make_shared<Task>("Hello, world!", QString(
-        "+1.5h Task 1\n"
-        "%1+2.5h Do something cool!\n"
-        "+0.5h Isn't this so cool? @%2\n"
-        "+0h NEXT TASK\n"
-        "+1.5h Achieve hiness @%3"
-    ).arg(donePref)
-        .arg(QDate::currentDate().addDays(3).toString("yyyy-MM-dd"))
-        .arg(QDate::currentDate().addDays(16).toString("yyyy-MM-dd"))
-    ));
-    alltasks["Hello"] = hi;
-}

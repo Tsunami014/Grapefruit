@@ -32,7 +32,7 @@ int parseStrTime(QString time) {
 }
 
 const QStringList strtimes{
-    "2m", "5m", "10m", "20m", "30m", "45m",
+    "5m", "10m", "20m", "30m", "45m",
     "1h", "1.3h", "1.7h", "2h", "2.5h"
     "3h", "3.5h", "4h", "5h"
 };
