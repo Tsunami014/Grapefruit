@@ -41,8 +41,7 @@ void MainGame::generateSettings() {
     {auto sp = new Spoiler("Reset", this);
     auto opts = new QHBoxLayout();
         {auto btn = addbtn("Delete All Tasks", opts, sp);
-        btn->connect(btn, &QPushButton::pressed, [=](){
-            btn->clearFocus();
+        btn->connect(btn, &QPushButton::clicked, [=](){
             if (confirm(setts, "Are you sure you want to delete all your tasks?", Conf_YESNO)
                 == QDialogButtonBox::YesRole) {
                     delAllTasks();
@@ -50,8 +49,7 @@ void MainGame::generateSettings() {
         });}
 
         {auto btn = addbtn("Reset Tasks", opts, sp);
-        btn->connect(btn, &QPushButton::pressed, [=](){
-            btn->clearFocus();
+        btn->connect(btn, &QPushButton::clicked, [=](){
             if (confirm(setts, "Are you sure you want to reset all your tasks with the defaults?", Conf_YESNO)
                 == QDialogButtonBox::YesRole) {
                     resetTasks();
