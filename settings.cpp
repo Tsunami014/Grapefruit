@@ -45,6 +45,7 @@ void MainGame::generateSettings() {
             if (confirm(setts, "Are you sure you want to delete all your tasks?", Conf_YESNO)
                 == QDialogButtonBox::YesRole) {
                     delAllTasks();
+                    tasks->redoTasks();
                 }
         });}
 
@@ -53,6 +54,7 @@ void MainGame::generateSettings() {
             if (confirm(setts, "Are you sure you want to reset all your tasks with the defaults?", Conf_YESNO)
                 == QDialogButtonBox::YesRole) {
                     resetTasks();
+                    tasks->redoTasks();
                 }
         });}
     sp->setContentLayout(*opts);
