@@ -51,6 +51,7 @@ void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) 
         idx++;
     }
     while (btns.size() > idx) {
+        lay->removeWidget(btns.back());
         btns.back()->deleteLater();
         btns.pop_back();
     }
@@ -275,7 +276,7 @@ void loadTasks() {
     while (!line.isNull()) {
         if (line == "") { continue; }
         if (line[0] == '\4') {
-            if (!tl.empty()) {
+            if (!title.isNull()) {
                 alltasks[title] = tl;
                 tl = {};
             }
@@ -285,7 +286,7 @@ void loadTasks() {
         }
         line = in.readLine();
     }
-    if (!tl.empty()) {
+    if (!title.isNull()) {
         alltasks[title] = tl;
     }
     file.close();

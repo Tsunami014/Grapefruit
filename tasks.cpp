@@ -5,7 +5,6 @@
 #include "wids/renameOverl.hpp"
 #include <QBoxLayout>
 #include <QPushButton>
-#include <QScrollArea>
 
 TaskView::TaskView() {
     tlay = new QGridLayout(this);
@@ -26,6 +25,7 @@ TaskView::TaskView() {
         btn->setProperty("fancy", true);
         btn->setIcon(QIcon(asset));
         btn->setIconSize(QSize(48, 44));
+        btn->setMinimumHeight(56);
         return btn;
     };
     topsect->setSpacing(16);
@@ -53,7 +53,7 @@ TaskView::TaskView() {
             labl->setAlignment(Qt::AlignCenter);
             topsectmid->addWidget(labl);}
 
-            auto* scrl = new QScrollArea(this);
+            scrl = new QScrollArea(this);
             scrl->setFrameShape(QFrame::NoFrame);
             scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
             scrl->setProperty("bg", true);
@@ -120,5 +120,11 @@ void TaskView::redoTasks() {
     }, this);
     setTasksCatsLay(tcatlay, redo, this);
     tcatdrag->installOn(tcatlay);
+    QTimer::singleShot(0, [this](){
+        // Set fixed scroll height
+        const int w = scrl->viewport()->width();
+        const int h = tcatlay->heightForWidth(w);
+        scrl->setFixedHeight(h);
+    });
     if (overlay) overlay->raise();
 }
