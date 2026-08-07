@@ -98,6 +98,7 @@ void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> 
 void newCategory(QWidget* parent, QString name) {
     if (alltasks.find(name) == alltasks.end()) {
         alltasks[name] = {};
+        saveTasks();
     } else {
         confirm(parent, "The category '" + name + "' already exists!", Conf_OK);
     }
@@ -142,6 +143,7 @@ bool renameCategory(QWidget* parent, QString newname) {
         alltasks.insert(std::move(node));
     }
     current = newname;
+    saveTasks();
     return true;
 }
 
@@ -154,6 +156,7 @@ bool deleteCategory(QWidget* parent) {
     }
     alltasks.erase(alltasks.find(cur));
     current = {};
+    saveTasks();
     return true;
 }
 
@@ -181,7 +184,10 @@ void removeTask(std::shared_ptr<Task> task, bool trycurfirst) {
                 std::remove(list.begin(), list.end(), task),
                 list.end()
             );
-            if (list.size() != oldsze) return;
+            if (list.size() != oldsze) {
+                saveTasks();
+                return;
+            }
             // Otherwise, was not found
         }
     }
@@ -194,7 +200,10 @@ void removeTask(std::shared_ptr<Task> task, bool trycurfirst) {
             std::remove(list.begin(), list.end(), task),
             list.end()
         );
-        if (list.size() != oldsze) break;
+        if (list.size() != oldsze) {
+            saveTasks();
+            break;
+        }
     }
 }
 
@@ -203,6 +212,7 @@ std::shared_ptr<Task> newtask() {
     if (!cur.isNull()) {
         auto ntsk = std::make_shared<Task>();
         alltasks[cur].push_back(ntsk);
+        saveTasks();
         return ntsk;
     }
     return nullptr;
@@ -212,6 +222,7 @@ std::shared_ptr<Task> newtask(QString cat) {
     if (it != alltasks.end()) {
         auto ntsk = std::make_shared<Task>();
         it->second.push_back(ntsk);
+        saveTasks();
         return ntsk;
     }
     return nullptr;
