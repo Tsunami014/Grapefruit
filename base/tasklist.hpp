@@ -21,11 +21,11 @@ inline void defTasks() {
         "You like seeing your ideas take shape"
     ));
     home.emplace_back(std::make_shared<Task>("Personal projects", QString(
+        "+1.7h Bake something to share with neighbours @%1\n"
         "+30m Work on a job application that excites you\n"
-        "+5m Submit the application\n"
-        "+1.7h Bake something to share with neighbours @%1"
-    ).arg(QDate::currentDate().addDays(3).toString("yyyy-MM-dd")),
-    5, std::set<QString>{"impactful", "empowering"}));
+        "+5m Submit the application"
+    ).arg(QDate::currentDate().addDays(7).toString("yyyy-MM-dd")),
+    3, std::set<QString>{"impactful", "empowering"}));
     alltasks["Home"] = home;
 
     tasklist schl;
