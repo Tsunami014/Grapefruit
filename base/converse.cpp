@@ -131,14 +131,19 @@ void Conversation::onclick(Option o) {
     const auto& ggp = getgroup();
     const auto& grps = groups();
     for (const auto& chng : o.changes) {
-        if (chng.at(0) == '~') {
+        QChar first = chng.at(0);
+        if (first == '$') {
+            externFunc(chng.substr(1));
+            continue;
+        }
+        if (first == '~') {
             if (auto it = context.find(chng.substr(1)); it != context.end()) {
                 context.erase(it); break;
             }
             continue;
         }
         std::string g;
-        bool clear = chng.at(0) == '-';
+        bool clear = first == '-';
         if (clear) { g = chng.substr(1); }
         else { g = ggp.at(chng); }
         for (const auto& val : grps.at(g)) {
@@ -155,24 +160,7 @@ void Conversation::onclick(Option o) {
 constexpr int maxRecursion = 10;
 
 const QRegularExpression groupsRe("%([a-zA-Z_]+)%?");
-const QRegularExpression dictRe("\\$([a-zA-Z0-9_]+)\\$?");
-
 QString Conversation::polishSentence(QString sent) {
-    // Replace dictionary $references (allows some references in references)
-    for (int i = 0; i < maxRecursion; i++) {
-        auto it = dictRe.globalMatch(sent);
-        if (!it.hasNext()) break;
-        int offs = 0;
-        while (it.hasNext()) {
-            auto m = it.next();
-            QString repl = QString::fromStdString(cconfig()["dictionary"][m.captured(1).toStdString()].as<std::string>());
-
-            int start = m.capturedStart(0) + offs;
-            int end = m.capturedEnd(0) + offs;
-            sent.replace(start, end - start, repl);
-            offs += repl.length() - (end - start);
-        }
-    }
     // Replace %taggroups
     {auto it = groupsRe.globalMatch(sent);
     int offs = 0;
@@ -234,6 +222,67 @@ QString Conversation::polishSentence(QString sent) {
     return sent;
 }
 
+const QRegularExpression dictRe("\\$([a-zA-Z0-9_]+)\\$?");
+const QRegularExpression failsafeRe("<([^<>|]+)(?:\\|([^<>|]*))?>");
+QString Conversation::basicParseSent(QString sent) {
+    auto checkCtx = [&](std::string group){
+        if (externList.find(group) != externList.end()) {
+            return evalExtern(group, sent);
+        } else {
+            bool good = false;
+            const auto& grps = groups();
+            const auto& it2 = grps.find(group);
+            if (it2 == grps.end()) return false;
+            for (const auto& val : it2->second) {
+                if (context.find(val) != context.end()) { good = true; break; }
+            }
+            return good;
+        }
+    };
+    // Replace dictionary $references (allows some references in references)
+    // We do this here so it also checks for groups and other things
+    for (int i = 0; i < maxRecursion; i++) {
+        auto it = dictRe.globalMatch(sent);
+        if (!it.hasNext()) break;
+        int offs = 0;
+        while (it.hasNext()) {
+            auto m = it.next();
+            QString repl = QString::fromStdString(cconfig()["dictionary"][m.captured(1).toStdString()].as<std::string>());
+
+            int start = m.capturedStart(0) + offs;
+            int end = m.capturedEnd(0) + offs;
+            sent.replace(start, end - start, repl);
+            offs += repl.length() - (end - start);
+        }
+    }
+    // Parse <> tags
+    {auto it = failsafeRe.globalMatch(sent);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+        QString repl = m.captured(1);
+        // Check if all context group tags exist, and if not use backup
+        auto it = groupsRe.globalMatch(repl);
+        while (it.hasNext()) {
+            auto m = it.next();
+            if (!checkCtx(m.captured(1).toStdString())) {
+                repl = m.captured(2);
+            }
+        }
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        sent.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }}
+    // Check all context group tags exist
+    auto it = groupsRe.globalMatch(sent);
+    while (it.hasNext()) {
+        auto m = it.next();
+        if (!checkCtx(m.captured(1).toStdString())) return QString();
+    }
+    return sent;
+}
+
 
 void Conversation::refresh() {
     auto ppse = cconfig()["purposes"][purpose];
@@ -278,9 +327,10 @@ void Conversation::refresh() {
                 return context.find(req) != context.end();
         }}
     };
-    auto parseSentenceMatch = [&](QString sent) {
+    auto parseSentence = [&](QString sent) {
+        if (sent.isNull()) return QString();
         auto idx = sent.lastIndexOf('#');
-        if (idx == -1) return sent;
+        if (idx == -1) return basicParseSent(sent);
         uint ln = 1;
         if (idx > 0 && sent.at(idx-1) == ' ') { idx--; ln++; }
         for (const QString& req : sent.mid(idx+ln).split(", ")) {
@@ -290,30 +340,7 @@ void Conversation::refresh() {
             }
             if (!good) return QString();
         }
-        return sent.left(idx);
-    };
-    auto checkSent = [&](std::string sent) {
-        auto qstr = parseSentenceMatch(QString::fromStdString(sent));
-        if (qstr.isNull()) return QString();
-        // Check all context group tags exist
-        auto it = groupsRe.globalMatch(qstr);
-        while (it.hasNext()) {
-            auto m = it.next();
-            std::string group = m.captured(1).toStdString();
-            if (externList.find(group) != externList.end()) {
-                if (!evalExtern(group)) return QString();
-            } else {
-                bool good = false;
-                const auto& grps = groups();
-                const auto& it2 = grps.find(group);
-                if (it2 == grps.end()) break;
-                for (const auto& val : it2->second) {
-                    if (context.find(val) != context.end()) good = true; break;
-                }
-                if (!good) return QString();
-            }
-        }
-        return qstr;
+        return basicParseSent(sent.left(idx));
     };
     std::vector<optList> opts;
     uint idx = 0;
@@ -321,7 +348,7 @@ void Conversation::refresh() {
         // Compile the options into a list
         optList outopts;
         for (const auto& item : opt["opts"]) {
-            auto o = parseSentenceMatch(QString::fromStdString(item[0].as<std::string>()));
+            auto o = parseSentence(QString::fromStdString(item[0].as<std::string>()));
             if (o.isNull()) continue;
             QString title = polishSentence(o);
             if (title.isEmpty()) continue;
@@ -358,13 +385,13 @@ void Conversation::refresh() {
             }
             if (good) {
                 if (tmpl.second.IsScalar()) {
-                    if (auto ns = checkSent(tmpl.second.as<std::string>()); !ns.isNull()) {
+                    if (auto ns = parseSentence(QString::fromStdString(tmpl.second.as<std::string>())); !ns.isNull()) {
                         sents.push_back(ns);
                         optidxs.push_back(idx);
                     }
                 } else {
                     for (const auto& it : tmpl.second) {
-                        if (auto ns = checkSent(it.as<std::string>()); !ns.isNull()) {
+                        if (auto ns = parseSentence(QString::fromStdString(it.as<std::string>())); !ns.isNull()) {
                             sents.push_back(ns);
                             optidxs.push_back(idx);
                         }

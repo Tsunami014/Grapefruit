@@ -15,17 +15,18 @@
 ### The sentence
 - Purposes have a list of templates grouped based on context tags present
   - The rules are a ", " separated list, and all the requirements must match. They can contain:
-    - tag - must have that tag
-    - !tag - must not have that tag
-    - +group - must have a tag from the group
-    - -group - matches when no tag from that group is active
-    - = - matches when no other sentence has matched yet (matches are evaluated first-last)
-    - + - matches when another sentence has already matched (opposite of =)
-    - * - matches everything
-    - rule?rule... - can match any of the provided rules
+    - `tag` - must have that tag
+    - `!tag` - must not have that tag
+    - `+group` - must have a tag from the group
+    - `-group` - matches when no tag from that group is active
+    - `=` - matches when no other sentence has matched yet (matches are evaluated first-last)
+    - `+` - matches when another sentence has already matched (opposite of =)
+    - `*` - matches everything
+    - `rule?rule...` - can match any of the provided rules
   - Only applicable templates are chosen from (e.g. if one group doesn't have the active tag it isn't avaliable)
-  - Each template can also define synonyms (e.g. "I hope you {feel/get} better"), use dictionary words (e.g. $feel) or use context groups and external variables (e.g. %mood or %time)
+  - Each template can also define synonyms (e.g. `I hope you {feel/get} better`), use dictionary words (e.g. `$feel`) or use context groups and external variables (e.g. `%mood` or `%time`)
     - But adding a context group to a template also adds the requirement that that group must have a tag active to that template
+    - If you wrap anything within `<>` brackets, instead of failing if something within isn't set it will evaluate to blank instead (and if a `|` is included, i.e. `<...|...>` then the contents after `|` will be used instead of blank if the left side doesn't exist. If both don't exist the sentence will fail)
   - Templates and options can also use rules by ending the item with `#rule` (or multiple; `#rule, rule`) which adds those requirements to that template (although `*`, `+` and `=` will work, they are pointless to use)
   - Starting a sentence with `x*` (optional space after) where x is a number 'repeats' the sentence x times, making it x times more likely to appear.
 - One avaliable template is chosen at random from all avaliable in the current purpose
@@ -37,7 +38,9 @@
   - This list contains multiple choices for what set of options to provide and it picks a random one
   - Each option in the set is a word or phrase and has attached tags and an optional set purpose (which can use `{/}` or `$word` too) which if included sets the purpose to that.
     - If an option's text is empty (including from usage of `{/}` and such), it will be ignored.
-  - 'Attached tags' are where if the option is selected, the tags are added to the current context, removing others in the same group. Additionally, if a tag is `~tag` or `-group`, it will remove that tag / all tags from that group instead.
+  - 'Attached tags' are where if the option is selected, the tags are added to the current context, removing others in the same group. They can also include:
+    - `~tag` or `-group` to remove that tag / all tags from that group
+    - `$name` to run an external function (different from regular externs) when that is called
 - A 'new topic' option is always automatically included (so no need to specify) that resets the conversation
 - If 'shuffle' is true then will shuffle the options. If false or omitted, will keep in order.
 
@@ -63,6 +66,7 @@ purposes:
           - "You seem to be doing well!"
         "-mood":
           - "How are you doing today?"
+        "!happy"
         "*":
           - "2*How's your %time{ going/}?"
       shuffle: true
@@ -82,6 +86,9 @@ These are utilised the same way as regular context groups; with `%name`
 - `scene` - a randomly chosen name from the current scene (verb)
 - `best_name` - the name of the currently deemed 'best task' to do
 - `best_reason` - a random reason sentence why the user wants to to the best task
+
+### External functions
+- `$reset_best` - reset the `best_name`
 
 
 # Scenes - `scenes.yml`

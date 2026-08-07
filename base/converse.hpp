@@ -18,6 +18,7 @@ protected:
     QLabel* curtxt;
 
     QString polishSentence(QString sent);
+    QString basicParseSent(QString sent); // Returns {} on fail
 
     void refresh();
     void display(QString txt, optList opts = {});

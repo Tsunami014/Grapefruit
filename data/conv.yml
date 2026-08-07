@@ -8,7 +8,7 @@ groups:
   ~checkstate: [justchecked]
   ~committed: [juststarted, startedelse]
   suggeststate: [resuggested]
-  comforttry: [triedrest, triedtask, triedsmaller, triedlater]
+  comforttry: [triedrest, triedtask, triedsmaller, trieddiff triedlater]
   ~comfortstate: [nogeneric, tryany, forcegeneric]
 
 
@@ -151,7 +151,7 @@ purposes:
       opts:
         - ["{Dunno/Don't know/Unsure}", [], suggest]
         - ["{Sleep/Rest/}", [tired], comfort]
-        - ["{Got plans/I know/2*Already {know/chosen}}", [motivated, startedelse], goingwell]
+        - ["{Got plans/I know/2*Already {know/chosen}}", [motivated, startedelse, $reset_best], goingwell]
         - ["$Struggle", [sad, stuck], checkin]
 
   checkin:
@@ -210,6 +210,7 @@ purposes:
         - ["$Stuck", [stuck], comfort]
         - ["$Tired", [tired], comfort]
         - ["$Stressed", [stressed], comfort]
+        - ["$CantWork", [], maybe]
         - ["{I'm ok/Nothing wrong/Still {looking/searching}/Keep suggesting}", [justchecked], suggest]
 
   comfort:
@@ -222,7 +223,7 @@ purposes:
           - "2*$WantBreak{? It might make you feel better./, it may help?/?}"
           - "Sounds like you need a break{. It might make you feel better./, it may help./2*, {want/feel like} one?/.}"
         "stressed?stuck, !triedrest":
-          - "2*$AhNotBest Want a $Quick{break/rest} to help $ClearMind?"
+          - "2*{$AhNotBest /}Want a $Quick{break/rest} to help $ClearMind?"
           - "A $Quick{break/rest} might help {clear your head/{make /3*}you feel less stuck}, {want/feel like} one?"
         "+comforttry?tryany, !triedrest":
           - "$WantBreak?"
@@ -237,8 +238,8 @@ purposes:
     # Maybe do something else?
     - templates:
         "stuck, !triedtask":
-          - "3*$AhNotBest Want {a different goal/something else} to {2*help /}$ClearMind?"
-          - "{How/what} about {switching to/doing} something {else/different} instead?"
+          - "3*{$AhNotBest /}Want {a different goal/something else} to {2*help /}$ClearMind?"
+          - "{How/What} about {switching to/doing} something {else/different} instead?"
         "depressed?stressed, !triedtask":
           - "2*{Sounds like/6*Do} you need something {new/different/more fun} to help $ClearMind?"
           - "Would something {{2*completely/totally} /}different {help/2*{be/feel} better} {3*right /}now?"
@@ -249,6 +250,20 @@ purposes:
         - ["{Yeah/Ok/Sure/I guess}", [-comforttry], suggest]
         - ["Maybe", [-comforttry], suggest]
         - ["{$NoToTask/Something else?}#-comforttry", [triedtask, nogeneric]]
+        - ["{$NoToTask}#+comforttry", [-comforttry], comfortend]
+
+    # Try something similar instead
+    - templates:
+        "stuck?bored?stressed?depressed, !trieddiff":
+          - "You don't {need/have to} do {exactly what the task is/the task exactly}, {what would make/why not try making/how would you make} it more {fun/engaging/interesting}?"
+        "stressed?depressed?tired, !trieddiff":
+          - "It's {ok/all right} if you {just /only /}do the task in a $DifferentWay{./3*, want to try?}"
+        "+comforttry?tryany, !trieddiff":
+          - "W{ell, w/}hat about doing the same task but in a $DifferentWay?"
+      opts:
+        - ["{Yeah/Ok/Sure/I guess}", [-comforttry, startedelse], goingwell]
+        - ["Maybe", [-comforttry, justmaybied], maybe]
+        - ["{$NoToTask/Something else?}#-comforttry", [trieddiff, nogeneric]]
         - ["{$NoToTask}#+comforttry", [-comforttry], comfortend]
 
     # Just do a little bit
@@ -391,16 +406,17 @@ purposes:
           - "Do {what you {can/feel like}/as much or as little as you {want/feel{ like/}}}, you don't have to do {much/everything}."
           - "$GotThis, even if just {for the/}{start/first {little /2*}bit}. $NoPressure{!/.}"
         "sad?depressed?stressed?tired, +committed":
-          - "{No pressure at all/Take it easy on yourself}, {2*even/just} {opening/looking at/2*starting} it is enough for now."
+          - "{No pressure at all/Take it easy on yourself}, {2*even/just} {opening/looking at/2*starting} $TaskNam is enough for now."
           - "You don't {have/need} to do much{ at all/}, {2*just having it in mind is fine/even a glance counts}."
         "motivated?happy, +committed":
           - "2*$GotThis!"
-        "juststarted": # is the same as +committed, !startedelse
+        "juststarted":
           - "4*%best_reason"
       opts:
         - ["{Thanks/Thanks/Ok}{!/}", [], working]
         - ["$IHope#!justchecked", [], checkin]
         - ["$IHope#justchecked", [forcegeneric], comfort]
+        - ["$CantWork", [], maybe]
         - ["{I can't/I'm not/3*Not {doing/going} {well/good}}", [sad], checkin]
 
   working:
@@ -422,9 +438,10 @@ purposes:
           - "2*@ $NoProblem{{, d/! D}o you feel like/{, a/! A}re you up for} '%best_name' instead?"
           - "@ $NoProblem{, i/! I}s now a better time for '%best_name'{ instead/}?"
       opts:
-        - ["$ChosenAlready", [-suggeststate, startedelse], goingwell]
+        - ["$ChosenAlready", [-suggeststate, startedelse, $reset_best], goingwell]
         - ["{Sure/Ok/Yeah/Alright}", [-suggeststate, juststarted], goingwell]
         - ["{Maybe/Don't know}{/?/...}", [], maybe]
+        - ["$CantWork", [$reset_best], maybe]
         - ["{$NoToTask}#!resuggested", [resuggested], suggest]
         - ["{Still no/$NoToTask}#resuggested", [-suggeststate], checkintask]
 
@@ -432,41 +449,43 @@ purposes:
     - templates:
         # What about only doing a bit?
         "*":
-          - "{Well, w/W}hat if you {just /only /instead /}{did '%best_name' for/gave '%best_name'} {a short time/{2/3/5} minutes}? $NoPressure."
-          - "$NoPressure, {what/how} about just {starting/doing/} {6*the first {small /}{bit/part}{s/2*} of /}'%best_name'?"
-          - "{3*You don't have to do much, w/W}hat about just {starting/working on} {6*a small {section/part/bit} of /}'%best_name'?"
+          - "{Well, w/W}hat if you {just /only /instead /}{did $TaskNam for/gave $TaskNam} {a short time/{2/3/5} minutes}? $NoPressure."
+          - "$NoPressure, {what/how} about just {starting/doing/} {6*the first {small /}{bit/part}{s/2*} of /}$TaskNam?"
+          - "{3*You don't have to do much, w/W}hat about just {starting/working on} {6*a small {section/part/bit} of /}$TaskNam?"
         # Only do it if you want
-          - "{2*{Totally/Completely} fine/2*No worries/Not a problem} if you don't want to do '%best_name', {only do it if you want/there's no pressure/don't stress {over/about} it}."
-          - "{2*Don't {worry/stress}, y/Y}ou {2*don't {have/need} to/aren't forced to}{ do/} '%best_name' if you don't want to."
+          - "{2*{Totally/Completely} fine/2*No worries/Not a problem} if you don't want to do $TaskNam, {only do it if you want/there's no pressure/don't stress {over/about} it}."
+          - "{2*Don't {worry/stress}, y/Y}ou {2*don't {have/need} to/aren't forced to}{ do/} $TaskNam if you don't want to."
         # No obligation
-          - "2*{There's no {requirement/need}/3*You {2*don't {need/have}/aren't forced}} to {2*finish/2*complete/do all of} '%best_name'{{2* if/} you don't want to/}{, doing anything is ok/, any amount is fine/}{!/.}"
-          - "'%best_name' doesn't {have/need} to be {finished/completed/{completely /entirely /3*}done}{, {only /you can{2* just/ instead/2*} /just /}do whatever you feel like/, however much you do is {fine/ok/great}}{./!}"
+          - "2*{There's no {requirement/need}/3*You {2*don't {need/have}/aren't forced}} to {2*finish/2*complete/do all of} it{{2* if/} you don't want to/}{, doing anything is ok/, any amount is fine/}{!/.}"
+          - "{2*<'%best_name'/>It/The task} doesn't {have/need} to be {finished/completed/{completely /entirely /3*}done}{, {only /you can{2* just/ instead/2*} /just /}do whatever you feel like/, however much you do is {fine/ok/great}}{./!}"
         # Do something else too
-          - "{Want to/Maybe try/2*{How/What} about} doing '%best_name' some way that {feels more {exciting/interesting}/doesn't feel {boring/annoying/like a job}}?{ Maybe {listen to music/do it while walking}?/}"
-          - "{What/How} about {doing/trying} '%best_name' with {something/music} you enjoy so it {doesn't feel/feels less} {boring/annoying/2*like {just work/work/2*a chore}}?"
-          - "Try changing up '%best_name' {a bit/however you feel/however works for you}{2*! I/. I/, i}t can be done however you desire{!/.}"
+          - "{Want to/Maybe try/2*{How/What} about} doing $TaskNam some way that {feels more {exciting/interesting}/doesn't feel {boring/annoying/like a job}}?{ Maybe {listen to music/do it while walking}?/}"
+          - "{What/How} about {doing/trying} $TaskNam with {something/music} you enjoy so it {doesn't feel/feels less} {boring/annoying/2*like {just work/work/2*a chore}}?"
+          - "Try changing up $TaskNam {a bit/however you feel/however works for you}{2*! I/. I/, i}t can be done however you desire{!/.}"
         # Fuel for later
-          - "You don't {even /}{have/need} to do '%best_name' properly, just something {for later/for when you feel more motivated/more than nothing}{ would be ok/ is good/}."
+          - "You don't {even /}{have/need} to do $TaskNam properly, just something {for later/for when you feel more motivated/more than nothing}{ would be ok/ is good/}."
           - "{Doesn't have to {count as/2*be}/You don't even have to do} {the whole thing/anything big}, just {something/something small/a rough version}{ to build on/} for {when you're more up for it/when you{'re feeling/ feel} more {up for it/motivated}/later}."
-          - "Even a {half-{done/finished}/incomplete/basic} {attempt/shot} at '%best_name' is {useful/something} for later, you {don't have/aren't forced} to do {much/anything big}."
+          - "Even a {half-{done/finished}/incomplete/basic} {attempt/shot} at $TaskNam is {useful/something} for later, you {don't have/aren't forced} to do {much/anything big}."
         # Stop anytime
           - "{You can/Feel free to/You're {absolutely /}free to} $StopWhenWant."
-          - "2*You can just {give '%best_name' a {look/glance/try/shot}/try '%best_name' out/make a start on '%best_name'} and $StopWhenWant."
-          - "{Start/Try} '%best_name' and $StopWhenWant."
+          - "2*You can just {give $TaskNam a {look/glance/try/shot}/try $TaskNam out/make a start on $TaskNam} and $StopWhenWant."
+          - "{Start/Try} $TaskNam and $StopWhenWant."
         # Just try it to see
-          - "You don't even have to {do/start/finish} anything, just {2*open it {and/to} {try /}/try and } $SeeIfWant."
-          - "{Just t/T}ake a quick {look/glance} at '%best_name' to $SeeIfWant{, y/. Y}ou{ don't need to do/'re not committing to} {anything /any /}more{ yet/}."
-          - "{{Just o/O}pen/Glance at/Take a quick look at} '%best_name' and $SeeIfWant, {that's all{ you have to do/}/2*you don't {need/have} to do anything {more/else}}."
+          - "You don't even have to {do/start/finish} anything, just {2*open it {and/to}{ try/}/try and} $SeeIfWant."
+          - "{Just t/T}ake a quick {look/glance} at $TaskNam to $SeeIfWant{, y/. Y}ou{ don't need to do/'re not committing to} {anything /any /}more{ yet/}."
+          - "{{Just o/O}pen/Glance at/Take a quick look at} $TaskNam and $SeeIfWant, {that's all{ you have to do/}/2*you don't {need/have} to do anything {more/else}}."
         # Try it as something you enjoy
-          - "Think {for a {bit/while}/}about how you would {try/go for} '%best_name' the {3*same /}way you{'d/ would} approach $SomethingFun."
-          - "{What if you treated/How about try treating} '%best_name' {like/the same as/as} $SomethingFun instead of {work/a task/a chore}?"
-          - "{Try approaching/Approach/How about try/Try/Try going for/Go for} '%best_name' the same way you{'d/ would} {approach/try/go about} $SomethingFun."
+          - "Think {for a {bit/while}/}about how you would {try/go for} $TaskNam the {3*same /}way you{'d/ would} approach $SomethingFun."
+          - "{What if you treated/How about try treating} $TaskNam {like/the same as/as} $SomethingFun instead of {work/a task/a chore}?"
+          - "{Try approaching/Approach/How about try/Try/Try going for/Go for} $TaskNam the same way you{'d/ would} {approach/try/go about} $SomethingFun."
         # Something related instead
-          - "2*{Is there/Maybe there's} something {related to/that you could do instead for} '%best_name' {3*that /}you{'d/ would/} {rather do/enjoy more/3*find more {fun/interesting/engaging}}?"
+          - "2*{Is there/Maybe there's/Try finding} something {related to/{that /}you could do {instead /}for} $TaskNam $RatherDo"
+          - "{2*What if {instead, doing/you instead did}/How about instead{,/} doing} something {2*{related/similar} to/for} $TaskNam $RatherDo"
         # User entered reason
           - "4*%best_reason"
           - "5*%best_reason {But remember, there's no pressure/No pressure though/But no pressure}."
       opts:
+        - ["$ChosenAlready", [-suggeststate, startedelse, $reset_best], goingwell]
         - ["{Sure/Ok/I guess/Alright/Doable}", [-suggeststate, juststarted], goingwell]
         - ["{{Still m/M}aybe/{Still d/D}on't know}{/?/...}#-maybestate", [justmaybied], maybe]
         - ["{Still don't know/Not helping/{Maybe t/T}ry another}#+maybestate, !resuggested", [], suggest]
@@ -479,6 +498,8 @@ dictionary:
   Going: "{going/coming along/holding up}"
   ThisDay: " %thistime/ today/ your day/ your %time"
   Quick: "{short /quick /small /2*}"
+
+  TaskNam: "{<2*'%best_name'/>the task/{your/the} work}"
 
   Hi: "Hiya/Heya/Hi/Hello"
   ABit: "{A bit/A little/Slightly/Somewhat}"
@@ -498,6 +519,7 @@ dictionary:
   SomethingFun: "{2*something {fun/you enjoy}/a hobby}"
   PartOfDoing: "{bit/part} {of/from} what you are doing"
   WhateverDoing: "whatever you{'re/ are} doing"
+  RatherDo: "{2*that /}you{'d/ would} {rather do/enjoy more/2*find more {fun/interesting/engaging}}?"
 
   WantSomething: "{Deciding/Aimless/2*Undecided/Want task}"
   Working: "{Working hard/Doing things/Achieving}"
@@ -507,9 +529,11 @@ dictionary:
   Tired: "{Tired/Life's tiring/So tired/Exhausted}"
   Stressed: "{Stressed/A bit stressed/Anxious/Life's stressful}"
   Struggle: "{I'm struggling/I'm feeling off/It's difficult}"
-  ChosenAlready: "{Other plans/4*{Chosen/Decided} {something{3*/ else}/already}/{Got my o/O}wn plan{s/}}"
+  ChosenAlready: "{Other plans/4*{Chosen/Decided} {something{3*/ else}/already}/{Got my o/O}wn plans}"
   NoToTask: "No/Not really/No thanks/Not feeling it/Don't want to/Not now"
   Unhelpful: "{Won't help/Not helpful/Unhelpful/Useless}"
   IHope: "{Maybe{.../?/}/Hopefully{..././}/I hope{./}}"
+  CantWork: "{Can't do {the work/it/anything}/Don't want to work/Don't feel like the work/Couldn't be bothered}"
+  DifferentWay: "{{different/unique} way/way that's more {fun/interesting/engaging}}"
 
   AllGoodOs: "{progress/what2do}"

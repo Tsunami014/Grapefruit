@@ -330,8 +330,9 @@ QString getAllTasksDebugInfo() {
 }
 
 std::shared_ptr<Task> best = nullptr;
-std::shared_ptr<Task> getBestTask() {
-    if (!best) {
+bool init = false;
+std::shared_ptr<Task> getBestTask(bool ignoreinit) {
+    if ((init || ignoreinit) && !best) {
         best = nullptr;
         int highsco = std::numeric_limits<int>::min();
 
@@ -349,4 +350,5 @@ std::shared_ptr<Task> getBestTask() {
     }
     return best;
 }
-void resetBest() { best = nullptr; }
+void resetBest() { best = nullptr; init = true; }
+void removeBest() { best = nullptr; init = false; }

@@ -4,5 +4,6 @@
 
 void resetExterns();
 QString runExtern(std::string name);
-bool evalExtern(std::string name);
+bool evalExtern(std::string name, QString whole);
 const extern std::unordered_set<std::string> externList;
+void externFunc(std::string name);

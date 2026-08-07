@@ -47,14 +47,14 @@ QString runExtern(std::string name) {
     return {};
 }
 
-bool evalExtern(std::string name) {
+bool evalExtern(std::string name, QString whole) {
     if (name == "time" ||
         name == "thistime" ||
         name == "scene") {
         return true;
     }
     if (name == "best_name") {
-        return getBestTask() != nullptr;
+        return getBestTask(whole.startsWith("@ ")) != nullptr;
     }
     if (name == "best_reason") {
         if (!hasBR) {
@@ -74,3 +74,12 @@ bool evalExtern(std::string name) {
 const std::unordered_set<std::string> externList = {
     "time", "thistime", "scene", "best_name", "best_reason"
 };
+
+void externFunc(std::string name) {
+    if (name == "reset_best") {
+        removeBest();
+        return;
+    }
+    qFatal() << "Unknown external function name:" << name;
+    return;
+}

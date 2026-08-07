@@ -24,5 +24,6 @@ void delAllTasks();
 void resetTasks();
 QString getAllTasksDebugInfo();
 
-std::shared_ptr<Task> getBestTask();
+std::shared_ptr<Task> getBestTask(bool ignoreinit = false);
+void removeBest();
 void resetBest();
