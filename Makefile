@@ -43,4 +43,4 @@ debug: setup-qt
 	cmake --build desktop --parallel
 
 clean:
-	rm -rf ./desktop ./release
+	rm -rf ./desktop ./release ./out

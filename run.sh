@@ -1,6 +1,6 @@
 #!/bin/sh
 APK=out/release.apk
-PKG=com.example.androidapp
+PKG=tsu.nami.grapefruit
 
 any=false
 for arg in "$@"; do

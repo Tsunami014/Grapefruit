@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-set(APP_NAME AndroidApp)
+set(APP_NAME Grapefruit)
 project(${APP_NAME} LANGUAGES CXX)
 
 set(CORE
