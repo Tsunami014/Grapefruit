@@ -6,6 +6,8 @@
 #include "wids/txtedit.hpp"
 #include "wids/qualsEdit.hpp"
 
+enum class BotSection { Overview, Edit, Reasons, Quals };
+
 class HlTxtEdit : public TxtEdit {
     Q_OBJECT
 public:
@@ -41,6 +43,10 @@ private:
     std::vector<QWidget*> parts;
     inline QMargins totMargin();
     std::function<void()> ondeath;
+
+    QScrollBar* botScrl = nullptr;
+    BotSection section = BotSection::Overview;
+    int scrolls[4] = {0, 0, 0, 0};
 
     std::shared_ptr<Task> task;
 };

@@ -240,9 +240,18 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
     new QVBoxLayout(bbar);
     generateBot();
 
-    connect(edit, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
-    connect(reasons, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
-    connect(quals, &TxtEdit::focusChange, [=](bool focus){ generateBot(); });
+    connect(edit, &TxtEdit::focusChange, [=](bool focus){
+        if (!window()->isActiveWindow()) return;
+        generateBot();
+    });
+    connect(reasons, &TxtEdit::focusChange, [=](bool focus){
+        if (!window()->isActiveWindow()) return;
+        generateBot();
+    });
+    connect(quals, &TxtEdit::focusChange, [=](bool focus){
+        if (!window()->isActiveWindow()) return;
+        generateBot();
+    });
     connect(edit, &QTextEdit::textChanged, [=](){
         task->setItems(edit->toPlainText());
         edit->highlight();
@@ -284,8 +293,19 @@ void TaskOverlay::generateBot() {
     auto* blay = qobject_cast<QBoxLayout*>(bbar->layout());
     clearlay(blay);
 
+    // Save last scroll's position
+    if (botScrl != nullptr) {
+        scrolls[static_cast<int>(section)] = botScrl->value();
+    }
+    botScrl = nullptr;
+
     bool isedit = edit->hasFocus() || showingDate;
     bool nofocus = !(isedit || reasons->hasFocus() || quals->hasFocus());
+
+    section = nofocus ? BotSection::Overview
+            : isedit  ? BotSection::Edit
+            : quals->hasFocus() ? BotSection::Quals
+            : BotSection::Reasons;
 
     if (isedit) {
         auto labl = new QLabel(bbar);
@@ -300,6 +320,7 @@ void TaskOverlay::generateBot() {
     }
 
     auto* scrl = new QScrollArea(bbar);
+    botScrl = scrl->horizontalScrollBar();
     scrl->setFrameShape(QFrame::NoFrame);
     scrl->setFocusPolicy(Qt::NoFocus);
     scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -379,6 +400,12 @@ void TaskOverlay::generateBot() {
             }
         }
     }
+
+    // Restore this scroll's position
+    int restore = scrolls[static_cast<int>(section)];
+    QTimer::singleShot(0, scrl, [this, restore](){
+        botScrl->setValue(restore);
+    });
 
     bbar->layout()->activate();
     update();
