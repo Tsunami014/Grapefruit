@@ -8,6 +8,7 @@
 #include <QPainter>
 #include <QTextBlock>
 #include <QAbstractTextDocumentLayout>
+#include <QWindow>
 
 TxtEdit::TxtEdit(QWidget* parent, bool bullets)
     : QTextEdit(parent) { init(bullets); }
@@ -96,4 +97,25 @@ void BulletArea::paintEvent(QPaintEvent* event) {
                 brect.top() - scrollY + linehei / 2.0
             ), bulletRadi, bulletRadi);
     }
+}
+
+// Fix on mobile the handle being in the wrong spot
+QVariant TxtEdit::inputMethodQuery(Qt::InputMethodQuery query) const {
+    QVariant result = QTextEdit::inputMethodQuery(query);
+    if (barea == nullptr) return result;
+
+    switch (query) {
+        case Qt::ImCursorRectangle:
+        case Qt::ImAnchorRectangle:
+        case Qt::ImInputItemClipRectangle: {
+            if (result.canConvert<QRectF>()) {
+                QRectF r = result.toRectF();
+                r.translate(bulletMarginWidth, 0);
+                return r;
+            }
+            break;
+        }
+        default: break;
+    }
+    return result;
 }

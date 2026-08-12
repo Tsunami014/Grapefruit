@@ -19,16 +19,18 @@ protected:
     void keyPressEvent(QKeyEvent* e) override;
     void insertFromMimeData(const QMimeData* source) override;
     void resizeEvent(QResizeEvent* event) override;
+    QVariant inputMethodQuery(Qt::InputMethodQuery query) const override;
 
 private:
     void init(bool bullets);
     BulletArea* barea = nullptr;
 };
 
-class BulletArea : public QWidget
-{
+class BulletArea : public QWidget {
 public:
-    explicit BulletArea(TxtEdit* edit) : QWidget(edit), edit(edit) {}
+    explicit BulletArea(TxtEdit* edit) : QWidget(edit), edit(edit) {
+        setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    }
     QSize sizeHint() const override { return QSize(bulletMarginWidth, 0); }
 
 protected:
