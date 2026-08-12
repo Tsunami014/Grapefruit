@@ -22,6 +22,7 @@ set(CORE
     extra/drag.cpp
     extra/bgitem.cpp
     extra/date.cpp
+    extra/help.cpp
 
     wids/flow.cpp
     wids/house.cpp

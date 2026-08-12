@@ -9,14 +9,14 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
-ConfirmOverlay::ConfirmOverlay(QWidget* parent) : QWidget(parent) {
+ConfirmOverlay::ConfirmOverlay(QWidget* parent, bool scroll) : QWidget(parent) {
     auto* outerV = new QVBoxLayout(this);
     outerV->setContentsMargins(0,0,0,0);
     auto* outerH = new QHBoxLayout();
     outerH->setContentsMargins(0,0,0,0);
-    outerV->addStretch();
-    outerV->addLayout(outerH);
-    outerV->addStretch();
+    outerV->addStretch(scroll? 1:0);
+    outerV->addLayout(outerH, scroll? 7:0);
+    outerV->addStretch(scroll? 1:0);
 
     inner = new QWidget(this);
     outerH->addStretch(1);
@@ -48,17 +48,18 @@ void ConfirmOverlay::paintEvent(QPaintEvent* event) {
     painter.fillRect(rect(), QColor(125, 125, 125, 125));
 }
 
-QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, ConfirmOpts opts) {
+QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, ConfirmOpts opts, bool scroll) {
     auto topLevel = parent ? parent->window() : nullptr;
     if (!topLevel) return QDialogButtonBox::RejectRole;
 
-    auto ovrl = new ConfirmOverlay(topLevel);
+    auto ovrl = new ConfirmOverlay(topLevel, scroll);
 
     auto lay = new QVBoxLayout(ovrl->inner);
     auto txt = new QLabel(text);
     resizeFont(txt, 1.3);
     txt->setWordWrap(true);
     lay->addWidget(txt);
+    if (scroll) lay->addStretch();
     lay->addSpacing(8);
 
     auto* btns = new QDialogButtonBox();

@@ -1,8 +1,10 @@
 #include "tasks.hpp"
 #include "game.hpp"
 #include "base/taskload.hpp"
+#include "extra/help.hpp"
 #include "wids/taskOverlay.hpp"
 #include "wids/renameOverl.hpp"
+#include "wids/confirm.hpp"
 #include <QBoxLayout>
 #include <QPushButton>
 
@@ -11,15 +13,20 @@ TaskView::TaskView() {
     tlay->setContentsMargins(0, 0, 0, 0);
     auto mtlay = new QVBoxLayout();
     mtlay->setContentsMargins(9, 9, 9, 9);
+    mtlay->setSpacing(0);
     tlay->addLayout(mtlay, 0, 0);
 
+    tbbllay = new QVBoxLayout();
+    mtlay->addLayout(tbbllay);
+    mtlay->addStretch();
+    mtlay->addSpacing(8);
+    {QFrame* line = new QFrame();
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Raised);
+    mtlay->addWidget(line);}
+    mtlay->addSpacing(8);
+
     auto topsect = new QHBoxLayout();
-    auto addLine = [&](){
-        QFrame* line = new QFrame();
-        line->setFrameShape(QFrame::VLine);
-        line->setFrameShadow(QFrame::Plain);
-        topsect->addWidget(line);
-    };
     auto addBtn = [&](QString asset){
         auto btn = new QPushButton();
         btn->setProperty("fancy", true);
@@ -28,85 +35,77 @@ TaskView::TaskView() {
         btn->setMinimumHeight(56);
         return btn;
     };
-    topsect->setSpacing(16);
-        auto left = new QVBoxLayout();
-        left->setSpacing(8);
-            {auto bk = addBtn(":/assets/UI/back.svg");
-            bk->setProperty("backbtn", true);
-            bk->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
-            connect(bk, &QPushButton::clicked, this, [=](){ MG->toMain(); });
-            left->addWidget(bk);}
 
-            {auto bin = addBtn(":/assets/UI/bin.svg");
-            connect(bin, &QPushButton::clicked, this, [this](){
-                if (deleteCategory(this)) redoTasks();
+    {auto* labl = new QLabel("Categories", this);
+    labl->setContentsMargins(4,8,4,8);
+    labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    labl->setAlignment(Qt::AlignCenter);
+    mtlay->addWidget(labl);}
+
+    scrl = new QScrollArea(this);
+    scrl->setFrameShape(QFrame::NoFrame);
+    scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    scrl->setProperty("bg", true);
+
+    scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
+    tcatdrag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
+
+    auto* catcont = new QWidget();
+    catcont->setObjectName("catcont");
+    catcont->setStyleSheet("#catcont { background: transparent; }");
+    tcatlay = new FlowLayout(catcont);
+    tcatlay->vertical(2);
+    scrl->setWidget(catcont);
+    scrl->setWidgetResizable(true);
+    mtlay->addWidget(scrl);
+    mtlay->addSpacing(8);
+
+    auto bot = new QHBoxLayout();
+    bot->setSpacing(8);
+        {auto bk = addBtn(":/assets/UI/back.svg");
+        bk->setProperty("backbtn", true);
+        connect(bk, &QPushButton::clicked, this, [=](){ MG->toMain(); });
+        bot->addWidget(bk);}
+
+        {auto plus = addBtn(":/assets/UI/plus.svg");
+        plus->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        connect(plus, &QPushButton::clicked, this, [this](){
+            overlay = new RenameOverlay("New category", "", [this](QString s){
+                newCategory(this, s.trimmed());
+                redoTasks();
             });
-            left->addWidget(bin);}
-        topsect->addLayout(left);
-        addLine();
+            tlay->addWidget(overlay, 0, 0);
+        });
+        bot->addWidget(plus);}
 
-        auto* topsectmid = new QVBoxLayout();
-        topsectmid->setSpacing(0);
-            {auto* labl = new QLabel("Categories", this);
-            labl->setContentsMargins(4,8,4,8);
-            labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-            labl->setAlignment(Qt::AlignCenter);
-            topsectmid->addWidget(labl);}
-
-            scrl = new QScrollArea(this);
-            scrl->setFrameShape(QFrame::NoFrame);
-            scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-            scrl->setProperty("bg", true);
-
-            scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-            scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-            scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
-            tcatdrag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
-
-            auto* catcont = new QWidget();
-            catcont->setObjectName("catcont");
-            catcont->setStyleSheet("#catcont { background: transparent; }");
-            tcatlay = new FlowLayout(catcont);
-            tcatlay->vertical(2);
-            scrl->setWidget(catcont);
-            scrl->setWidgetResizable(true);
-            topsectmid->addWidget(scrl);
-        topsect->addLayout(topsectmid);
-
-        addLine();
-        auto right = new QVBoxLayout();
-        right->setSpacing(8);
-            {auto plus = addBtn(":/assets/UI/plus.svg");
-            connect(plus, &QPushButton::clicked, this, [this](){
-                overlay = new RenameOverlay("New category", "", [this](QString s){
-                    newCategory(this, s.trimmed());
-                    redoTasks();
-                });
-                tlay->addWidget(overlay, 0, 0);
+        {auto rnam = addBtn(":/assets/UI/rename.svg");
+        rnam->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        connect(rnam, &QPushButton::clicked, this, [this](){
+            QString cur = getCurrent();
+            overlay = new RenameOverlay("Rename category '" + cur + "'", cur, [this](QString s){
+                if (renameCategory(this, s.trimmed())) redoTasks();
             });
-            right->addWidget(plus);}
+            tlay->addWidget(overlay, 0, 0);
+        });
+        bot->addWidget(rnam);}
 
-            {auto rnam = addBtn(":/assets/UI/rename.svg");
-            rnam->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
-            connect(rnam, &QPushButton::clicked, this, [this](){
-                QString cur = getCurrent();
-                overlay = new RenameOverlay("Rename category '" + cur + "'", cur, [this](QString s){
-                    if (renameCategory(this, s.trimmed())) redoTasks();
-                });
-                tlay->addWidget(overlay, 0, 0);
-            });
-            right->addWidget(rnam);}
-        topsect->addLayout(right);
-    mtlay->addLayout(topsect);
-    {QFrame* line = new QFrame();
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Raised);
-    mtlay->addWidget(line);}
+        {auto bin = addBtn(":/assets/UI/bin.svg");
+        bin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        connect(bin, &QPushButton::clicked, this, [this](){
+            if (deleteCategory(this)) redoTasks();
+        });
+        bot->addWidget(bin);}
 
-    tbbllay = new QVBoxLayout();
-    mtlay->addLayout(tbbllay);
-    mtlay->addStretch();
+        {auto help = addBtn(":/assets/UI/help.svg");
+        help->setProperty("backbtn", true);
+        connect(help, &QPushButton::clicked, this, [this](){
+            confirm(this, TASK_HELP, Conf_OK, true);
+        });
+        bot->addWidget(help);}
+    mtlay->addLayout(bot);
 
     redoTasks();
 }
