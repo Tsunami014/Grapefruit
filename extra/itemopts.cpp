@@ -232,11 +232,13 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
     }
     mkbtn(":/assets/UI/erase.svg", [=](){
         QTextCursor cur = edit->textCursor();
-        if (cur.block().text().isEmpty()) {
+        cur.movePosition(QTextCursor::StartOfBlock);
+        cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        cur.removeSelectedText();
+        if (!cur.atEnd()) {
             cur.deleteChar();
-        } else {
-            cur.select(QTextCursor::BlockUnderCursor);
-            cur.removeSelectedText();
+        } else if (!cur.atStart()) {
+            cur.deletePreviousChar();
         }
     });
 
