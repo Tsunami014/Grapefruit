@@ -11,21 +11,6 @@ void MainGame::generateSettings() {
     auto slay = new QVBoxLayout(setts);
     slay->setSpacing(16);
 
-    auto topsect = new QHBoxLayout();
-        auto bk = new QPushButton();
-        bk->setProperty("fancy", true);
-        bk->setProperty("backbtn", true);
-        bk->setIcon(QIcon(":/assets/UI/back.svg"));
-        bk->setIconSize(QSize(48, 40));
-        connect(bk, &QPushButton::clicked, this, [this](){ toMain(); });
-        topsect->addWidget(bk, 0, Qt::AlignHCenter);
-        {auto labl = new QLabel("Settings");
-        resizeFont(labl, 1.5);
-        labl->setAlignment(Qt::AlignCenter);
-        labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        topsect->addWidget(labl);}
-    slay->addLayout(topsect);
-
     auto addbtn = [=](QString txt, QBoxLayout* opts, QWidget* parent){
         auto btn = new QPushButton(txt, parent);
         btn->setProperty("fancy", true);
@@ -74,4 +59,19 @@ void MainGame::generateSettings() {
     slay->addWidget(sp);}
 
     slay->addStretch();
+
+    auto topsect = new QHBoxLayout();
+        auto bk = new QPushButton();
+        bk->setProperty("fancy", true);
+        bk->setProperty("backbtn", true);
+        bk->setIcon(QIcon(":/assets/UI/back.svg"));
+        bk->setIconSize(QSize(48, 40));
+        connect(bk, &QPushButton::clicked, this, [this](){ toMain(); });
+        topsect->addWidget(bk, 0, Qt::AlignHCenter);
+        {auto labl = new QLabel("Settings");
+        resizeFont(labl, 1.5);
+        labl->setAlignment(Qt::AlignCenter);
+        labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        topsect->addWidget(labl);}
+    slay->addLayout(topsect);
 }
