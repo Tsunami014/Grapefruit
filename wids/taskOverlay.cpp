@@ -332,6 +332,7 @@ void TaskOverlay::generateBot() {
     scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
     blay->addWidget(scrl);
 
+    auto* drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
     QWidget* bitsWid;
     if (nofocus) {
         tbtxt = new QLabel(task->bottom(), bbar);
@@ -339,6 +340,7 @@ void TaskOverlay::generateBot() {
         tbtxt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         tbtxt->setContentsMargins(8,8,8,4);
         bitsWid = tbtxt;
+        drag->installOn(tbtxt);
         scrl->setWidgetResizable(true);
     } else {
         bitsWid = new QWidget(bbar);
@@ -360,6 +362,7 @@ void TaskOverlay::generateBot() {
             // Calculate sizes!
             bflow->activate();
             bitsWid->setMinimumWidth(bflow->lastSize().width());
+            drag->installOn(bflow);
         } else {
             auto* bits = new QHBoxLayout(bitsWid);
             bits->setContentsMargins(12,6,12,6);
@@ -371,12 +374,11 @@ void TaskOverlay::generateBot() {
 
             int sb = scrl->horizontalScrollBar()->sizeHint().height();
             scrl->setFixedHeight(bitsWid->rect().height() + sb);
+            drag->installOn(bits);
         }
     }
     bitsWid->setProperty("bg", true);
     scrl->setWidget(bitsWid);
-    auto* drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
-    drag->installOn(bitsWid);
 
     if (nofocus) {
         for (auto* w : parts) w->show();

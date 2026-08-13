@@ -19,21 +19,20 @@ DragScroll::DragScroll(QWidget* viewp, QScrollBar* scrollb)
 
 void DragScroll::installOn(QWidget* w) {
     w->installEventFilter(this);
-    for (auto* c : w->findChildren<QWidget*>())
-        c->installEventFilter(this);
 }
 void DragScroll::installOn(QLayout* l) {
     if (!l) return;
     for (int i = 0; i < l->count(); ++i) {
         QLayoutItem* it = l->itemAt(i);
 
-        if (QWidget* nw = it->widget()) installOn(nw);
+        if (QWidget* nw = it->widget()) nw->installEventFilter(this);
         if (QLayout* nl = it->layout()) installOn(nl);
     }
 }
 
 bool DragScroll::eventFilter(QObject* obj, QEvent* ev) {
-    auto* me = static_cast<QMouseEvent*>(ev);
+    auto* me = dynamic_cast<QMouseEvent*>(ev);
+    if (me == nullptr) return false;
     switch (ev->type()) {
         case QEvent::MouseButtonPress:
             if (me->button() != Qt::LeftButton) return false;
