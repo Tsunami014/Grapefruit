@@ -1,5 +1,6 @@
 #include "confirm.hpp"
 #include "font.hpp"
+#include "extra/drag.hpp"
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
@@ -7,6 +8,7 @@
 #include <QBoxLayout>
 #include <QLabel>
 #include <QDialogButtonBox>
+#include <QScrollArea>
 #include <QPushButton>
 
 ConfirmOverlay::ConfirmOverlay(QWidget* parent, bool scroll) : QWidget(parent) {
@@ -55,14 +57,32 @@ QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, Confi
     auto ovrl = new ConfirmOverlay(topLevel, scroll);
 
     auto lay = new QVBoxLayout(ovrl->inner);
-    auto txt = new QLabel(text);
-    resizeFont(txt, 1.3);
+    auto txt = new QLabel(text, ovrl);
+    txt->setObjectName("cardtxt");
+    resizeFont(txt, scroll? 1.1 : 1.3);
     txt->setWordWrap(true);
-    lay->addWidget(txt);
-    if (scroll) lay->addStretch();
+    if (scroll) {
+        auto* scrl = new QScrollArea(ovrl);
+        scrl->setFrameShape(QFrame::NoFrame);
+
+        scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        scrl->verticalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+        scrl->verticalScrollBar()->setFocusPolicy(Qt::NoFocus);
+        auto drag = new DragScroll(scrl->viewport(), scrl->verticalScrollBar());
+        drag->installOn(txt);
+
+        scrl->setWidget(txt);
+        scrl->setWidgetResizable(true);
+        lay->addWidget(scrl);
+
+        lay->addStretch();
+    } else {
+        lay->addWidget(txt);
+    }
     lay->addSpacing(8);
 
-    auto* btns = new QDialogButtonBox();
+    auto* btns = new QDialogButtonBox(ovrl);
     if (opts == Conf_YESNO) {
         btns->setStandardButtons(QDialogButtonBox::Yes | QDialogButtonBox::No);
     } else if (opts == Conf_YESNOCANCEL) {
