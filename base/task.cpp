@@ -54,7 +54,7 @@ Task* Task::fromSaved(QString saved) {
     return new Task(nam, items, impt, quals, reasons);
 }
 
-const QRegularExpression normlSpaces(R"(^\s*\n|\n\s*$|[ \t]+(?=\n)|\s+(?=\n[ \t]*\n))");
+const QRegularExpression normlSpaces(R"(^\s*\n|\n\s*$|[ \t]+$|\s+(?=\n[ \t]*$))", QRegularExpression::MultilineOption);
 QString normaliseSpaces(QString txt) {
     auto it = normlSpaces.globalMatch(txt);
     int offs = 0;
