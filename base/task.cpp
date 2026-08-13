@@ -114,10 +114,13 @@ QString Task::top() {
 }
 QString Task::bottom() {
     auto ps = Progress();
-    if (ps.isEmpty()) return "No task items";
+    if (ps.isEmpty()) return "No items";
 
     if (ps.nextDue.isNull()) {
-        return QString("%1 tasks (%2)").arg(ps.totTasks).arg(strTime(ps.totTime, true));
+        if (ps.totTime == 0) {
+            return QString("%1 items").arg(ps.totTasks);
+        }
+        return QString("%1 items (%2)").arg(ps.totTasks).arg(strTime(ps.totTime, true));
     }
     QString txt = QString("%1 due %2")
         .arg(strTime(ps.nextTime, true)).arg(parseDate(ps.nextDue, true));
