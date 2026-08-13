@@ -64,6 +64,7 @@ QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, Confi
     if (scroll) {
         auto* scrl = new QScrollArea(ovrl);
         scrl->setFrameShape(QFrame::NoFrame);
+        scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
         scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -75,8 +76,6 @@ QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, Confi
         scrl->setWidget(txt);
         scrl->setWidgetResizable(true);
         lay->addWidget(scrl);
-
-        lay->addStretch();
     } else {
         lay->addWidget(txt);
     }
