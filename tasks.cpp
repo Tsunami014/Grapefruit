@@ -118,8 +118,10 @@ void TaskView::redoTasks() {
     }, this);
     setTasksCatsLay(tcatlay, redo, this);
     tcatdrag->installOn(tcatlay);
+    tcatlay->activate();
+    scrl->widget()->setMinimumWidth(tcatlay->lastSize().width() + 8);
+
     QTimer::singleShot(0, [this](){
-        // Set fixed scroll height
         const int w = scrl->viewport()->width();
         const int h = tcatlay->heightForWidth(w);
         scrl->setFixedHeight(h);
