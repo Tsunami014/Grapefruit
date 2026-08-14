@@ -162,6 +162,14 @@ bool deleteCategory(QWidget* parent) {
 }
 
 
+QStringList allTaskCats() {
+    QStringList out;
+    for (auto& [cat, _] : alltasks) {
+        out << cat;
+    }
+    return out;
+}
+
 QString taskCategory(std::shared_ptr<Task> task) {
     for (auto& [key, list] : alltasks) {
         if (std::find(list.begin(), list.end(), task) != list.end()) {
@@ -169,6 +177,43 @@ QString taskCategory(std::shared_ptr<Task> task) {
         }
     }
     return {};
+}
+
+void changeCat(std::shared_ptr<Task> task, QString newcat, QString fromcat) {
+    if (newcat == fromcat) return;
+
+    // Try the stated category first
+    bool done = false;
+    if (!fromcat.isNull()) {
+        if (auto it = alltasks.find(fromcat); it != alltasks.end()) {
+            auto& list = it->second;
+            auto oldsze = list.size();
+
+            list.erase(
+                std::remove(list.begin(), list.end(), task),
+                list.end()
+            );
+            done = list.size() != oldsze;
+        }
+    }
+    if (!done) {
+        for (auto& [key, list] : alltasks) {
+            if (key == fromcat) continue;
+
+            auto oldsze = list.size();
+            list.erase(
+                std::remove(list.begin(), list.end(), task),
+                list.end()
+            );
+            if (list.size() != oldsze) break;
+        }
+    }
+
+    if (auto it = alltasks.find(newcat); it != alltasks.end()) {
+        it->second.push_back(task);
+        current = newcat;
+    }
+    saveTasks();
 }
 
 void removeTask(std::shared_ptr<Task> task, bool trycurfirst) {
@@ -203,14 +248,13 @@ void removeTask(std::shared_ptr<Task> task, bool trycurfirst) {
         );
         if (list.size() != oldsze) {
             saveTasks();
-            break;
+            return;
         }
     }
 }
 
 std::shared_ptr<Task> newtask() {
-    auto cur = getCurrent();
-    if (!cur.isNull()) {
+    if (auto cur = getCurrent(); !cur.isNull()) {
         auto ntsk = std::make_shared<Task>();
         alltasks[cur].push_back(ntsk);
         saveTasks();
@@ -219,8 +263,7 @@ std::shared_ptr<Task> newtask() {
     return nullptr;
 }
 std::shared_ptr<Task> newtask(QString cat) {
-    auto it = alltasks.find(cat);
-    if (it != alltasks.end()) {
+    if (auto it = alltasks.find(cat); it != alltasks.end()) {
         auto ntsk = std::make_shared<Task>();
         it->second.push_back(ntsk);
         saveTasks();

@@ -58,7 +58,7 @@ QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, Confi
 
     auto lay = new QVBoxLayout(ovrl->inner);
     auto txt = new QLabel(text, ovrl);
-    txt->setObjectName("cardtxt");
+    txt->setObjectName("cardcont");
     resizeFont(txt, scroll? 1.1 : 1.3);
     txt->setWordWrap(true);
     if (scroll) {

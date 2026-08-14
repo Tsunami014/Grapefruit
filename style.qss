@@ -4,7 +4,8 @@ QMainWindow, *[bg=true] { background-color: #EED9E8; }
     background-color: white;
     border-radius: 8px;
 }
-#cardtxt { background-color: white; }
+#cardcont { background-color: white; }
+#transpbg { background: transparent; }
 
 #curtxt { padding: 8px; }
 

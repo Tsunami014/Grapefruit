@@ -5,6 +5,7 @@
 #include "extra/drag.hpp"
 #include "extra/date.hpp"
 #include "wids/confirm.hpp"
+#include "wids/movetask.hpp"
 #include "wids/slider.hpp"
 #include "wids/flow.hpp"
 #include "font.hpp"
@@ -155,10 +156,23 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             resizeFont(titl, 1.3);
             sublay1->addWidget(titl);
 
-            auto bin = new QPushButton();
+            int mx = titl->rect().height() + 8;
+            {auto mov = new QPushButton();
+            mov->setProperty("fancy", true);
+            mov->setIcon(QIcon(":/assets/UI/move.svg"));
+            mov->setIconSize(QSize(mx, mx-4));
+            connect(mov, &QPushButton::clicked, sl1wid, [=](){
+                QString nam = task->name;
+                deleteLater();
+                QTimer::singleShot(0, parent, [=]() {
+                    moveTask(parent, task);
+                    ondeath();
+                });
+            });
+            sublay1->addWidget(mov);}
+            {auto bin = new QPushButton();
             bin->setProperty("fancy", true);
             bin->setIcon(QIcon(":/assets/UI/bin.svg"));
-            int mx = titl->rect().height() + 8;
             bin->setIconSize(QSize(mx, mx-4));
             connect(bin, &QPushButton::clicked, sl1wid, [=](){
                 QString nam = task->name;
@@ -171,7 +185,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
                     ondeath();
                 });
             });
-            sublay1->addWidget(bin);
+            sublay1->addWidget(bin);}
         auto* sl2wid = new QWidget(this);
         sl2wid->setContentsMargins(0,0,0,0);
         parts.push_back(sl2wid);

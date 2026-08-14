@@ -53,9 +53,8 @@ TaskView::TaskView() {
     scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
     tcatdrag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
 
-    auto* catcont = new QWidget();
-    catcont->setObjectName("catcont");
-    catcont->setStyleSheet("#catcont { background: transparent; }");
+    auto* catcont = new QWidget(this);
+    catcont->setObjectName("transpbg");
     tcatlay = new FlowLayout(catcont);
     tcatlay->vertical(2);
     scrl->setWidget(catcont);
