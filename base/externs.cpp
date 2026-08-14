@@ -60,9 +60,10 @@ bool evalExtern(std::string name, QString whole) {
         if (!hasBR) {
             hasBR = true;
             auto bt = getBestTask();
+            if (bt == nullptr) return false;
             auto opts = bt->getReasons().split("\n", Qt::SkipEmptyParts);
-            if (bt != nullptr || !opts.isEmpty()) return false;
-            bestR = opts[QRandomGenerator::global()->bounded(opts.size())];
+            if (opts.isEmpty()) return false;
+            bestR = opts[QRandomGenerator::global()->bounded(opts.size())].trimmed();
             return true;
         }
         return !bestR.isNull();

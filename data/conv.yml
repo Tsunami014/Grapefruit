@@ -4,7 +4,7 @@ groups:
   uncertainty: [unsure, stuck, motivated]
 
   ~reststatus: [justrested, nottired, stilltired]
-  ~maybestate: [justmaybied]
+  ~maybestate: [justmaybied, justwhyd]
   ~checkstate: [justchecked]
   ~committed: [juststarted, startedelse]
   suggeststate: [resuggested]
@@ -126,7 +126,7 @@ purposes:
         - ["$Struggle", [sad, stuck], checkin]
         - ["{Sleep/Rest/}", [tired], comfort]
         - ["$Unsure", [unsure], suggest]
-        - ["{2*Work/2*Productivity/Good things}", [motivated], progress]
+        - ["{2*Work/2*Productivity/Good things}", [motivated], goingwell]
 
     # Is there anything you want to do?
     - templates:
@@ -308,7 +308,6 @@ purposes:
 
     # Fallback redirect
     - templates: { "=": ["> {suggest/what2do}"] }
-
   comfortend:
     # Nothing worked
     - templates:
@@ -397,6 +396,7 @@ purposes:
         - ["$IHope#!justchecked", [], checkin]
         - ["$IHope#justchecked", [forcegeneric], comfort]
         - ["{Actually, not really/Not great}", [sad], checkin]
+        - ["{Unsure/2*Aimless/2*Undecided}", [], suggest]
 
     # Just committed to a task
     - templates:
@@ -440,7 +440,7 @@ purposes:
       opts:
         - ["$ChosenAlready", [-suggeststate, startedelse, $reset_best], goingwell]
         - ["{Sure/Ok/Yeah/Alright}", [-suggeststate, juststarted], goingwell]
-        - ["{Maybe/Don't know}{/?/...}", [], maybe]
+        - ["{Maybe/Don't know}{/?/...}", [], "{4*maybe/whytask}"]
         - ["$CantWork", [$reset_best], maybe]
         - ["{$NoToTask}#!resuggested", [resuggested], suggest]
         - ["{Still no/$NoToTask}#resuggested", [-suggeststate], checkintask]
@@ -481,15 +481,33 @@ purposes:
         # Something related instead
           - "2*{Is there/Maybe there's/Try finding} something {related to/{that /}you could do {instead /}for} $TaskNam $RatherDo"
           - "{2*What if {instead, doing/you instead did}/How about instead{,/} doing} something {2*{related/similar} to/for} $TaskNam $RatherDo"
-        # User entered reason
-          - "4*%best_reason"
-          - "5*%best_reason {But remember, there's no pressure/No pressure though/But no pressure}."
       opts:
         - ["$ChosenAlready", [-suggeststate, startedelse, $reset_best], goingwell]
         - ["{Sure/Ok/I guess/Alright/Doable}", [-suggeststate, juststarted], goingwell]
-        - ["{{Still m/M}aybe/{Still d/D}on't know}{/?/...}#-maybestate", [justmaybied], maybe]
-        - ["{Still don't know/Not helping/{Maybe t/T}ry another}#+maybestate, !resuggested", [], suggest]
-        - ["{Still don't know/Not helping}#+maybestate, resuggested", [unsure, -suggeststate], checkintask]
+        - ["{But why/Why{ should I/ though/4*}}{/?}#-maybestate", [justmaybied], whytask]
+        - ["{{Still m/M}aybe{/?/...}/{Still d/D}on't know{/./...}}#!justmaybied", [justmaybied], "{8*maybe/whytask}"]
+        - ["{Still don't know/Not helping/{Maybe t/T}ry another}#justmaybied, !resuggested", [resuggested], suggest]
+        - ["{Still don't know/Not helping}#justmaybied, resuggested", [unsure, -suggeststate], checkintask]
+        - ["{$NoToTask}#!resuggested", [resuggested], suggest]
+        - ["{Still no/$NoToTask}#resuggested", [unsure, -suggeststate], checkintask]
+
+  whytask:
+    # User entered reason
+    - templates:
+        "*":
+          - "3*%best_reason{2*./!/2*}"
+          - "2*%best_reason{. B/! B/, b}ut remember{,/} you {aren't forced/do{n't/ not} {need/have}} to do it if you don't want{ to/}{2*./!/2&}"
+          - "%best_reason{. B/! B/, b}ut remember{,/} {there's /}no pressure{3* to {finish/complete} anything{2*{ if/} you don't want{ to/}/}{2*./!/2&}"
+          - "%best_reason{. N/! N/ - n/, n}o pressure though{,/ -} you can always $StopWhenWant{2*./!/2*}"
+        "=": # In case the user didn't put a reason, redirect back to maybe
+          - "> maybe"
+      opts:
+        - ["$ChosenAlready", [-suggeststate, startedelse, $reset_best], goingwell]
+        - ["{Sure/Ok/I guess/Alright/Doable}", [-suggeststate, juststarted], goingwell]
+        - ["{Maybe/Don't know}{/?/...}#!justmaybied", [justwhyd], maybe]
+        - ["{Still don't know/Not helping/{Maybe t/T}ry another}#justmaybied, !resuggested", [resuggested], suggest]
+        - ["{Still don't know/Not helping}#justmaybied, resuggested", [unsure, -suggeststate], checkintask]
+        - ["{$CantWork/}#!justmaybied", [$reset_best, justmaybied], maybe]
         - ["{$NoToTask}#!resuggested", [resuggested], suggest]
         - ["{Still no/$NoToTask}#resuggested", [unsure, -suggeststate], checkintask]
 
@@ -533,7 +551,7 @@ dictionary:
   NoToTask: "No/Not really/No thanks/Not feeling it/Don't want to/Not now"
   Unhelpful: "{Won't help/Not helpful/Unhelpful/Useless}"
   IHope: "{Maybe{.../?/}/Hopefully{..././}/I hope{./}}"
-  CantWork: "{Can't do {the work/it/anything}/Don't want to work/Don't feel like the work/Couldn't be bothered}"
+  CantWork: "{Can't do {the work/it/anything}/Don't feel like {2*it/the work}/Couldn't be bothered}"
   DifferentWay: "{{different/unique} way/way that's more {fun/interesting/engaging}}"
 
   AllGoodOs: "{progress/what2do}"
