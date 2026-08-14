@@ -19,14 +19,14 @@ void moveTask(QWidget* parent, std::shared_ptr<Task> task) {
     auto ovrl = new ConfirmOverlay(topLevel, true);
 
     auto lay = new QVBoxLayout(ovrl->inner);
-    auto txt = new QLabel("Which category do you want to move this to?\n(Was in "+cur+")", ovrl);
+    auto txt = new QLabel(cur + " → ...", ovrl);
     resizeFont(txt, 1.3);
     txt->setWordWrap(true);
     lay->addWidget(txt);
 
     auto* scrl = new QScrollArea(ovrl);
     scrl->setFrameShape(QFrame::NoFrame);
-    scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
     scrl->setProperty("bg", true);
 
     scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -56,7 +56,7 @@ void moveTask(QWidget* parent, std::shared_ptr<Task> task) {
 
     scrl->setWidget(cont);
     scrl->setWidgetResizable(true);
-    lay->addWidget(scrl);
+    lay->addWidget(scrl, 1);
     lay->addSpacing(8);
 
     auto* btns = new QDialogButtonBox(QDialogButtonBox::Cancel, ovrl);
