@@ -291,24 +291,29 @@ QString parseDate(const QDate& date, bool brief) {
         return "on " + date.toString(sameYear ? "dddd, MMM d" : "MMMM d, yyyy");
     }
 
-    int weeks2 = std::floor(float(days2) / 7.0);
+    // Get number of days since this Monday / 7
+    int weeks2 = std::floor(float(cur.addDays(1 - cur.dayOfWeek()).daysTo(date)) / 7.0);
+    if (weeks2 <= 1) {
+        if (brief) return QString("%1%2 (%3d)")
+            .arg(weeks2 == 1? "nxt ":"")
+            .arg(date.toString("ddd"))
+            .arg(days2);
+        return QString("%1 %2 (in %3 days)")
+            .arg(weeks2 == 1 ? "next" : "this")
+            .arg(date.toString("dddd"))
+            .arg(days2);
+    }
     if (weeks2 > 3) {
         bool sameYear = date.year() == cur.year();
         if (brief) return date.toString(sameYear ? "MMM d" : "MMM d, yyyy");
         return "on " + date.toString(sameYear ? "dddd, MMMM d" : "MMMM d, yyyy");
     }
-    if (weeks2 > 0) {
-        if (brief) {
-            int smldays = days2-(weeks2*7);
-            if (smldays == 0) return QString("in %1w").arg(weeks2);
-            return QString("in %1w %2d").arg(weeks2).arg(smldays);
-        }
-        return QString("on %1 in %2 week%3 (%4 days away)")
-            .arg(date.toString("dddd")).arg(weeks2).arg(weeks2 == 1 ? "" : "s").arg(days2);
+    if (brief) {
+        int realwks = std::floor(float(days2) / 7.0);
+        int smldays = days2-(realwks*7);
+        if (smldays == 0) return QString("in %1w").arg(weeks2);
+        return QString("in %1w %2d").arg(realwks).arg(smldays);
     }
-
-    if (brief) return QString("%1 (%2d)").arg(date.toString("ddd")).arg(days2);
-    return QString("%1 %2 (in %3 days)")
-        .arg(cur.dayOfWeek() > date.dayOfWeek() ? "next" : "this")
-        .arg(date.toString("dddd")).arg(days2);
+    return QString("on %1 in %2 weeks (%3 days away)")
+        .arg(date.toString("dddd")).arg(weeks2).arg(days2);
 }
