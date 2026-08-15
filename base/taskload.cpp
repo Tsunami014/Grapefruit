@@ -184,7 +184,7 @@ bool deleteCategory(QWidget* parent) {
         confirm(parent, "Cannot delete the today category!", Conf_OK);
         return false;
     }
-    if (confirm(parent, "Are you sure you want to delete the category '" + cur + "' and all its tasks?",
+    if (confirm(parent, "Are you sure you want to delete the category '" + cur + "' AND ALL ITS TASKS?",
           Conf_YESNO) != QDialogButtonBox::YesRole) {
         return false;
     }
