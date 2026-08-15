@@ -52,6 +52,7 @@ TaskView::TaskView() {
         titlay->addStretch();
 
         {auto* labl = new QLabel("Categories", this);
+        resizeFont(labl, 1.2);
         labl->setContentsMargins(4,8,4,8);
         labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         labl->setAlignment(Qt::AlignCenter);
