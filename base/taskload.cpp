@@ -14,14 +14,18 @@
 #include <QStandardPaths>
 #include <QDir>
 
-QString current;
+QString current; // \3 is the 'Today' category
 QString getCurrent() {
+    if (current == "\3") return "\3";
     if (alltasks.empty()) return {};
     if (current.isNull() || alltasks.find(current) == alltasks.end()) {
         current = alltasks.begin()->first;
     }
     return current;
 }
+void showNoCat() { current = {}; }
+void showToday() { current = "\3"; }
+bool isTodayCat() { return current == "\3"; }
 
 void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) {
     static std::vector<QPushButton*> btns;
@@ -63,45 +67,66 @@ void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> 
         delete item;
     }
 
-    {auto* labl = new QLabel("Tasks", parent);
+    auto cur = getCurrent();
+    if (cur.isNull()) return;
+    sortTasks();
+
+    {auto* labl = new QLabel(cur == "\3"? "Today's tasks":"Tasks", parent);
     labl->setContentsMargins(4,8,4,4);
     labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     labl->setAlignment(Qt::AlignCenter);
     lay->addWidget(labl);}
 
-    auto cur = getCurrent();
-    if (cur.isNull()) return;
-    sortTasks();
-
-    for (auto& t : alltasks.at(cur)) {
-        auto bub = new TaskBubble(t, parent);
-        QObject::connect(bub, &TaskBubble::clickedCalendar, [=](){
-            t->today = !t->today;
-            saveTasks();
-            reload();
-        });
-        QObject::connect(bub, &TaskBubble::clicked, [=](){
-            press(t, false);
-        });
-        lay->addWidget(bub);
+    if (cur == "\3") {
+        for (const auto& [key, tasks] : alltasks) {
+            for (const auto& t : tasks) {
+                if (!t || !t->today) continue;
+                auto bub = new TaskBubble(t, parent);
+                QObject::connect(bub, &TaskBubble::clickedCalendar, [=](){
+                    t->today = !t->today;
+                    saveTasks();
+                    reload();
+                });
+                QObject::connect(bub, &TaskBubble::clicked, [=](){
+                    press(t, false);
+                });
+                lay->addWidget(bub);
+            }
+        }
+    } else {
+        for (const auto& t : alltasks.at(cur)) {
+            auto bub = new TaskBubble(t, parent);
+            QObject::connect(bub, &TaskBubble::clickedCalendar, [=](){
+                t->today = !t->today;
+                saveTasks();
+                reload();
+            });
+            QObject::connect(bub, &TaskBubble::clicked, [=](){
+                press(t, false);
+            });
+            lay->addWidget(bub);
+        }
     }
 
     QWidget* space = new QWidget(parent);
     space->setFixedSize(0, 8);
     lay->addWidget(space);
 
-    auto btn = new QPushButton();
-    btn->setProperty("fancy", true);
-    btn->setIcon(QIcon(":/assets/UI/plus.svg"));
-    btn->setIconSize(QSize(48, 44));
-    btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    lay->connect(btn, &QPushButton::clicked, lay, [=](){
-        press(newtask(), true);
-    });
-    lay->addWidget(btn);
+    if (cur != "\3") {
+        auto btn = new QPushButton();
+        btn->setProperty("fancy", true);
+        btn->setIcon(QIcon(":/assets/UI/plus.svg"));
+        btn->setIconSize(QSize(48, 44));
+        btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        lay->connect(btn, &QPushButton::clicked, lay, [=](){
+            press(newtask(), true);
+        });
+        lay->addWidget(btn);
+    }
 }
 
 void newCategory(QWidget* parent, QString name) {
+    name = name.replace('\3', "");
     if (alltasks.find(name) == alltasks.end()) {
         alltasks[name] = {};
         saveTasks();
@@ -117,6 +142,11 @@ bool renameCategory(QWidget* parent, QString newname) {
         confirm(parent, "No category is selected!\nCreate a category first!", Conf_OK);
         return false;
     }
+    if (cur == '\3') {
+        confirm(parent, "Cannot rename the today category!", Conf_OK);
+        return false;
+    }
+    newname = newname.replace('\3', "");
     if (cur == newname) return false;
 
     if (auto it = alltasks.find(newname); it != alltasks.end()) {
@@ -156,6 +186,10 @@ bool renameCategory(QWidget* parent, QString newname) {
 bool deleteCategory(QWidget* parent) {
     auto cur = getCurrent();
     if (cur.isNull()) return false;
+    if (cur == '\3') {
+        confirm(parent, "Cannot delete the today category!", Conf_OK);
+        return false;
+    }
     if (confirm(parent, "Are you sure you want to delete the category '" + cur + "' and all its tasks?",
           Conf_YESNO) != QDialogButtonBox::YesRole) {
         return false;
@@ -185,6 +219,8 @@ QString taskCategory(std::shared_ptr<Task> task) {
 }
 
 void changeCat(std::shared_ptr<Task> task, QString newcat, QString fromcat) {
+    if (fromcat == '\3') fromcat = {};
+    newcat = newcat.replace('\3', "");
     if (newcat == fromcat) return;
 
     // Try the stated category first
@@ -226,7 +262,7 @@ void removeTask(std::shared_ptr<Task> task, bool trycurfirst) {
     QString cur;
     if (trycurfirst) {
         auto cur = getCurrent();
-        if (!cur.isNull())
+        if (!cur.isNull() && cur != "\3")
         if (auto it = alltasks.find(cur); it != alltasks.end()) {
             auto& list = it->second;
             auto oldsze = list.size();
@@ -259,7 +295,7 @@ void removeTask(std::shared_ptr<Task> task, bool trycurfirst) {
 }
 
 std::shared_ptr<Task> newtask() {
-    if (auto cur = getCurrent(); !cur.isNull()) {
+    if (auto cur = getCurrent(); !cur.isNull() && cur != "\3") {
         auto ntsk = std::make_shared<Task>();
         alltasks[cur].push_back(ntsk);
         saveTasks();
@@ -268,6 +304,7 @@ std::shared_ptr<Task> newtask() {
     return nullptr;
 }
 std::shared_ptr<Task> newtask(QString cat) {
+    cat = cat.replace('\3', "");
     if (auto it = alltasks.find(cat); it != alltasks.end()) {
         auto ntsk = std::make_shared<Task>();
         it->second.push_back(ntsk);

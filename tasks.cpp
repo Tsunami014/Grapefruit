@@ -5,8 +5,8 @@
 #include "wids/taskOverlay.hpp"
 #include "wids/renameOverl.hpp"
 #include "wids/confirm.hpp"
+#include "font.hpp"
 #include <QBoxLayout>
-#include <QPushButton>
 
 TaskView::TaskView() {
     tlay = new QGridLayout(this);
@@ -36,11 +36,29 @@ TaskView::TaskView() {
         return btn;
     };
 
-    {auto* labl = new QLabel("Categories", this);
-    labl->setContentsMargins(4,8,4,8);
-    labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    labl->setAlignment(Qt::AlignCenter);
-    mtlay->addWidget(labl);}
+    auto titlay = new QHBoxLayout();
+        titlay->addStretch();
+        todaybtn = new QPushButton("Today", this);
+        todaybtn->setProperty("fancy", true);
+        todaybtn->setProperty("optbtn", true);
+        todaybtn->setProperty("current", isTodayCat());
+        resizeFont(todaybtn, 1.2);
+        QObject::connect(todaybtn, &QPushButton::clicked, [this](){
+            if (isTodayCat()) showNoCat();
+            else showToday();
+            redoTasks();
+        });
+        titlay->addWidget(todaybtn);
+        titlay->addStretch();
+
+        {auto* labl = new QLabel("Categories", this);
+        labl->setContentsMargins(4,8,4,8);
+        labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        labl->setAlignment(Qt::AlignCenter);
+        titlay->addWidget(labl);}
+        titlay->addStretch();
+    mtlay->addLayout(titlay);
+
 
     scrl = new QScrollArea(this);
     scrl->setFrameShape(QFrame::NoFrame);
@@ -83,6 +101,10 @@ TaskView::TaskView() {
         {auto rnam = addBtn(":/assets/UI/rename.svg");
         rnam->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         connect(rnam, &QPushButton::clicked, this, [this](){
+            if (isTodayCat()) {
+                confirm(this, "Cannot rename the today category!", Conf_OK);
+                return;
+            }
             QString cur = getCurrent();
             overlay = new RenameOverlay("Rename category '" + cur + "'", cur, [this](QString s){
                 if (renameCategory(this, s.trimmed())) redoTasks();
@@ -94,6 +116,10 @@ TaskView::TaskView() {
         {auto bin = addBtn(":/assets/UI/bin.svg");
         bin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         connect(bin, &QPushButton::clicked, this, [this](){
+            if (isTodayCat()) {
+                confirm(this, "Cannot delete the today category!", Conf_OK);
+                return;
+            }
             if (deleteCategory(this)) redoTasks();
         });
         bot->addWidget(bin);}
@@ -110,6 +136,11 @@ TaskView::TaskView() {
 }
 
 void TaskView::redoTasks() {
+    todaybtn->setProperty("current", isTodayCat());
+    todaybtn->style()->unpolish(todaybtn);
+    todaybtn->style()->polish(todaybtn);
+    todaybtn->update();
+
     auto redo = [this](){ redoTasks(); };
     setTasksLay(tbbllay, [=](std::shared_ptr<Task> t, bool upd){
         overlay = new TaskOverlay(t, redo, this);
