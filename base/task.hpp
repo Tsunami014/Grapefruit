@@ -20,7 +20,8 @@ public:
         const QString& items = "",
         int import = 1,
         std::set<QString> quals = {},
-        const QString& reasons = "");
+        const QString& reasons = "",
+        bool today = false);
     bool operator<(const Task& other) const;
     bool operator==(const Task& other) const;
 
@@ -28,6 +29,7 @@ public:
 
     QString name;
     int import;
+    bool today;
     std::set<QString> quals;
 
     inline QString getReasons() const { return reasons; }
@@ -42,7 +44,7 @@ public:
     bool isNew() { return name == "New Task" && items.isEmpty() && quals.empty() && reasons.isEmpty(); }
 
     QString toSave();
-    static Task* fromSaved(QString saved);
+    static Task* fromSaved(QString saved, bool usetoday);
 
 protected:
     QString reasons;

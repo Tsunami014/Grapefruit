@@ -1,5 +1,7 @@
 #include "taskbbl.hpp"
 #include <QLabel>
+#include <QPushButton>
+#include <QBoxLayout>
 #include <QStyleOption>
 #include <QPainter>
 #include <QTimer>
@@ -28,18 +30,28 @@ protected:
 };
 
 TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(parent) {
-    main = new QVBoxLayout(this);
+    auto* main = new QHBoxLayout(this);
     main->setSpacing(0);
 
-    {auto labl = new CutoffLabel(t->top(), this);
-    labl->setAlignment(Qt::AlignCenter);
-    labl->setProperty("bubble", "top");
-    main->addWidget(labl);}
+    auto* sub = new QVBoxLayout();
+    sub->setSpacing(0);
+        {auto labl = new CutoffLabel(t->top(), this);
+        labl->setAlignment(Qt::AlignCenter);
+        labl->setProperty("bubble", "top");
+        sub->addWidget(labl);}
+        {auto labl = new CutoffLabel(t->bottom(), this);
+        labl->setAlignment(Qt::AlignCenter);
+        labl->setProperty("bubble", "bot");
+        sub->addWidget(labl);}
 
-    {auto labl = new CutoffLabel(t->bottom(), this);
-    labl->setAlignment(Qt::AlignCenter);
-    labl->setProperty("bubble", "bot");
-    main->addWidget(labl);}
+    main->addLayout(sub, 1);
+    {auto btn = new QPushButton(this);
+    btn->setProperty("bubblebtn", true);
+    btn->setIcon(QIcon(t->today? ":/assets/UI/cal-heart.svg" : ":/assets/UI/cal-empty.svg"));
+    btn->setIconSize(QSize(48, 48));
+    btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
+    QObject::connect(btn, &QPushButton::clicked, this, &TaskBubble::clickedCalendar);
+    main->addWidget(btn);}
 }
 
 void TaskBubble::mousePressEvent(QMouseEvent* event) {

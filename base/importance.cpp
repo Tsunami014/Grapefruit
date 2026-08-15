@@ -12,6 +12,10 @@ double Importance(std::shared_ptr<Task> task) {
     return double(task->import)/5;
 }
 
+double Today(std::shared_ptr<Task> task) {
+    return double(task->today);
+}
+
 constexpr double k = 14.0; // Number of days until it becomes half as important
 constexpr double s = 10.0; // The 'speed' of the change - each increase makes it take an extra day to reach the same value (relative to k)
 double datesigm(QDate date, double max, double min) {
@@ -76,6 +80,7 @@ _ratioNamesTyp _ratioNames() {
     _ratioNamesTyp rn;
     rn.insert("Randomness", Randomness);
     rn.insert("Importance", Importance);
+    rn.insert("Today", Today);
     rn.insert("Urgency", Urgency);
     rn.insert("Load", Load);
     rn.insert("Resonance", Resonance);
@@ -89,6 +94,7 @@ QHash<QString, int> ratios;
 void loadRatios() {
     ratios.insert("Randomness", 1);
     ratios.insert("Importance", 2);
+    ratios.insert("Today", 5);
     ratios.insert("Urgency", 5);
     ratios.insert("Load", 4);
     ratios.insert("Resonance", 4);

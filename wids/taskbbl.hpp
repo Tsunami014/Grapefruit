@@ -1,6 +1,5 @@
 #pragma once
 #include <QWidget>
-#include <QBoxLayout>
 #include <QMouseEvent>
 #include "base/task.hpp"
 
@@ -11,6 +10,7 @@ public:
 
 signals:
     void clicked();
+    void clickedCalendar();
 
 protected:
     void mousePressEvent(QMouseEvent* e) override;
@@ -19,6 +19,5 @@ protected:
     bool pressed = false;
 
 private:
-    QVBoxLayout* main;
     void refreshStyle();
 };

@@ -56,7 +56,7 @@ void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) 
         btns.pop_back();
     }
 }
-void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> press, QWidget* parent) {
+void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> press, std::function<void()> reload, QWidget* parent) {
     QLayoutItem* item;
     while ((item = lay->takeAt(0)) != nullptr) {
         if (auto* wid = item->widget()) wid->deleteLater();
@@ -75,6 +75,11 @@ void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> 
 
     for (auto& t : alltasks.at(cur)) {
         auto bub = new TaskBubble(t, parent);
+        QObject::connect(bub, &TaskBubble::clickedCalendar, [=](){
+            t->today = !t->today;
+            saveTasks();
+            reload();
+        });
         QObject::connect(bub, &TaskBubble::clicked, [=](){
             press(t, false);
         });
@@ -316,16 +321,24 @@ void loadTasks() {
     QString line = in.readLine();
     QString title;
     tasklist tl;
+    bool use2day = false;
     while (!line.isNull()) {
-        if (line == "") { continue; }
-        if (line[0] == '\4') {
+        if (line == "") {
+        } else if (line[0] == '\5') {
+            auto parts = line.mid(1).split(';');
+            if (parts[0] == "date") {
+                use2day = QDate::currentDate() == QDate::fromString(parts.at(1), "yyyy-M-d");
+            } else {
+                qWarning() << "Unknown setting key:" << parts[0];
+            }
+        } else if (line[0] == '\4') {
             if (!title.isNull()) {
                 alltasks[title] = tl;
                 tl = {};
             }
             title = deescape(line.mid(1));
         } else {
-            tl.push_back(std::shared_ptr<Task>(Task::fromSaved(line)));
+            tl.push_back(std::shared_ptr<Task>(Task::fromSaved(line, use2day)));
         }
         line = in.readLine();
     }
@@ -341,6 +354,7 @@ void saveTasks() {
         return;
     }
     QTextStream out(&file);
+    out << "\5date;" << QDate::currentDate().toString("yyyy-M-d") << "\n";
     for (const auto& [key, tasks] : alltasks) {
         out << "\4" << escape(key) << "\n";
         for (const auto& tsk : tasks) {

@@ -115,7 +115,7 @@ void TaskView::redoTasks() {
         overlay = new TaskOverlay(t, redo, this);
         tlay->addWidget(overlay, 0, 0);
         if (upd) redoTasks();
-    }, this);
+    }, redo, this);
     setTasksCatsLay(tcatlay, redo, this);
     tcatdrag->installOn(tcatlay);
     tcatlay->activate();

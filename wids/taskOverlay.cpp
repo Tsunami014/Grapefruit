@@ -157,7 +157,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             sublay1->addWidget(titl);
 
             int mx = titl->rect().height() + 8;
-            {auto mov = new QPushButton();
+            {auto mov = new QPushButton(this);
             mov->setProperty("fancy", true);
             mov->setIcon(QIcon(":/assets/UI/move.svg"));
             mov->setIconSize(QSize(mx, mx-4));
@@ -170,7 +170,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
                 });
             });
             sublay1->addWidget(mov);}
-            {auto bin = new QPushButton();
+            {auto bin = new QPushButton(this);
             bin->setProperty("fancy", true);
             bin->setIcon(QIcon(":/assets/UI/bin.svg"));
             bin->setIconSize(QSize(mx, mx-4));
