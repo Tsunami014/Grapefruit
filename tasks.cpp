@@ -24,7 +24,6 @@ TaskView::TaskView() {
 
     {auto tskscrl = new QScrollArea(this);
     tskscrl->setFrameShape(QFrame::NoFrame);
-    tskscrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     tskscrl->setProperty("bg", true);
 
     tskscrl->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -37,11 +36,12 @@ TaskView::TaskView() {
     tcont->setObjectName("transpbg");
     tbbllay = new QVBoxLayout(tcont);
     tbbllay->setSpacing(8);
+    tbbllay->setAlignment(Qt::AlignTop);
     tskscrl->setWidget(tcont);
     tskscrl->setWidgetResizable(true);
     mtlay->addWidget(tskscrl);}
-    mtlay->addStretch();
     mtlay->addSpacing(8);
+
     {QFrame* line = new QFrame();
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Raised);
@@ -169,7 +169,6 @@ void TaskView::redoTasks() {
         tlay->addWidget(overlay, 0, 0);
         if (upd) redoTasks();
     }, redo, this);
-    tbbllay->addStretch();
     setTasksCatsLay(tcatlay, redo, this);
     tcatdrag->installOn(tcatlay);
     tdrag->installOn(tbbllay);
