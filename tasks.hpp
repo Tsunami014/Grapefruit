@@ -18,6 +18,7 @@ private:
     QVBoxLayout* tbbllay;
     FlowLayout* tcatlay;
     DragScroll* tcatdrag;
+    DragScroll* tdrag;
     QPushButton* todaybtn;
     QScrollArea* scrl;
     QPointer<QWidget> overlay;

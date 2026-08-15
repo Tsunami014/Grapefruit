@@ -71,12 +71,6 @@ void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> 
     if (cur.isNull()) return;
     sortTasks();
 
-    {auto* labl = new QLabel(cur == "\3"? "Today's tasks":"Tasks", parent);
-    labl->setContentsMargins(4,8,4,4);
-    labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    labl->setAlignment(Qt::AlignCenter);
-    lay->addWidget(labl);}
-
     if (cur == "\3") {
         for (const auto& [key, tasks] : alltasks) {
             for (const auto& t : tasks) {

@@ -10,6 +10,7 @@ class CutoffLabel : public QLabel {
 public:
     CutoffLabel(const QString& text, QWidget* parent) : QLabel(parent), full(text) {
         setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+        setAttribute(Qt::WA_TransparentForMouseEvents);
     }
     void setFullText(const QString& text) {
         full = text;
@@ -31,6 +32,7 @@ protected:
 
 TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(parent) {
     auto* main = new QHBoxLayout(this);
+    main->setContentsMargins(0, 0, 0, 0);
     main->setSpacing(0);
 
     auto* sub = new QVBoxLayout();
@@ -57,29 +59,30 @@ TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(paren
 void TaskBubble::mousePressEvent(QMouseEvent* event) {
     event->accept();
     pressed = true;
-    QTimer::singleShot(0, this, &TaskBubble::refreshStyle);
+    refreshStyle();
     QWidget::mousePressEvent(event);
 }
 void TaskBubble::mouseReleaseEvent(QMouseEvent* event) {
+    QWidget::mouseReleaseEvent(event);
     if (!pressed) return;
     event->accept();
     pressed = false;
-    QTimer::singleShot(0, this, &TaskBubble::refreshStyle);
-    QWidget::mouseReleaseEvent(event);
+    refreshStyle();
     emit clicked();
 }
-void TaskBubble::mouseMoveEvent(QMouseEvent* event) {
-    if (pressed && !rect().contains(event->pos())) {
-        event->accept();
-        pressed = false;
-        QTimer::singleShot(0, this, &TaskBubble::refreshStyle);
-    }
-    QWidget::mouseMoveEvent(event);
+void TaskBubble::leaveEvent(QEvent* event) {
+    QWidget::leaveEvent(event);
+    if (!pressed) return;
+    event->accept();
+    pressed = false;
+    refreshStyle();
 }
 void TaskBubble::refreshStyle() {
     setProperty("pressed", pressed);
+    style()->unpolish(this);
     style()->polish(this);
     for (QLabel* labl : findChildren<QLabel*>()) {
+        style()->unpolish(labl);
         style()->polish(labl);
         labl->update();
     }

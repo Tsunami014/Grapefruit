@@ -16,8 +16,30 @@ TaskView::TaskView() {
     mtlay->setSpacing(0);
     tlay->addLayout(mtlay, 0, 0);
 
-    tbbllay = new QVBoxLayout();
-    mtlay->addLayout(tbbllay);
+    {auto* labl = new QLabel("Tasks", this);
+    labl->setContentsMargins(4,4,4,8);
+    labl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    labl->setAlignment(Qt::AlignCenter);
+    mtlay->addWidget(labl);}
+
+    {auto tskscrl = new QScrollArea(this);
+    tskscrl->setFrameShape(QFrame::NoFrame);
+    tskscrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    tskscrl->setProperty("bg", true);
+
+    tskscrl->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    tskscrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    tskscrl->verticalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    tskscrl->verticalScrollBar()->setFocusPolicy(Qt::NoFocus);
+    tdrag = new DragScroll(tskscrl->viewport(), tskscrl->verticalScrollBar());
+
+    auto* tcont = new QWidget(this);
+    tcont->setObjectName("transpbg");
+    tbbllay = new QVBoxLayout(tcont);
+    tbbllay->setSpacing(8);
+    tskscrl->setWidget(tcont);
+    tskscrl->setWidgetResizable(true);
+    mtlay->addWidget(tskscrl);}
     mtlay->addStretch();
     mtlay->addSpacing(8);
     {QFrame* line = new QFrame();
@@ -60,8 +82,7 @@ TaskView::TaskView() {
         titlay->addStretch();
     mtlay->addLayout(titlay);
 
-
-    scrl = new QScrollArea(this);
+    {scrl = new QScrollArea(this);
     scrl->setFrameShape(QFrame::NoFrame);
     scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     scrl->setProperty("bg", true);
@@ -78,7 +99,7 @@ TaskView::TaskView() {
     tcatlay->vertical(2);
     scrl->setWidget(catcont);
     scrl->setWidgetResizable(true);
-    mtlay->addWidget(scrl);
+    mtlay->addWidget(scrl);}
     mtlay->addSpacing(8);
 
     auto bot = new QHBoxLayout();
@@ -148,8 +169,10 @@ void TaskView::redoTasks() {
         tlay->addWidget(overlay, 0, 0);
         if (upd) redoTasks();
     }, redo, this);
+    tbbllay->addStretch();
     setTasksCatsLay(tcatlay, redo, this);
     tcatdrag->installOn(tcatlay);
+    tdrag->installOn(tbbllay);
     tcatlay->activate();
     scrl->widget()->setMinimumWidth(tcatlay->lastSize().width() + 8);
 
