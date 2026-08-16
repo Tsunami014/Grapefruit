@@ -5,7 +5,9 @@
 
     <application
         android:label="Grapefruit"
-        android:theme="@style/DaCoolTheme">
+        android:theme="@style/DaCoolTheme"
+        android:icon="@drawable/icon"
+        android:roundIcon="@drawable/icon">
 
         <activity
             android:name="org.qtproject.qt.android.bindings.QtActivity"

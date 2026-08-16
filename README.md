@@ -21,3 +21,6 @@ Including `-DENABLE_DEBUG=ON` when building (or running `make debug`) will inclu
 - Sorts tasks in task list instead by task end score
 - Add a redo button to conversations
 - Logs the location of the data on the drive whenever it loads it
+
+### The app icon
+`assets/icon.svg` is the app icon, but NOT DIRECTLY the apk app icon. For that, the file needs to be converted to an android xml file and then placed in `android/res/drawable/icon.xml`. This can be done via e.g. [a website](https://svg2vector.com/).

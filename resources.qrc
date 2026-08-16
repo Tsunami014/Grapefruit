@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>style.qss</file>
+        <file>assets/icon.svg</file>
 
         <file>data/conv.yml</file>
         <file>data/scenes.yml</file>

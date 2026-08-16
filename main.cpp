@@ -8,6 +8,7 @@ MainGame* MG = nullptr;
 int main(int argc, char* argv[]) {
     QCoreApplication::setApplicationName("Grapefruit");
     QApplication app(argc, argv);
+    app.setWindowIcon(QIcon(":/assets/icon.svg"));
 
     QFont font = QApplication::font();
     font.setPointSize(16);
