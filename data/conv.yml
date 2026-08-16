@@ -173,6 +173,7 @@ purposes:
         - ["{Bored/Nothing to do}", [bored, justchecked], suggest]
         - ["$Unsure", [unsure, justchecked], suggest]
         - ["$Stuck", [stuck, justchecked], comfort]
+        - ["$Dunno", [unsure, justchecked, tryany], comfort]
         - ["{Nothing/Nothing's wrong/I'm good/All good/All's good}", [-mood, -uncertainty, justchecked], "$AllGoodOs"]
 
     # How are you going?
@@ -200,6 +201,7 @@ purposes:
         - ["$Tired", [tired, justchecked], comfort]
         - ["$Stressed", [stressed, justchecked], comfort]
         - ["{Bored/Nothing to do}", [bored, justchecked], suggest]
+        - ["$Dunno", [unsure, justchecked, tryany], comfort]
         - ["{All's good/Doing well}!", [happy, -problem, justchecked], "$AllGoodOs"]
 
   checkintask:
@@ -214,6 +216,7 @@ purposes:
         - ["$Tired", [tired], comfort]
         - ["$Stressed", [stressed], comfort]
         - ["$CantWork", [], maybe]
+        - ["$Dunno", [unsure, justchecked, tryany], comfort]
         - ["{I'm ok/Nothing wrong/Still {looking/searching}/Keep suggesting}", [justchecked], suggest]
 
   comfort:
@@ -557,7 +560,7 @@ dictionary:
 
   Working: "{Working hard/Doing things/Achieving}"
   Chilling: "{Chillaxing/Relaxing}"
-  Unsure: "{3*Deciding/Unsure/2*Aimless/2*Undecided/Lost}"
+  Unsure: "{3*Deciding/2*Aimless/2*Undecided/Lost}"
   Stuck: "{Stuck/Need help/Bit stuck/Hit a wall}"
   Tired: "{Tired/Life's tiring/So tired/Exhausted}"
   Stressed: "{Stressed/A bit stressed/Anxious/Life's stressful}"
@@ -568,5 +571,6 @@ dictionary:
   IHope: "{Maybe{.../?/}/Hopefully{..././}/I hope{./}}"
   CantWork: "{Can't do {the work/it/anything}/Don't feel like {2*it/the work}/Couldn't be bothered}"
   DifferentWay: "{{different/unique} way/way that's more {fun/interesting/engaging}}"
+  Dunno: "{Dunno/2*Don't know/2*No idea/Wish I knew/Who knows}"
 
   AllGoodOs: "{progress/what2do}"
