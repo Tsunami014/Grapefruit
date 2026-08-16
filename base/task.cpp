@@ -124,7 +124,7 @@ QString Task::bottom() {
         if (ps.totTime == 0) {
             return QString("%1 items").arg(ps.totTasks);
         }
-        return QString("%1 items (%2)").arg(ps.totTasks).arg(strTime(ps.totTime, true));
+        return QString("%1 over %2 items").arg(strTime(ps.totTime, true)).arg(ps.totTasks);
     }
     QString txt = QString("%1 due %2")
         .arg(strTime(ps.nextTime, true)).arg(parseDate(ps.nextDue, true));
