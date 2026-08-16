@@ -3,11 +3,12 @@
 #include "extra/bgitem.hpp"
 #include <QGraphicsItem>
 
-#define SCENE "desk#rug"
+//#define SCENE "desk#rug#computer"
+constexpr int SCALE = 10;
 
 House::House(QWidget* parent) : scn(), QGraphicsView(parent) {
     setScene(&scn);
-    scale(8,8);
+    scale(SCALE, SCALE);
 #ifdef SCENE
     buildScene(SCENE);
     curScnNam = "testing";

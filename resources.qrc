@@ -34,6 +34,7 @@
         <file>assets/BG/furnature.svg</file>
         <file>assets/BG/food.svg</file>
         <file>assets/BG/grape.svg</file>
+        <file>assets/BG/things.svg</file>
     </qresource>
 </RCC>
 

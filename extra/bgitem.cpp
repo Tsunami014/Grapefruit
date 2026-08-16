@@ -11,6 +11,7 @@ void loadFile(QString fle) {
     QString pth = ":/assets/BG/"+fle+".svg";
     QFile file(pth);
     if (!file.open(QIODevice::ReadOnly)) {
+        // Did you forget to add the file to resources.qrc?
         qFatal() << "Unable to read from file " << pth;
         return;
     }

@@ -23,6 +23,8 @@ scenes:
     - rug: [[rug, -3.5, 6.13]]
     - [gf-sit-chair, -0.38, -2.38]
     - [desk, -3.38, 0.13]
+    - computer:
+      - [computer, 2.92, 3.43]
 
 
 assets:
@@ -36,6 +38,8 @@ assets:
   food:
     - plate
     - pizza
+  things:
+    - computer
   grape:
     - gf-sit-chair
 
@@ -53,3 +57,10 @@ choices:
     names:
       - "chilling{ out/}"
       - "relaxing"
+
+  - base: desk
+    extras:
+      - [rug, ~]
+      - computer
+    names:
+      - "{doing/working on} random {things/stuff}"
