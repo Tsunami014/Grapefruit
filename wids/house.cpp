@@ -3,12 +3,17 @@
 #include "extra/bgitem.hpp"
 #include <QGraphicsItem>
 
+#define SCENE "desk#rug"
+
 House::House(QWidget* parent) : scn(), QGraphicsView(parent) {
     setScene(&scn);
     scale(8,8);
-    //buildScene("dining#eat#pizza");
-    //curScnNam = "testing"
+#ifdef SCENE
+    buildScene(SCENE);
+    curScnNam = "testing";
+#else
     newScene();
+#endif
 }
 
 void House::newScene() {
