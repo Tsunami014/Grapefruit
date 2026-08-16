@@ -15,7 +15,7 @@ const QString TASK_HELP =
             "<p>A task's importance not only determines how high it is placed in the task list and also is used when determining which task to suggest you.</p>"
         "<h3>Reasoning</h3>"
             "<p>This is where you put reasoning as to why you want to do the task!</p>"
-            "<p><i>Please phrase these as sentences about yourself in second person, i.e. 'You ...'</i></p>"
+            "<p><i>Please phrase these as sentences about yourself in second person, i.e. 'You ...' and do not include punctuation at the end.</i></p>"
             "<p>The best way to use this is by having intrinsically motivating reasons - <b>What do you enjoy about doing the task?</b></p>"
             "<p>For example, while you may want to put e.g. 'You want to do well at ...' it is more effective if you think about <i>why you want to do this in the first place</i>, e.g. 'You love seeing the things you build come to life'</p>"
         "<h3>Qualities</h3>"

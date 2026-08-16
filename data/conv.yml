@@ -410,8 +410,8 @@ purposes:
           - "You don't {have/need} to do much{ at all/}, {2*just having it in mind is fine/even a glance counts}."
         "motivated?happy, +committed":
           - "2*$GotThis!"
-        "juststarted":
-          - "4*%best_reason"
+        # "juststarted":
+        #   - "$GotThis! %best_reason"
       opts:
         - ["{Thanks/Thanks/Ok}{!/}", [], working]
         - ["$IHope#!justchecked", [], checkin]

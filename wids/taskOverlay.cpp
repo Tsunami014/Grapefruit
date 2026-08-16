@@ -456,7 +456,7 @@ void TaskOverlay::mousePressEvent(QMouseEvent* event) {
             QGuiApplication::inputMethod()->hide();
             del = false;
         }
-        if (QWidget* focus = QApplication::focusWidget()) {
+        if (QWidget* focus = QApplication::focusWidget(); focus && isAncestorOf(focus)) {
             focus->clearFocus();
             del = false;
         }
