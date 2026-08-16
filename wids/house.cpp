@@ -4,7 +4,7 @@
 #include <QGraphicsItem>
 
 //#define SCENE "desk#rug#computer"
-constexpr int SCALE = 10;
+constexpr int SCALE = 11;
 
 House::House(QWidget* parent) : scn(), QGraphicsView(parent) {
     setScene(&scn);
