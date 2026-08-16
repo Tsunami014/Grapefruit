@@ -6,7 +6,12 @@
 
 const std::regex chooseReStd(R"(^((\d+) ?\*).*)");
 std::pair<std::string, int> choose(const std::vector<std::string>& opts) {
-    if (opts.size() == 1) return {opts.at(0), 0};
+    if (opts.size() == 1) {
+        if (std::smatch matches; std::regex_search(opts.at(0), matches, chooseReStd)) {
+            return {opts.at(0).substr(matches[1].length()), 0};
+        }
+        return {opts.at(0), 0};
+    }
     std::vector<std::pair<int, int>> choices; // idx, prefix len
     int idx = 0;
     for (const auto& str : opts) {
@@ -28,7 +33,13 @@ std::pair<std::string, int> choose(const std::vector<std::string>& opts) {
 
 const QRegularExpression chooseReQ(R"(^((\d+) ?\*).*)");
 std::pair<QString, int> choose(const std::vector<QString>& opts) {
-    if (opts.size() == 1) return {opts.at(0), 0};
+    if (opts.size() == 1) {
+        auto m = chooseReQ.match(opts.at(0));
+        if (m.hasMatch()) {
+            return {opts.at(0).mid(m.captured(1).length()), 0};
+        }
+        return {opts.at(0), 0};
+    }
     std::vector<std::pair<int, int>> choices; // idx, prefix len
     int idx = 0;
     for (const auto& str : opts) {

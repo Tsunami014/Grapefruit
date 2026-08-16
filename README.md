@@ -1,5 +1,5 @@
 # Grapefruit
-An *intrinsically* motivating *non-ML* digital friend for organisation and help with procrastination
+An *intrinsically* motivational *non-LLM or ML* digital friend for organisation and help with procrastination! Made with a LOT of handcrafted sentences by me <3
 
 ## Building
 There are a bunch of requirements needed in order to build, but there's a `shell.nix` file for those using Nix!
