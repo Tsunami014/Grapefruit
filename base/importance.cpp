@@ -16,7 +16,7 @@ double Today(std::shared_ptr<Task> task) {
     return double(task->today);
 }
 
-constexpr int unspecifAway = 21; // If the date does not exist, assume it is this far away (at minimum)
+constexpr int unspecifAway = 18; // If the date does not exist, assume it is this far away (at minimum)
 
 constexpr double k = 14.0; // Number of days until it becomes half as important
 constexpr double s = 10.0; // The 'speed' of the change - each increase makes it take an extra day to reach the same value (relative to k)
