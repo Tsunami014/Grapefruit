@@ -98,11 +98,11 @@ progress Task::Progress() {
         {auto m = dateRe.match(line);
         if (m.hasMatch()) {
             QChar sep = m.captured(2)[0];
-            due = QDate::fromString(m.captured(1).replace(sep, "-"), "yyyy-MM-dd");
+            QDate date = QDate::fromString(m.captured(1).replace(sep, "-"), "yyyy-MM-dd");
             if (fst) {
-                nxtdue = due;
+                nxtdue = date;
                 fst = false;
-            }
+            } else { due = date; }
         }}
     }
     return {nxtamnt, amnt, nxttime, time, nxtdue, due};
@@ -129,7 +129,7 @@ QString Task::bottom() {
     QString txt = QString("%1 due %2")
         .arg(strTime(ps.nextTime, true)).arg(parseDate(ps.nextDue, true));
 
-    if (ps.lastDue == ps.nextDue) return txt;
+    if (ps.lastDue.isNull()) return txt;
     return txt + QString(", Total %1 due %2")
         .arg(strTime(ps.totTime, true)).arg(parseDate(ps.lastDue, true));
 }
