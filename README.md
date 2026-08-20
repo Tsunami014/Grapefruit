@@ -13,7 +13,15 @@ It also contains an *extremely efficient* text editor for mobile, containing but
 
 **Also please note it autosaves constantly, don't worry about losing your work**.
 
-## Building
+## Installing
+- Go to the [releases page](https://github.com/Tsunami014/Grapefruit/releases) and download an apk file of the latest (or any, but the latest is always best) release onto your phone.
+- Go to the file manager and press on the app.
+    - If it says "the file manager doesn't have permission to install this app" then you need to press the button in that popup to open the settings and change the file manager to be able to install apps and try again.
+    - If it says "this app has not been verified", do not worry you can still install it by pressing "don't scan" (which may be under "more options"). You can scan it if you want but I promise I didn't put any viruses in this so it's kinda a waste of time.
+- The app should be installed! Yay! Now go enjoy it!
+
+## Developing
+### Building
 There are a bunch of requirements needed in order to build, but there's a `shell.nix` file for those using Nix!
 
 Run `make debug` for a debug desktop version or `make release` for a final mobile version. `make clean` deletes all build files.
