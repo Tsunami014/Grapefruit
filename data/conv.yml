@@ -346,6 +346,7 @@ purposes:
             - "{Have a rest/Take a break} and come back {later/when you feel better}{!/.}"
       opts:
         - ["Done", [], afterRest]
+        - ["{No thanks/Rather not/No}", [triedrest], comfort]
         - ["{Still tired/2*$Unhelpful}", [tired, justrested, triedrest], "{stillTired/comfort}"]
   afterRest:
     - templates:
@@ -565,10 +566,10 @@ dictionary:
   Stressed: "{Stressed/A bit stressed/Anxious/Life's stressful}"
   Struggle: "{I'm struggling/I'm feeling off/It's difficult}"
   ChosenAlready: "{Other plans/4*{Chosen/Decided} {something{3*/ else}/already}/{Got my o/O}wn plans}"
-  NoToTask: "No/Not really/No thanks/Not feeling it/Don't want to/Not now"
+  NoToTask: "No/Not really/No thanks/Not feeling it/Don't want to/Don't feel like {2*it/the work}/Not interested/Couldn't be bothered"
+  CantWork: "{Can't/{Not /Un}able to}{2* {manage/do} {6*it/the work/anything}/ manage/}"
   Unhelpful: "{Won't help/Not helpful/Unhelpful/Useless}"
   IHope: "{Maybe{.../?/}/Hopefully{..././}/I hope{./}}"
-  CantWork: "{Can't do {the work/it/anything}/Don't feel like {2*it/the work}/Couldn't be bothered}"
   DifferentWay: "{{different/unique} way/way that's more {fun/interesting/engaging}}"
   Dunno: "{Dunno/2*Don't know/2*No idea/Wish I knew/Who knows}"
 
