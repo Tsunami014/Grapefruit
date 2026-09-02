@@ -82,6 +82,7 @@ QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, Confi
     lay->addSpacing(8);
 
     auto* btns = new QDialogButtonBox(ovrl);
+    btns->setObjectName("confirmButtons");
     if (opts == Conf_YESNO) {
         btns->setStandardButtons(QDialogButtonBox::Yes | QDialogButtonBox::No);
     } else if (opts == Conf_YESNOCANCEL) {

@@ -49,6 +49,10 @@ QPushButton[settbtn=true] {
 }
 QPushButton[settbtn=true]:pressed { background-color: #7BCCBD; }
 
+#confirmButtons QPushButton {
+    padding: 4px 8px;
+}
+
 Spoiler QToolButton {
     background-color: #A0C4B5;
     border-radius: 4px;

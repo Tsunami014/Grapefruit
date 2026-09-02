@@ -21,7 +21,7 @@
 #include <QScroller>
 #include <QAbstractTextDocumentLayout>
 
-const QMargins innerMarg{36, 16, 64, 36};
+const QMargins innerMarg{24, 16, 64, 16};
 
 void HlTxtEdit::paintEvent(QPaintEvent* event) {
     // Paint done backgrounds manually
