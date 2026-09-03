@@ -4,6 +4,7 @@
 #include <QPointer>
 #include <QScrollArea>
 #include <QPushButton>
+#include <QLabel>
 #include "wids/flow.hpp"
 #include "extra/drag.hpp"
 
@@ -14,6 +15,9 @@ public:
     void redoTasks();
 private:
     QGridLayout* tlay;
+
+    QLabel* topheader;
+    QPushButton* newtaskbtn;
 
     QVBoxLayout* tbbllay;
     FlowLayout* tcatlay;

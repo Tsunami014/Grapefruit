@@ -3,12 +3,13 @@
 #include "base/task.hpp"
 
 QString getCurrent();
+QString curCatName();
 void showNoCat();
 void showStar();
 bool isStarCat();
 
 void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent = nullptr);
-void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool upd)> press, std::function<void()> reload, QWidget* parent = nullptr);
+void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>)> press, std::function<void()> reload, QWidget* parent = nullptr);
 
 void newCategory(QWidget* parent, QString name);
 bool renameCategory(QWidget* parent, QString newname);

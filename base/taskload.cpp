@@ -23,6 +23,12 @@ QString getCurrent() {
     }
     return current;
 }
+QString curCatName() {
+    QString cur = getCurrent();
+    if (cur.isNull()) return {};
+    if (cur == "\3") return "Starred tasks";
+    return cur;
+}
 void showNoCat() { current = {}; }
 void showStar() { current = "\3"; }
 bool isStarCat() { return current == "\3"; }
@@ -60,7 +66,7 @@ void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) 
         btns.pop_back();
     }
 }
-void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> press, std::function<void()> reload, QWidget* parent) {
+void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>)> press, std::function<void()> reload, QWidget* parent) {
     QLayoutItem* item;
     while ((item = lay->takeAt(0)) != nullptr) {
         if (auto* wid = item->widget()) wid->deleteLater();
@@ -82,7 +88,7 @@ void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> 
                     reload();
                 });
                 QObject::connect(bub, &TaskBubble::clicked, [=](){
-                    press(t, false);
+                    press(t);
                 });
                 lay->addWidget(bub);
             }
@@ -96,26 +102,10 @@ void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> 
                 reload();
             });
             QObject::connect(bub, &TaskBubble::clicked, [=](){
-                press(t, false);
+                press(t);
             });
             lay->addWidget(bub);
         }
-    }
-
-    QWidget* space = new QWidget(parent);
-    space->setFixedSize(0, 8);
-    lay->addWidget(space);
-
-    if (cur != "\3") {
-        auto btn = new QPushButton();
-        btn->setProperty("fancy", true);
-        btn->setIcon(QIcon(":/assets/UI/plus.svg"));
-        btn->setIconSize(QSize(48, 44));
-        btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        lay->connect(btn, &QPushButton::clicked, lay, [=](){
-            press(newtask(), true);
-        });
-        lay->addWidget(btn);
     }
 }
 
