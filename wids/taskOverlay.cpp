@@ -152,15 +152,17 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
         mlay->addWidget(sl1wid);
         parts.push_back(sl1wid);
         auto* sublay1 = new QHBoxLayout(sl1wid);
+        sublay1->setSpacing(12);
             auto titl = new QLineEdit(task->name, sl1wid);
+            titl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
             resizeFont(titl, 1.3);
-            sublay1->addWidget(titl);
+            sublay1->addWidget(titl, Qt::AlignVCenter);
 
-            int mx = titl->rect().height() + 8;
             {auto mov = new QPushButton(this);
             mov->setProperty("fancy", true);
             mov->setIcon(QIcon(":/assets/UI/move.svg"));
-            mov->setIconSize(QSize(mx, mx-4));
+            mov->setIconSize(QSize(44, 40));
+            mov->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
             connect(mov, &QPushButton::clicked, sl1wid, [=](){
                 QString nam = task->name;
                 deleteLater();
@@ -169,11 +171,12 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
                     ondeath();
                 });
             });
-            sublay1->addWidget(mov);}
+            sublay1->addWidget(mov, Qt::AlignVCenter);}
             {auto bin = new QPushButton(this);
             bin->setProperty("fancy", true);
             bin->setIcon(QIcon(":/assets/UI/bin.svg"));
-            bin->setIconSize(QSize(mx, mx-4));
+            bin->setIconSize(QSize(44, 40));
+            bin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
             connect(bin, &QPushButton::clicked, sl1wid, [=](){
                 QString nam = task->name;
                 deleteLater();
@@ -185,7 +188,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
                     ondeath();
                 });
             });
-            sublay1->addWidget(bin);}
+            sublay1->addWidget(bin, Qt::AlignVCenter);}
         auto* sl2wid = new QWidget(this);
         sl2wid->setContentsMargins(0,0,0,0);
         parts.push_back(sl2wid);
@@ -379,8 +382,8 @@ void TaskOverlay::generateBot() {
             drag->installOn(bflow);
         } else {
             auto* bits = new QHBoxLayout(bitsWid);
-            bits->setContentsMargins(12,6,12,6);
-            bits->setSpacing(12);
+            bits->setContentsMargins(8,6,8,6);
+            bits->setSpacing(8);
 
             bits->setSizeConstraint(QLayout::SetMinimumSize);
             GenerateOpts(bitsWid, bits, isedit? edit:reasons, isedit);

@@ -163,7 +163,7 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
         btn->setProperty("fancy", true);
         btn->setProperty("tinybtn", true);
         btn->setIcon(QIcon(ico));
-        btn->setIconSize(QSize(40, 40));
+        btn->setIconSize(QSize(32, 32));
         btn->setFocusPolicy(Qt::NoFocus);
         parent->connect(btn, &QPushButton::clicked, edit, slot);
         lay->addWidget(btn);
