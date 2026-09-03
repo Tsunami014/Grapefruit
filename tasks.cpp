@@ -26,6 +26,12 @@ TaskView::TaskView() {
     };
 
     auto toplay = new QHBoxLayout();
+        {auto bin = addBtn(":/assets/UI/bin.svg");
+        connect(bin, &QPushButton::clicked, this, [this](){
+            if (deleteCategory(this)) redoTasks();
+        });
+        toplay->addWidget(bin);}
+
         topheader = new QLabel(this);
         topheader->setContentsMargins(4,4,4,8);
         topheader->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -37,15 +43,8 @@ TaskView::TaskView() {
             overlay = new TaskOverlay(newtask(), [this](){ redoTasks(); }, this);
             tlay->addWidget(overlay, 0, 0);
             redoTasks();
-            if (deleteCategory(this)) redoTasks();
         });
         toplay->addWidget(newtaskbtn);
-
-        {auto bin = addBtn(":/assets/UI/bin.svg");
-        connect(bin, &QPushButton::clicked, this, [this](){
-            if (deleteCategory(this)) redoTasks();
-        });
-        toplay->addWidget(bin);}
     mtlay->addLayout(toplay);
 
     {auto tskscrl = new QScrollArea(this);
