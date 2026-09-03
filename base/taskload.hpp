@@ -4,8 +4,8 @@
 
 QString getCurrent();
 void showNoCat();
-void showToday();
-bool isTodayCat();
+void showStar();
+bool isStarCat();
 
 void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent = nullptr);
 void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool upd)> press, std::function<void()> reload, QWidget* parent = nullptr);

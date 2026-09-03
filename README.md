@@ -6,7 +6,7 @@ Grapefruit will be chilling in their house all day, stop by whenever you don't f
 
 Tasks contain an importance rating (out of 5), a list of reasons why you want to do the task (with a guide on how to make them intrinsic, boiling down to "not why you want to do the task but why doing it is fun/enjoyable for you"), a list of qualities from a preset bank (e.g. "tiring") which also are used when recommending you tasks (e.g. it is less likely to recommend you a tiring task when you said you were tired) and a list of 'items', basically sub things that need doing for that task. Each item can have a *rough* estimated time and/or a due date.
 Tasks are sorted into categories for convenience too.
-Tasks can also be labelled as 'doing today' (which resets at the start of each day, unless you leave it open overnight) which makes it more likely to be recommended and also allows you to see all the 'today tasks' separately for more organisation.
+Tasks can also be starred, which makes it more likely to be recommended and also allows you to see all the 'starred tasks' separately for more organisation.
 It uses a task recommendation system which uses complex maths to determine which tasks are best to do now based on many qualities of the task, your emotions and the conversation so far.
 
 It also contains an *extremely efficient* text editor for mobile, containing buttons in a bar at the bottom (directly above the keyboard) for e.g. moving whole lines of text around and inserting new lines. It also hides other elements when selecting one to make it easier to see while editing.

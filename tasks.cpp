@@ -60,17 +60,17 @@ TaskView::TaskView() {
 
     auto titlay = new QHBoxLayout();
         titlay->addStretch();
-        todaybtn = new QPushButton("Today", this);
-        todaybtn->setProperty("fancy", true);
-        todaybtn->setProperty("optbtn", true);
-        todaybtn->setProperty("current", isTodayCat());
-        resizeFont(todaybtn, 1.2);
-        QObject::connect(todaybtn, &QPushButton::clicked, [this](){
-            if (isTodayCat()) showNoCat();
-            else showToday();
+        starbtn = new QPushButton("Star", this);
+        starbtn->setProperty("fancy", true);
+        starbtn->setProperty("optbtn", true);
+        starbtn->setProperty("current", isStarCat());
+        resizeFont(starbtn, 1.2);
+        QObject::connect(starbtn, &QPushButton::clicked, [this](){
+            if (isStarCat()) showNoCat();
+            else showStar();
             redoTasks();
         });
-        titlay->addWidget(todaybtn);
+        titlay->addWidget(starbtn);
         titlay->addStretch();
 
         {auto* labl = new QLabel("Categories", this);
@@ -123,8 +123,8 @@ TaskView::TaskView() {
         {auto rnam = addBtn(":/assets/UI/rename.svg");
         rnam->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         connect(rnam, &QPushButton::clicked, this, [this](){
-            if (isTodayCat()) {
-                confirm(this, "Cannot rename the today category!", Conf_OK);
+            if (isStarCat()) {
+                confirm(this, "Cannot rename the star category!", Conf_OK);
                 return;
             }
             QString cur = getCurrent();
@@ -138,8 +138,8 @@ TaskView::TaskView() {
         {auto bin = addBtn(":/assets/UI/bin.svg");
         bin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         connect(bin, &QPushButton::clicked, this, [this](){
-            if (isTodayCat()) {
-                confirm(this, "Cannot delete the today category!", Conf_OK);
+            if (isStarCat()) {
+                confirm(this, "Cannot delete the star category!", Conf_OK);
                 return;
             }
             if (deleteCategory(this)) redoTasks();
@@ -158,10 +158,10 @@ TaskView::TaskView() {
 }
 
 void TaskView::redoTasks() {
-    todaybtn->setProperty("current", isTodayCat());
-    todaybtn->style()->unpolish(todaybtn);
-    todaybtn->style()->polish(todaybtn);
-    todaybtn->update();
+    starbtn->setProperty("current", isStarCat());
+    starbtn->style()->unpolish(starbtn);
+    starbtn->style()->polish(starbtn);
+    starbtn->update();
 
     auto redo = [this](){ redoTasks(); };
     setTasksLay(tbbllay, [=](std::shared_ptr<Task> t, bool upd){

@@ -19,7 +19,7 @@ private:
     FlowLayout* tcatlay;
     DragScroll* tcatdrag;
     DragScroll* tdrag;
-    QPushButton* todaybtn;
+    QPushButton* starbtn;
     QScrollArea* scrl;
     QPointer<QWidget> overlay;
 };

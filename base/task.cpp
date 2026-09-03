@@ -12,8 +12,8 @@
 
 uint nxtid = 0;
 
-Task::Task(const QString& nam, const QString& items, int import, std::set<QString> quals, const QString& reasons, bool today)
-    : id(nxtid++), name(nam), items(items), import(import), quals(quals), reasons(reasons), today(today) {}
+Task::Task(const QString& nam, const QString& items, int import, std::set<QString> quals, const QString& reasons, bool star)
+    : id(nxtid++), name(nam), items(items), import(import), quals(quals), reasons(reasons), star(star) {}
 bool Task::operator==(const Task& oth) const { return id == oth.id; }
 bool Task::operator<(const Task& oth) const {
     // If this is less than oth it will be higher in the list
@@ -31,7 +31,7 @@ QString Task::toSave() {
         qualsOut << escape(q);
     }
     return
-        (today? "-":"")+
+        (star? "-":"")+
         escape(name)+';'+
         escape(items)+';'+
         QString::number(import)+';'+
@@ -39,10 +39,10 @@ QString Task::toSave() {
         escape(reasons)
     ;
 }
-Task* Task::fromSaved(QString saved, bool usetoday) {
-    bool twoday = saved.startsWith('-');
+Task* Task::fromSaved(QString saved) {
+    bool star = saved.startsWith('-');
     QStringList conts;
-    if (twoday) conts = saved.mid(1).split(';');
+    if (star) conts = saved.mid(1).split(';');
     else conts = saved.split(';');
     QString nam = deescape(conts.at(0));
     QString items = deescape(conts.at(1));
@@ -55,7 +55,7 @@ Task* Task::fromSaved(QString saved, bool usetoday) {
             quals.insert(txt);
     }
     QString reasons = deescape(conts.at(4));
-    return new Task(nam, items, impt, quals, reasons, usetoday && twoday);
+    return new Task(nam, items, impt, quals, reasons, star);
 }
 
 const QRegularExpression normlSpaces(R"(^\s*\n|\n\s*$|[ \t]+$|\s+(?=\n[ \t]*$))", QRegularExpression::MultilineOption);

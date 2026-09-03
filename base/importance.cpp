@@ -12,8 +12,8 @@ double Importance(std::shared_ptr<Task> task) {
     return double(task->import)/5;
 }
 
-double Today(std::shared_ptr<Task> task) {
-    return double(task->today);
+double Star(std::shared_ptr<Task> task) {
+    return double(task->star);
 }
 
 constexpr int unspecifAway = 18; // If the date does not exist, assume it is this far away (at minimum)
@@ -85,7 +85,7 @@ _ratioNamesTyp _ratioNames() {
     _ratioNamesTyp rn;
     rn.insert("Randomness", Randomness);
     rn.insert("Importance", Importance);
-    rn.insert("Today", Today);
+    rn.insert("Star", Star);
     rn.insert("Urgency", Urgency);
     rn.insert("Load", Load);
     rn.insert("Resonance", Resonance);
@@ -99,7 +99,7 @@ QHash<QString, int> ratios;
 void loadRatios() {
     ratios.insert("Randomness", 1);
     ratios.insert("Importance", 2);
-    ratios.insert("Today", 4);
+    ratios.insert("Star", 4);
     ratios.insert("Urgency", 5);
     ratios.insert("Load", 4);
     ratios.insert("Resonance", 4);

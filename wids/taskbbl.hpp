@@ -10,7 +10,7 @@ public:
 
 signals:
     void clicked();
-    void clickedCalendar();
+    void toggleStar();
 
 protected:
     void mousePressEvent(QMouseEvent* e) override;

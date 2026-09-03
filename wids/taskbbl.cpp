@@ -49,10 +49,10 @@ TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(paren
     main->addLayout(sub, 1);
     {auto btn = new QPushButton(this);
     btn->setProperty("bubblebtn", true);
-    btn->setIcon(QIcon(t->today? ":/assets/UI/cal-heart.svg" : ":/assets/UI/cal-empty.svg"));
+    btn->setIcon(QIcon(t->star? ":/assets/UI/starred.svg" : ":/assets/UI/starOff.svg"));
     btn->setIconSize(QSize(48, 48));
     btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
-    QObject::connect(btn, &QPushButton::clicked, this, &TaskBubble::clickedCalendar);
+    QObject::connect(btn, &QPushButton::clicked, this, &TaskBubble::toggleStar);
     main->addWidget(btn);}
 }
 

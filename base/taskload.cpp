@@ -14,7 +14,7 @@
 #include <QStandardPaths>
 #include <QDir>
 
-QString current; // \3 is the 'Today' category
+QString current; // \3 is the 'Star' category
 QString getCurrent() {
     if (current == "\3") return "\3";
     if (alltasks.empty()) return {};
@@ -24,8 +24,8 @@ QString getCurrent() {
     return current;
 }
 void showNoCat() { current = {}; }
-void showToday() { current = "\3"; }
-bool isTodayCat() { return current == "\3"; }
+void showStar() { current = "\3"; }
+bool isStarCat() { return current == "\3"; }
 
 void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) {
     static std::vector<QPushButton*> btns;
@@ -74,10 +74,10 @@ void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> 
     if (cur == "\3") {
         for (const auto& [key, tasks] : alltasks) {
             for (const auto& t : tasks) {
-                if (!t || !t->today) continue;
+                if (!t || !t->star) continue;
                 auto bub = new TaskBubble(t, parent);
-                QObject::connect(bub, &TaskBubble::clickedCalendar, [=](){
-                    t->today = !t->today;
+                QObject::connect(bub, &TaskBubble::toggleStar, [=](){
+                    t->star = !t->star;
                     saveTasks();
                     reload();
                 });
@@ -90,8 +90,8 @@ void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>, bool)> 
     } else {
         for (const auto& t : alltasks.at(cur)) {
             auto bub = new TaskBubble(t, parent);
-            QObject::connect(bub, &TaskBubble::clickedCalendar, [=](){
-                t->today = !t->today;
+            QObject::connect(bub, &TaskBubble::toggleStar, [=](){
+                t->star = !t->star;
                 saveTasks();
                 reload();
             });
@@ -137,7 +137,7 @@ bool renameCategory(QWidget* parent, QString newname) {
         return false;
     }
     if (cur == '\3') {
-        confirm(parent, "Cannot rename the today category!", Conf_OK);
+        confirm(parent, "Cannot rename the star category!", Conf_OK);
         return false;
     }
     newname = newname.replace('\3', "");
@@ -181,7 +181,7 @@ bool deleteCategory(QWidget* parent) {
     auto cur = getCurrent();
     if (cur.isNull()) return false;
     if (cur == '\3') {
-        confirm(parent, "Cannot delete the today category!", Conf_OK);
+        confirm(parent, "Cannot delete the star category!", Conf_OK);
         return false;
     }
     if (confirm(parent, "Are you sure you want to delete the category '" + cur + "' AND ALL ITS TASKS?",
@@ -352,16 +352,11 @@ void loadTasks() {
     QString line = in.readLine();
     QString title;
     tasklist tl;
-    bool use2day = false;
     while (!line.isNull()) {
         if (line == "") {
         } else if (line[0] == '\5') {
             auto parts = line.mid(1).split(';');
-            if (parts[0] == "date") {
-                use2day = QDate::currentDate() == QDate::fromString(parts.at(1), "yyyy-M-d");
-            } else {
-                qWarning() << "Unknown setting key:" << parts[0];
-            }
+            qWarning() << "Unknown setting key:" << parts[0];
         } else if (line[0] == '\4') {
             if (!title.isNull()) {
                 alltasks[title] = tl;
@@ -369,7 +364,7 @@ void loadTasks() {
             }
             title = deescape(line.mid(1));
         } else {
-            tl.push_back(std::shared_ptr<Task>(Task::fromSaved(line, use2day)));
+            tl.push_back(std::shared_ptr<Task>(Task::fromSaved(line)));
         }
         line = in.readLine();
     }
@@ -385,7 +380,6 @@ void saveTasks() {
         return;
     }
     QTextStream out(&file);
-    out << "\5date;" << QDate::currentDate().toString("yyyy-M-d") << "\n";
     for (const auto& [key, tasks] : alltasks) {
         out << "\4" << escape(key) << "\n";
         for (const auto& tsk : tasks) {
