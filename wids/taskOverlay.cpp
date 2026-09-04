@@ -161,7 +161,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             {auto mov = new QPushButton(this);
             mov->setProperty("fancy", true);
             mov->setIcon(QIcon(":/assets/UI/move.svg"));
-            mov->setIconSize(QSize(44, 40));
+            mov->setIconSize(QSize(32, 30));
             mov->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
             connect(mov, &QPushButton::clicked, sl1wid, [=](){
                 QString nam = task->name;
@@ -175,7 +175,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             {auto bin = new QPushButton(this);
             bin->setProperty("fancy", true);
             bin->setIcon(QIcon(":/assets/UI/bin.svg"));
-            bin->setIconSize(QSize(44, 40));
+            bin->setIconSize(QSize(32, 30));
             bin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
             connect(bin, &QPushButton::clicked, sl1wid, [=](){
                 QString nam = task->name;
