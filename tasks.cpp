@@ -120,12 +120,10 @@ TaskView::TaskView() {
             vlay->addWidget(bk);}
         bot->addLayout(vlay);}
 
-        bot->addSpacing(8);
         {QFrame* line = new QFrame();
         line->setFrameShape(QFrame::VLine);
         line->setFrameShadow(QFrame::Raised);
         bot->addWidget(line);}
-        bot->addSpacing(8);
 
         {scrl = new QScrollArea(this);
         scrl->setFrameShape(QFrame::NoFrame);
@@ -146,12 +144,10 @@ TaskView::TaskView() {
         scrl->setWidgetResizable(true);
         bot->addWidget(scrl);}
 
-        bot->addSpacing(8);
         {QFrame* line = new QFrame();
         line->setFrameShape(QFrame::VLine);
         line->setFrameShadow(QFrame::Raised);
         bot->addWidget(line);}
-        bot->addSpacing(8);
 
         {auto vlay = new QVBoxLayout();
             {auto rnam = addBtn(":/assets/UI/rename.svg");
