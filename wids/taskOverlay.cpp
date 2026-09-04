@@ -12,7 +12,6 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QBoxLayout>
-#include <QLineEdit>
 #include <QApplication>
 #include <QPushButton>
 #include <QTextBlock>
@@ -153,12 +152,13 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
         parts.push_back(sl1wid);
         auto* sublay1 = new QHBoxLayout(sl1wid);
         sublay1->setSpacing(12);
-            auto titl = new QLineEdit(task->name, sl1wid);
+            titl = new QLineEdit(task->name, sl1wid);
             titl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
             resizeFont(titl, 1.3);
             sublay1->addWidget(titl, Qt::AlignVCenter);
 
             {auto mov = new QPushButton(this);
+            topparts.push_back(mov);
             mov->setProperty("fancy", true);
             mov->setIcon(QIcon(":/assets/UI/move.svg"));
             mov->setIconSize(QSize(32, 30));
@@ -173,6 +173,7 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             });
             sublay1->addWidget(mov, Qt::AlignVCenter);}
             {auto bin = new QPushButton(this);
+            topparts.push_back(bin);
             bin->setProperty("fancy", true);
             bin->setIcon(QIcon(":/assets/UI/bin.svg"));
             bin->setIconSize(QSize(32, 30));
@@ -257,16 +258,9 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
     new QVBoxLayout(bbar);
     generateBot();
 
-    connect(edit, &TxtEdit::focusChange, [=](bool focus){
+    connect(qApp, &QApplication::focusChanged, this, [=](QWidget* old, QWidget* now){
         if (!window()->isActiveWindow()) return;
-        generateBot();
-    });
-    connect(reasons, &TxtEdit::focusChange, [=](bool focus){
-        if (!window()->isActiveWindow()) return;
-        generateBot();
-    });
-    connect(quals, &TxtEdit::focusChange, [=](bool focus){
-        if (!window()->isActiveWindow()) return;
+        if (!isAncestorOf(old) && !isAncestorOf(now)) return;
         generateBot();
     });
     connect(edit, &QTextEdit::textChanged, [=](){
@@ -425,6 +419,13 @@ void TaskOverlay::generateBot() {
     QTimer::singleShot(0, scrl, [this, restore](){
         botScrl->setValue(restore);
     });
+
+    // Hide/show some top bar elements depending on if the title is selected or not
+    if (titl->hasFocus()) {
+        for (auto* w : topparts) w->hide();
+    } else {
+        for (auto* w : topparts) w->show();
+    }
 
     bbar->layout()->activate();
     update();

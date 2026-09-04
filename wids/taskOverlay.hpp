@@ -2,6 +2,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QPointer>
+#include <QLineEdit>
 #include "base/task.hpp"
 #include "wids/txtedit.hpp"
 #include "wids/qualsEdit.hpp"
@@ -41,6 +42,9 @@ private:
     QPointer<QLabel> tbtxt;
     /// Parts of the layout that are always hidden when selecting a large text box
     std::vector<QWidget*> parts;
+    /// Parts of the layout that are hidden when the title is selected
+    std::vector<QWidget*> topparts;
+    QLineEdit* titl;
     inline QMargins totMargin();
     std::function<void()> ondeath;
 
