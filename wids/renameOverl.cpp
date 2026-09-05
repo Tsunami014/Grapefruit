@@ -78,9 +78,8 @@ bool RenameOverlay::eventFilter(QObject* watched, QEvent* event) {
     return QWidget::eventFilter(watched, event);
 }
 void RenameOverlay::setSze() {
-    auto scrn = QGuiApplication::primaryScreen();
-    auto geom = scrn->geometry();
-    auto av = ref->geometry();
+    auto geom = QGuiApplication::primaryScreen()->geometry();
+    QRect av(ref->mapToGlobal(QPoint(0, 0)), ref->size());
     setGeometry(geom);
     setContentsMargins(
         av.left()-geom.left(),

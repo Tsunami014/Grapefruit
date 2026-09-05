@@ -1,5 +1,4 @@
 #pragma once
-#include <QGridLayout>
 #include <QBoxLayout>
 #include <QPointer>
 #include <QScrollArea>
@@ -14,8 +13,6 @@ public:
 
     void redoTasks();
 private:
-    QGridLayout* tlay;
-
     QLabel* topheader;
     QPushButton* newtaskbtn;
 

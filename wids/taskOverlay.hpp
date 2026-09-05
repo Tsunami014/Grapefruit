@@ -20,7 +20,7 @@ protected:
 
 class TaskOverlay : public QWidget {
 public:
-    explicit TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondeath, QWidget* parent = nullptr);
+    explicit TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondeath, QWidget* ref, QWidget* parent = nullptr);
     ~TaskOverlay() { ondeath(); }
 
 protected:
@@ -30,7 +30,12 @@ protected:
 
     void generateBot();
     void updateBot();
+
+    bool eventFilter(QObject* watched, QEvent* event) override;
+    void setSze();
 private:
+    QWidget* ref;
+
     QPointer<QWidget> bbar;
     QWidget* editWid;
     HlTxtEdit* edit;

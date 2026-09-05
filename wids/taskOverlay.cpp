@@ -139,7 +139,11 @@ QString labelTxt(QTextEdit* edit) {
 }
 
 
-TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondeath, QWidget* parent) : QWidget(parent), ondeath(ondeath), task(task) {
+TaskOverlay::TaskOverlay(
+        std::shared_ptr<Task> task,
+        std::function<void()> ondeath,
+        QWidget* ref, QWidget* parent
+        ) : QWidget(parent), task(task), ondeath(ondeath), ref(ref) {
     auto* lay = new QVBoxLayout(this);
     lay->setContentsMargins(0,0,0,0);
 
@@ -291,6 +295,28 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
         saveTasks();
         updateBot();
     });
+
+    setSze();
+    if (parent) parent->installEventFilter(this);
+    else qApp->installEventFilter(this);
+}
+
+bool TaskOverlay::eventFilter(QObject* watched, QEvent* event) {
+    if (watched == parent() && event->type() == QEvent::Resize) {
+        setSze();
+    }
+    return QWidget::eventFilter(watched, event);
+}
+void TaskOverlay::setSze() {
+    auto geom = QGuiApplication::primaryScreen()->geometry();
+    QRect av(ref->mapToGlobal(QPoint(0, 0)), ref->size());
+    setGeometry(geom);
+    setContentsMargins(
+        av.left()-geom.left(),
+        av.top()-geom.top(),
+        geom.right()-av.right(),
+        geom.bottom()-av.bottom()
+    );
 }
 
 void clearlay(QLayout* lay) {
@@ -455,7 +481,7 @@ void TaskOverlay::keyPressEvent(QKeyEvent* event) {
 }
 void TaskOverlay::mousePressEvent(QMouseEvent* event) {
     auto point = event->position().toPoint();
-    auto r = rect();
+    auto r = contentsRect();
     if (point.y() > r.bottom() - bbar->rect().height()) { event->ignore(); return; }
 
     if (!r.marginsRemoved(totMargin()).contains(point)) {
@@ -479,10 +505,9 @@ void TaskOverlay::mousePressEvent(QMouseEvent* event) {
 
 void TaskOverlay::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
-    auto r = rect();
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.fillRect(r, QColor(125, 125, 125, 125));
+    painter.fillRect(rect(), QColor(125, 125, 125, 125));
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(255, 255, 255));
-    painter.drawRoundedRect(r.marginsRemoved(totMargin()), 16, 16);
+    painter.drawRoundedRect(contentsRect().marginsRemoved(totMargin()), 16, 16);
 }

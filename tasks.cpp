@@ -9,12 +9,9 @@
 #include <QBoxLayout>
 
 TaskView::TaskView() {
-    tlay = new QGridLayout(this);
-    tlay->setContentsMargins(0, 0, 0, 0);
-    auto mtlay = new QVBoxLayout();
+    auto mtlay = new QVBoxLayout(this);
     mtlay->setContentsMargins(9, 9, 9, 9);
     mtlay->setSpacing(0);
-    tlay->addLayout(mtlay, 0, 0);
 
     auto addBtn = [&](QString asset){
         auto btn = new QPushButton();
@@ -41,8 +38,8 @@ TaskView::TaskView() {
 
         newtaskbtn = addBtn(":/assets/UI/plus.svg");
         connect(newtaskbtn, &QPushButton::clicked, this, [this](){
-            overlay = new TaskOverlay(newtask(), [this](){ redoTasks(); }, this);
-            tlay->addWidget(overlay, 0, 0);
+            overlay = new TaskOverlay(newtask(), [this](){ redoTasks(); }, this, window());
+            overlay->show();
             redoTasks();
         });
         toplay->addWidget(newtaskbtn);
@@ -183,8 +180,8 @@ void TaskView::redoTasks() {
 
     auto redo = [this](){ redoTasks(); };
     setTasksLay(tbbllay, [=](std::shared_ptr<Task> t){
-        overlay = new TaskOverlay(t, redo, this);
-        tlay->addWidget(overlay, 0, 0);
+        overlay = new TaskOverlay(t, redo, this, window());
+        overlay->show();
     }, redo, this);
     setTasksCatsLay(tcatlay, redo, this);
     tcatdrag->installOn(tcatlay);
