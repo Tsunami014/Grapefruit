@@ -159,7 +159,7 @@ TaskView::TaskView() {
             });
             vlay->addWidget(rnam);}
 
-            {auto plus = addBtn(":/assets/UI/plus.svg");
+            {auto plus = addBtn(":/assets/UI/plusFoldr.svg");
             connect(plus, &QPushButton::clicked, this, [this](){
                 overlay = new RenameOverlay("New category", "", [this](QString s){
                     newCategory(this, s.trimmed());
