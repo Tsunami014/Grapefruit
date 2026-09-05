@@ -3,7 +3,7 @@
 #include <QLayout>
 #include <QWidget>
 #include <QStyle>
-
+#include <QResizeEvent>
 class FlowLayout : public QLayout {
 public:
     explicit FlowLayout(QWidget* parent, int margin = -1, int hSpacing = -1, int vSpacing = -1);
@@ -40,4 +40,11 @@ private:
 
     /// If maxRows <= 0 then will place elements horizontally, else will place elements vertically
     int maxRows = -1;
+};
+
+class FlowContainer : public QWidget {
+public:
+    explicit FlowContainer(QWidget* parent = nullptr) : QWidget(parent) {}
+protected:
+    void resizeEvent(QResizeEvent* event) override;
 };

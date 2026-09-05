@@ -33,6 +33,7 @@ TaskView::TaskView() {
         toplay->addWidget(bin);}
 
         topheader = new QLabel(this);
+        resizeFont(topheader, 1.5);
         topheader->setContentsMargins(4,4,4,8);
         topheader->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         topheader->setAlignment(Qt::AlignCenter);
@@ -96,12 +97,6 @@ TaskView::TaskView() {
         titlay->addWidget(labl);}
         titlay->addStretch();
     mtlay->addLayout(titlay);
-
-    mtlay->setSpacing(8);
-    {QFrame* line = new QFrame();
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Sunken);
-    mtlay->addWidget(line);}
     mtlay->setSpacing(8);
 
     auto bot = new QHBoxLayout();
@@ -176,7 +171,8 @@ TaskView::TaskView() {
         bot->addLayout(vlay);}
     mtlay->addLayout(bot);
 
-    redoTasks();
+    // Prevent issues while the app is still loading. Shouldn't be visible anyway
+    QTimer::singleShot(0, [this](){ redoTasks(); });
 }
 
 void TaskView::redoTasks() {
@@ -194,13 +190,15 @@ void TaskView::redoTasks() {
     tcatdrag->installOn(tcatlay);
     tdrag->installOn(tbbllay);
     tcatlay->activate();
-    scrl->widget()->setMinimumWidth(tcatlay->lastSize().width() + 8);
 
     QTimer::singleShot(0, [this](){
+        scrl->widget()->setMinimumWidth(tcatlay->lastSize().width() + 8);
+
         const int w = scrl->viewport()->width();
         const int h = tcatlay->heightForWidth(w);
         scrl->setFixedHeight(h);
     });
+
     if (overlay) overlay->raise();
 
     topheader->setText(curCatName());

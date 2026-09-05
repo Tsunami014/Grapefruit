@@ -10,12 +10,12 @@
 #include <QPushButton>
 
 
-void moveTask(QWidget* parent, std::shared_ptr<Task> task) {
+bool moveTask(QWidget* parent, std::shared_ptr<Task> task) {
     auto topLevel = parent ? parent->window() : nullptr;
-    if (!topLevel) return;
+    if (!topLevel) return false;
     QEventLoop loop;
     QString cur = taskCategory(task);
-
+    bool moved = false;
     auto ovrl = new ConfirmOverlay(topLevel, true);
 
     auto lay = new QVBoxLayout(ovrl->inner);
@@ -34,7 +34,7 @@ void moveTask(QWidget* parent, std::shared_ptr<Task> task) {
     scrl->verticalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     scrl->verticalScrollBar()->setFocusPolicy(Qt::NoFocus);
 
-    auto* cont = new QWidget(ovrl);
+    auto* cont = new FlowContainer(ovrl);
     cont->setObjectName("cardcont");
     auto* contlay = new FlowLayout(cont);
     for (const auto& cat : allTaskCats()) {
@@ -45,6 +45,7 @@ void moveTask(QWidget* parent, std::shared_ptr<Task> task) {
         resizeFont(btn, 1.2);
         QObject::connect(btn, &QPushButton::clicked, [&, btn](){
             changeCat(task, btn->text(), cur);
+            moved = true;
             loop.quit();
         });
         contlay->addWidget(btn);
@@ -75,5 +76,5 @@ void moveTask(QWidget* parent, std::shared_ptr<Task> task) {
     loop.exec();
 
     ovrl->deleteLater();
-    return;
+    return moved;
 }

@@ -6,12 +6,18 @@
 #include <QLineEdit>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QResizeEvent>
 #include <QApplication>
 #include <QTimer>
 
 constexpr int MARGIN = 8;
 
 RenameOverlay::RenameOverlay(QString title, QString initial, std::function<void(QString)> done, QWidget* parent) : QWidget(parent) {
+    if (parent) {
+        setGeometry(parent->rect());
+        parent->installEventFilter(this);
+    }
+
     auto* outerV = new QVBoxLayout(this);
     outerV->setContentsMargins(0,0,0,0);
     auto* outerH = new QHBoxLayout();
@@ -58,7 +64,13 @@ RenameOverlay::RenameOverlay(QString title, QString initial, std::function<void(
     connect(btn, &QPushButton::clicked, le, &QLineEdit::returnPressed);
     hlay->addWidget(btn);
 }
-
+bool RenameOverlay::eventFilter(QObject* watched, QEvent* event) {
+    if (watched == parent() && event->type() == QEvent::Resize) {
+        QResizeEvent* resizeEvent = static_cast<QResizeEvent*>(event);
+        setGeometry({QPoint(0, 0), resizeEvent->size()});
+    }
+    return QWidget::eventFilter(watched, event);
+}
 void RenameOverlay::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Back) {
         if (QGuiApplication::inputMethod()->isVisible()) {

@@ -26,7 +26,7 @@ QString getCurrent() {
 QString curCatName() {
     QString cur = getCurrent();
     if (cur.isNull()) return {};
-    if (cur == "\3") return "Starred tasks";
+    if (cur == "\3") return "Starred";
     return cur;
 }
 void showNoCat() { current = {}; }

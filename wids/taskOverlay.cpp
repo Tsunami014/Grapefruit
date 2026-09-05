@@ -164,11 +164,11 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             mov->setIconSize(QSize(32, 30));
             mov->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
             connect(mov, &QPushButton::clicked, sl1wid, [=](){
-                QString nam = task->name;
-                deleteLater();
+                setVisible(false);
                 QTimer::singleShot(0, parent, [=]() {
-                    moveTask(parent, task);
-                    ondeath();
+                    bool movd = moveTask(parent, task);
+                    setVisible(true);
+                    if (movd) ondeath();
                 });
             });
             sublay1->addWidget(mov, Qt::AlignVCenter);}
@@ -180,12 +180,16 @@ TaskOverlay::TaskOverlay(std::shared_ptr<Task> task, std::function<void()> ondea
             bin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
             connect(bin, &QPushButton::clicked, sl1wid, [=](){
                 QString nam = task->name;
-                deleteLater();
+                setVisible(false);
                 QTimer::singleShot(0, parent, [=]() {
                     if (!task->isNew() && confirm(parent,
                           "Are you sure you want to delete the task '" + nam + "'?",
-                          Conf_YESNO) != QDialogButtonBox::YesRole) return;
+                          Conf_YESNO) != QDialogButtonBox::YesRole) {
+                        setVisible(true);
+                        return;
+                    }
                     removeTask(task);
+                    deleteLater();
                     ondeath();
                 });
             });
@@ -353,40 +357,40 @@ void TaskOverlay::generateBot() {
         bitsWid = tbtxt;
         drag->installOn(tbtxt);
         scrl->setWidgetResizable(true);
+    } else if (quals->hasFocus()) {
+        auto* container = new FlowContainer(bbar);
+        bitsWid = container;
+        auto* bflow = new FlowLayout(container, -1, 16, 16);
+        bflow->vertical(3);
+
+        // Create the buttons!
+        for (const auto& k : qualkeys()) {
+            auto btn = new QPushButton(k, bbar);
+            resizeFont(btn, 1.3);
+            btn->setProperty("fancy", true);
+            btn->setProperty("tinybtn", true);
+            btn->setFocusPolicy(Qt::NoFocus);
+            connect(btn, &QPushButton::clicked, quals, [=](){ quals->toggleWord(k); });
+            bflow->addWidget(btn);
+        }
+
+        // Calculate sizes! (both width AND height)
+        bflow->activate();
+        container->setFixedSize(bflow->lastSize());
+        drag->installOn(bflow);
     } else {
         bitsWid = new QWidget(bbar);
-        if (quals->hasFocus()) {
-            auto* bflow = new FlowLayout(bitsWid, -1, 16, 16);
-            bflow->vertical(3);
+        auto* bits = new QHBoxLayout(bitsWid);
+        bits->setContentsMargins(8,6,8,6);
+        bits->setSpacing(8);
 
-            // Create the buttons!
-            for (const auto& k : qualkeys()) {
-                auto btn = new QPushButton(k, bbar);
-                resizeFont(btn, 1.3);
-                btn->setProperty("fancy", true);
-                btn->setProperty("tinybtn", true);
-                btn->setFocusPolicy(Qt::NoFocus);
-                connect(btn, &QPushButton::clicked, quals, [=](){ quals->toggleWord(k); });
-                bflow->addWidget(btn);
-            }
+        bits->setSizeConstraint(QLayout::SetMinimumSize);
+        GenerateOpts(bitsWid, bits, isedit? edit:reasons, isedit);
+        bitsWid->adjustSize();
 
-            // Calculate sizes!
-            bflow->activate();
-            bitsWid->setMinimumWidth(bflow->lastSize().width());
-            drag->installOn(bflow);
-        } else {
-            auto* bits = new QHBoxLayout(bitsWid);
-            bits->setContentsMargins(8,6,8,6);
-            bits->setSpacing(8);
-
-            bits->setSizeConstraint(QLayout::SetMinimumSize);
-            GenerateOpts(bitsWid, bits, isedit? edit:reasons, isedit);
-            bitsWid->adjustSize();
-
-            int sb = scrl->horizontalScrollBar()->sizeHint().height();
-            scrl->setFixedHeight(bitsWid->rect().height() + sb);
-            drag->installOn(bits);
-        }
+        int sb = scrl->horizontalScrollBar()->sizeHint().height();
+        scrl->setFixedHeight(bitsWid->rect().height() + sb);
+        drag->installOn(bits);
     }
     bitsWid->setProperty("bg", true);
     scrl->setWidget(bitsWid);
