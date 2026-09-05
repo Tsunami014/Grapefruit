@@ -26,13 +26,14 @@ ConfirmOverlay::ConfirmOverlay(QWidget* parent, bool scroll) : QWidget(parent) {
     outerH->addStretch(1);
 
     inner->setObjectName("card");
-    setGeometry(parent->rect());
-    parent->installEventFilter(this);
+
+    setGeometry(QGuiApplication::primaryScreen()->geometry());
+    if (parent) parent->installEventFilter(this);
+    else qApp->installEventFilter(this);
 }
 bool ConfirmOverlay::eventFilter(QObject* watched, QEvent* event) {
     if (watched == parent() && event->type() == QEvent::Resize) {
-        QResizeEvent* resizeEvent = static_cast<QResizeEvent*>(event);
-        setGeometry({QPoint(0, 0), resizeEvent->size()});
+        setGeometry(QGuiApplication::primaryScreen()->geometry());
     }
     return QWidget::eventFilter(watched, event);
 }

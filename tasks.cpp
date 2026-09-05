@@ -154,8 +154,8 @@ TaskView::TaskView() {
                 QString cur = getCurrent();
                 overlay = new RenameOverlay("Rename category '" + cur + "'", cur, [this](QString s){
                     if (renameCategory(this, s.trimmed())) redoTasks();
-                });
-                tlay->addWidget(overlay, 0, 0);
+                }, this, window());
+                overlay->show();
             });
             vlay->addWidget(rnam);}
 
@@ -164,8 +164,8 @@ TaskView::TaskView() {
                 overlay = new RenameOverlay("New category", "", [this](QString s){
                     newCategory(this, s.trimmed());
                     redoTasks();
-                });
-                tlay->addWidget(overlay, 0, 0);
+                }, this, window());
+                overlay->show();
             });
             vlay->addWidget(plus);}
         bot->addLayout(vlay);}

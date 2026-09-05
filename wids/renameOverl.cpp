@@ -12,7 +12,10 @@
 
 constexpr int MARGIN = 8;
 
-RenameOverlay::RenameOverlay(QString title, QString initial, std::function<void(QString)> done, QWidget* parent) : QWidget(parent) {
+RenameOverlay::RenameOverlay(QString title, QString initial,
+        std::function<void(QString)> done,
+        QWidget* ref, QWidget* parent
+        ) : QWidget(parent), ref(ref) {
     if (parent) {
         setGeometry(parent->rect());
         parent->installEventFilter(this);
@@ -63,13 +66,28 @@ RenameOverlay::RenameOverlay(QString title, QString initial, std::function<void(
     btn->setProperty("backbtn", true);
     connect(btn, &QPushButton::clicked, le, &QLineEdit::returnPressed);
     hlay->addWidget(btn);
+
+    setSze();
+    if (parent) parent->installEventFilter(this);
+    else qApp->installEventFilter(this);
 }
 bool RenameOverlay::eventFilter(QObject* watched, QEvent* event) {
     if (watched == parent() && event->type() == QEvent::Resize) {
-        QResizeEvent* resizeEvent = static_cast<QResizeEvent*>(event);
-        setGeometry({QPoint(0, 0), resizeEvent->size()});
+        setSze();
     }
     return QWidget::eventFilter(watched, event);
+}
+void RenameOverlay::setSze() {
+    auto scrn = QGuiApplication::primaryScreen();
+    auto geom = scrn->geometry();
+    auto av = ref->geometry();
+    setGeometry(geom);
+    setContentsMargins(
+        av.left()-geom.left(),
+        av.top()-geom.top(),
+        geom.right()-av.right(),
+        geom.bottom()-av.bottom()
+    );
 }
 void RenameOverlay::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Back) {
