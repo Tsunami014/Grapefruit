@@ -5,7 +5,6 @@
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QKeyEvent>
-#include <QFile>
 
 MainGame::MainGame() {
     stack = new QStackedWidget(this);
@@ -89,10 +88,7 @@ MainGame::MainGame() {
     stack->addWidget(tasks);
 
     // Last initialisation!
-    QFile file(":/style.qss");
-    bool ok = file.open(QIODevice::ReadOnly);
-    // Should always be ok because we're loading from a preset internal file
-    setStyleSheet(QString::fromUtf8(file.readAll()));
+    genStyle();
     stack->setCurrentWidget(main);
 }
 

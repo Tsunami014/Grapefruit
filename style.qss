@@ -1,17 +1,17 @@
-* { color: black; }
-QMainWindow, *[bg=true] { background-color: #EED9E8; }
+* { color: $txt; }
+QMainWindow, *[bg=true] { background-color: $bg; }
 #card {
-    background-color: white;
+    background-color: $cardbg;
     border-radius: 8px;
 }
-#cardcont { background-color: white; }
+#cardcont { background-color: $cardbg; }
 #transpbg { background: transparent; }
 
 #curtxt { padding: 8px; }
 
 IcoButton, QPushButton[fancy=true], QDialogButtonBox QPushButton {
     background-color: #8B81A2;
-    color: white;
+    color: $invtxt;
     padding: 4px;
     border-style: outset;
     border-width: 2px;
@@ -30,7 +30,7 @@ QPushButton[tinybtn=true] {
 }
 QPushButton[tinybtn=true]:pressed { background-color: #90AB7E; }
 QPushButton[optbtn=true] {
-    color: black;
+    color: $txt;
     background-color: #EBBA6B;
     border-color: #AC884F;
     padding: 10px 18px;
@@ -43,7 +43,7 @@ QPushButton[current=true] {
 }
 QPushButton[current=true]:pressed { background-color: #BAC875; }
 QPushButton[settbtn=true] {
-    color: black;
+    color: $txt;
     background-color: #A7DDD8;
     border-color: #5DC0AA;
 }

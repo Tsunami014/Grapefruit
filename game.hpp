@@ -1,3 +1,5 @@
+#pragma once
+
 #include <QMainWindow>
 #include <QStackedWidget>
 #include "tasks.hpp"
@@ -14,6 +16,8 @@ public:
 
     Conversation* conv;
     House* house;
+
+    void genStyle();
 
 private:
     QStackedWidget* stack;

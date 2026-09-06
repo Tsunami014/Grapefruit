@@ -4,6 +4,7 @@ project(${APP_NAME} LANGUAGES CXX)
 
 set(CORE
     main.cpp game.cpp
+    style.cpp
     resources.qrc
     settings.cpp tasks.cpp
 
