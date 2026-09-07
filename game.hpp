@@ -27,6 +27,10 @@ private:
     QWidget* setts;
     TaskView* tasks;
 
+    void setupStyle();
+    /// -1: system, 0: dark, 1: light
+    int theme = -1;
+
 #ifdef Q_OS_ANDROID
     QTimer *stylNavTimer = nullptr;
 #endif

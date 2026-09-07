@@ -1,11 +1,20 @@
 #include "game.hpp"
 #include <QFile>
+#include <QStyleHints>
 #ifdef Q_OS_ANDROID
 #include <QJniObject>
 #include <QtCore/qnativeinterface.h>
 #endif
 
 const QColor base(236, 161, 211);
+
+void MainGame::setupStyle() {
+    QObject::connect(qApp->styleHints(), &QStyleHints::colorSchemeChanged,
+              qApp, [this](Qt::ColorScheme scheme) {
+        if (theme == -1) genStyle();
+    });
+    genStyle();
+}
 
 
 enum PalleteOpts {
@@ -33,7 +42,11 @@ QString getCol(float bhue, PalleteOpts palstyl, float tone) {
 }
 
 void MainGame::genStyle() {
-    const bool light = true;
+    bool light;
+    if (theme == -1) {
+        Qt::ColorScheme scheme = qApp->styleHints()->colorScheme();
+        light = scheme != Qt::ColorScheme::Dark; // Includes unknown
+    } else { light = theme == 1; }
     float bhue = base.hueF();
 
     QFile file(":/style.qss");

@@ -1,5 +1,5 @@
 # Grapefruit
-> Currently builds for: Only Android (and will probably stay that way).
+> Currently builds for: Only Android
 
 Grapefruit is a virtual friend who can try help you do your work! They have *non-ML based* conversations with you (made with a **LOT** of handcrafted sentences by me <3) and try to *intrinsically* motivate you to complete tasks, basically by reassuring you, suggesting different things based on your emotions (such as taking a break or doing a different task) and affirming that even starting work is ok, you don't have to finish if you don't want to (and many other different things similar in vibe). And never by pressuring you to do anything.
 Grapefruit will be chilling in their house all day, stop by whenever you don't feel like doing anything or when you don't know what to do! There is zero pressure, Grapefruit won't judge you or berate you for not getting stuff done. You can even have overdue tasks and it won't change anything.
@@ -23,6 +23,8 @@ It also contains an *extremely efficient* text editor for mobile, containing but
 ## Developing
 ### Building
 There are a bunch of requirements needed in order to build, but there's a `shell.nix` file for those using Nix!
+
+You need Qt >=6.5 (which the make commands installs for you)
 
 Run `make debug` for a debug desktop version or `make release` for a final mobile version. `make clean` deletes all build files.
 

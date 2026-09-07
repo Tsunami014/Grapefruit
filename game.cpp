@@ -88,7 +88,7 @@ MainGame::MainGame() {
     stack->addWidget(tasks);
 
     // Last initialisation!
-    genStyle();
+    setupStyle();
     stack->setCurrentWidget(main);
 }
 
