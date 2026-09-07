@@ -1,55 +1,27 @@
-* { color: $txt; }
-QMainWindow, *[bg=true] { background-color: $bg; }
+* { color: $OnSurf; }
+QMainWindow, *[bg=true] { background-color: $Surf; }
 #card {
-    background-color: $cardbg;
+    background-color: $SurfContnr;
     border-radius: 8px;
 }
-#cardcont { background-color: $cardbg; }
+#cardcont { background-color: $SurfContnr; }
 #transpbg { background: transparent; }
 
 #curtxt {
-    color: $txt;
-    background-color: $ctbg;
+    color: $OnSurf;
+    background-color: $SurfContnr;
     padding: 8px;
     border-radius: 12px;
 }
 
 IcoButton, QPushButton {
-    color: $txt;
     padding: 4px;
     border-width: 2px;
     border-radius: 12px;
 }
 
-*[thm=primary] {
-    color: $invtxt;
-    background-color: $primary;
-    border-color: $primary;
-}
-*[thm=primary]:pressed {
-    background-color: $primarydown;
-}
-*[thm=secondary] {
-    background-color: $secondary;
-    border-color: $secondary;
-}
-*[thm=secondary]:pressed {
-    background-color: $seconddown;
-}
-*[thm=tertiary] {
-    background-color: $tertiary;
-    border-color: $tertiary;
-}
-*[thm=tertiary]:pressed {
-    background-color: $tertiarydown;
-}
-*[thm=neutral] {
-    background-color: $neutral;
-    border-color: $neutral;
-}
-*[thm=neutral]:pressed {
-    background-color: $neutraldown;
-}
+^^grps
+
 *[btnsty=round] {
     border-radius: 18px;
 }
@@ -109,7 +81,8 @@ TaskBubble QLabel[bubble=bot] {
 }
 TaskBubble[pressed=true] QLabel[bubble=bot] { background-color: #AA4488; }
 QPushButton[bubblebtn=true] {
-    background-color: $fadecardbg;
+    color: $OnSec;
+    background-color: $Sec;
     border-width: 2px;
     border-radius: 0;
     border-top-right-radius: 12px;
@@ -119,7 +92,7 @@ QPushButton[bubblebtn=true] {
 }
 
 QTextEdit, QLineEdit {
-    background-color: $cardbg;
+    background-color: $SurfContnrHighest;
     border-style: solid;
     border-width: 2px;
     border-color: #888;
@@ -168,7 +141,7 @@ QSlider::sub-page { border-radius: 3px; }
 QSlider::sub-page:horizontal, QSlider::add-page:vertical { background: #4F8EF7; }
 
 QSlider::handle {
-    background: $cardbg;
+    background: $SurfContnrHighest;
     border: 2px solid #3B6FD1;
     border-radius: 6px;
     width: 16px;
@@ -176,7 +149,7 @@ QSlider::handle {
 }
 
 QWidget#navigation {
-    background-color: $cardbg;
+    background-color: $SurfContnrHighest;
     padding: 6px 4px;
     border-bottom: 2px solid #EEF0F3;
 }

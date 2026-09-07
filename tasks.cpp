@@ -15,7 +15,7 @@ TaskView::TaskView() {
 
     auto addBtn = [&](QString asset, bool grey){
         auto btn = new QPushButton();
-        btn->setProperty("thm", grey? "neutral" : "secondary");
+        ColGroups::setGrp(btn, grey? ColGroups::SecondaryContainer : ColGroups::Secondary);
         btn->setIcon(QIcon(asset));
         btn->setIconSize(QSize(48, 44));
         btn->setMinimumHeight(56);
@@ -74,7 +74,7 @@ TaskView::TaskView() {
     auto titlay = new QHBoxLayout();
         titlay->addStretch();
         starbtn = new QPushButton("Starred", this);
-        starbtn->setProperty("thm", "tertiary");
+        ColGroups::setGrp(starbtn, ColGroups::Tertiary);
         starbtn->setProperty("btnsty", "big");
         starbtn->setProperty("current", isStarCat());
         resizeFont(starbtn, 1.2);

@@ -1,4 +1,5 @@
 #include "options.hpp"
+#include "colours.hpp"
 //#include "font.hpp"
 #include <QPushButton>
 
@@ -11,7 +12,7 @@ void setOptsLay(QLayout* lay, std::vector<Option> opts, std::function<void(Optio
 
     for (auto& o : opts) {
         auto* btn = new QPushButton(o.title, parent);
-        btn->setProperty("thm", "secondary");
+        ColGroups::setGrp(btn, ColGroups::Secondary);
         btn->setProperty("btnsty", "big");
         btn->setProperty("fancy", true);
         btn->setProperty("optbtn", true);

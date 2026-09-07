@@ -1,6 +1,7 @@
 #include "movetask.hpp"
 #include "confirm.hpp"
 #include "flow.hpp"
+#include "colours.hpp"
 #include "font.hpp"
 #include "extra/drag.hpp"
 #include "base/taskload.hpp"
@@ -40,7 +41,7 @@ bool moveTask(QWidget* parent, std::shared_ptr<Task> task) {
     for (const auto& cat : allTaskCats()) {
         if (cat == cur) continue;
         auto* btn = new QPushButton(cat, cont);
-        btn->setProperty("thm", "secondary");
+        ColGroups::setGrp(btn, ColGroups::Secondary);
         btn->setProperty("btnsty", "big");
         resizeFont(btn, 1.2);
         QObject::connect(btn, &QPushButton::clicked, [&, btn](){

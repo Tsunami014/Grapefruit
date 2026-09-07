@@ -1,4 +1,5 @@
 #include "renameOverl.hpp"
+#include "colours.hpp"
 #include "font.hpp"
 #include <QBoxLayout>
 #include <QPushButton>
@@ -59,7 +60,7 @@ RenameOverlay::RenameOverlay(QString title, QString initial,
     hlay->addWidget(le);
 
     auto btn = new QPushButton();
-    btn->setProperty("thm", "secondary");
+    ColGroups::setGrp(btn, ColGroups::Secondary);
     btn->setProperty("btnsty", "round");
     btn->setIcon(QIcon(":/assets/UI/check.svg"));
     int mx = le->rect().height() + 8;

@@ -24,14 +24,14 @@ MainGame::MainGame() {
     curtxt->setAlignment(Qt::AlignCenter);
     curtxt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     curtxt->setObjectName("curtxt");
-    curtxt->setProperty("thm", "primary");
+    ColGroups::setGrp(curtxt, ColGroups::Primary);
     resizeFont(curtxt, 1.2);
     QFontMetrics fm(curtxt->font());
     curtxt->setMinimumHeight(fm.lineSpacing() * 1.2 * 2); // 2 lines plus extra space
 #ifdef APP_DEBUG
     {
         auto* btn = new QPushButton("REDO", this);
-        btn->setProperty("thm", "neutral");
+        ColGroups::setGrp(btn, ColGroups::TertiaryContainer);
         btn->setProperty("btnsty", "big");
         resizeFont(btn, 0.7);
         connect(btn, &QPushButton::clicked, this, [=](){ conv->onclick({}); });
@@ -56,7 +56,7 @@ MainGame::MainGame() {
         auto quickbtns = new QVBoxLayout();
             auto addBtn = [&](const QString& labl, const QString& asset, auto slot) {
                 auto btn = new IcoButton(labl, asset);
-                btn->setProperty("thm", "tertiary");
+                ColGroups::setGrp(btn, ColGroups::Tertiary);
                 btn->setIconSize(QSize(0,0));
                 resizeFont(btn, 0.9);
                 connect(btn, &QPushButton::clicked, this, slot);

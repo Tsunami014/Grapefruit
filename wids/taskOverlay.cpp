@@ -164,7 +164,7 @@ TaskOverlay::TaskOverlay(
 
             {auto mov = new QPushButton(this);
             topparts.push_back(mov);
-            mov->setProperty("thm", "secondary");
+            ColGroups::setGrp(mov, ColGroups::Secondary);
             mov->setIcon(QIcon(":/assets/UI/move.svg"));
             mov->setIconSize(QSize(32, 30));
             mov->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
@@ -179,7 +179,7 @@ TaskOverlay::TaskOverlay(
             sublay1->addWidget(mov, Qt::AlignVCenter);}
             {auto bin = new QPushButton(this);
             topparts.push_back(bin);
-            bin->setProperty("thm", "secondary");
+            ColGroups::setGrp(bin, ColGroups::Secondary);
             bin->setIcon(QIcon(":/assets/UI/bin.svg"));
             bin->setIconSize(QSize(32, 30));
             bin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
@@ -394,7 +394,7 @@ void TaskOverlay::generateBot() {
         for (const auto& k : qualkeys()) {
             auto btn = new QPushButton(k, bbar);
             resizeFont(btn, 1.3);
-            btn->setProperty("thm", "secondary");
+            ColGroups::setGrp(btn, ColGroups::Secondary);
             btn->setFocusPolicy(Qt::NoFocus);
             connect(btn, &QPushButton::clicked, quals, [=](){ quals->toggleWord(k); });
             bflow->addWidget(btn);
@@ -508,6 +508,6 @@ void TaskOverlay::paintEvent(QPaintEvent* event) {
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), QColor(125, 125, 125, 125));
     painter.setPen(Qt::NoPen);
-    painter.setBrush(MG->styls.cardbg);
+    painter.setBrush(MG->styls[Cols::SurfaceContainer]);
     painter.drawRoundedRect(contentsRect().marginsRemoved(totMargin()), 16, 16);
 }

@@ -6,12 +6,9 @@
 #include <QTimer>
 #endif
 #include "tasks.hpp"
+#include "colours.hpp"
 #include "base/converse.hpp"
 #include "wids/house.hpp"
-
-struct _extraStyls {
-    QColor cardbg;
-};
 
 class MainGame : public QMainWindow {
 public:
@@ -25,7 +22,7 @@ public:
     House* house;
 
     void genStyle();
-    _extraStyls styls;
+    std::unordered_map<Cols::Colour, QColor> styls;
 
 private:
     QStackedWidget* stack;

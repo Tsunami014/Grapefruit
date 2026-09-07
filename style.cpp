@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include <QFile>
 #include <QStyleHints>
+#include <QRegularExpression>
 #ifdef Q_OS_ANDROID
 #include <QJniObject>
 #include <QtCore/qnativeinterface.h>
@@ -30,7 +31,7 @@ QColor getCol(float bhue, PalleteOpts palstyl, float tone) {
         case PRIMARY:
             return QColor::fromHslF(bhue, 0.48, tone);
         case SECONDARY:
-            return QColor::fromHslF(bhue, 0.18, tone);
+            return QColor::fromHslF(bhue, 0.16, tone);
         case TERTIARY:
             return QColor::fromHslF(
                 std::fmod(bhue+(60.0f/360.0f), 1.0f), 0.24, tone);
@@ -41,10 +42,13 @@ QColor getCol(float bhue, PalleteOpts palstyl, float tone) {
     }
     return {};
 }
-inline QString getColName(float bhue, PalleteOpts palstyl, float tone) {
-    return getCol(bhue, palstyl, tone).name();
+
+constexpr int diff = 15;
+inline QColor colbang(QColor orig, bool light) {
+    return QColor(orig.red() - diff, orig.green() - diff, orig.blue() - diff);
 }
 
+const QRegularExpression stylRe(R"(\$([a-zA-Z]+)\$?)");
 void MainGame::genStyle() {
     bool light;
     if (theme == -1) {
@@ -53,35 +57,81 @@ void MainGame::genStyle() {
     } else { light = theme == 1; }
     float bhue = base.hueF();
 
-    styls = {
-        getCol(bhue, NEUTRAL, light? 0.94:0.12), // cardbg
-    };
+    styls[Cols::Primary] = getCol(bhue, PRIMARY, light? 0.4:0.8);
+    styls[Cols::OnPrimary] = getCol(bhue, PRIMARY, light? 1.0:0.2);
+    styls[Cols::PrimaryContainer] = getCol(bhue, PRIMARY, light? 0.9:0.3);
+    styls[Cols::OnPrimaryContainer] = getCol(bhue, PRIMARY, light? 0.1:0.9);
+    styls[Cols::PrimaryInverse] = getCol(bhue, PRIMARY, light? 0.9:0.3);
+    styls[Cols::OnPrimaryInverse] = getCol(bhue, PRIMARY, light? 0.1:0.9);
 
-    QFile file(":/style.qss");
-    bool ok = file.open(QIODevice::ReadOnly);
-    // Should always be ok because we're loading from a preset internal file
-    QString styl = QString::fromUtf8(file.readAll())
-        .replace("$txt", getColName(bhue, PRIMARY, light? 0.1:0.9))
-        .replace("$invtxt", getColName(bhue, PRIMARY, light? 0.9:0.1))
-        .replace("$bg", getColName(bhue, NEUTRAL, light? 0.93:0.13))
-        .replace("$cardbg", styls.cardbg.name())
-        .replace("$fadecardbg", getColName(bhue, NEUTRAL, light? 0.80:0.20)) // Card BG but inline with background instead of overlay
-        .replace("$ctbg", getColName(bhue, PRIMARY, light? 0.80:0.40))
+    styls[Cols::Secondary] = getCol(bhue, SECONDARY, light? 0.4:0.8);
+    styls[Cols::OnSecondary] = getCol(bhue, SECONDARY, light? 1.0:0.2);
+    styls[Cols::SecondaryContainer] = getCol(bhue, SECONDARY, light? 0.9:0.3);
+    styls[Cols::OnSecondaryContainer] = getCol(bhue, SECONDARY, light? 0.1:0.9);
 
-        .replace("$primarydown", getColName(bhue, PRIMARY, light? 0.45:0.85))
-        .replace("$primary", getColName(bhue, PRIMARY, light? 0.50:0.80))
-        .replace("$seconddown", getColName(bhue, SECONDARY, light? 0.70:0.55))
-        .replace("$secondary", getColName(bhue, SECONDARY, light? 0.75:0.50))
-        .replace("$tertiarydown", getColName(bhue, TERTIARY, light? 0.70:0.55))
-        .replace("$tertiary", getColName(bhue, TERTIARY, light? 0.75:0.50))
-        .replace("$neutraldown", getColName(bhue, NEUTRALVARIANT, light? 0.70:0.55))
-        .replace("$neutral", getColName(bhue, NEUTRALVARIANT, light? 0.75:0.50))
-    ;
+    styls[Cols::Tertiary] = getCol(bhue, TERTIARY, light? 0.4:0.8);
+    styls[Cols::OnTertiary] = getCol(bhue, TERTIARY, light? 1.0:0.2);
+    styls[Cols::TertiaryContainer] = getCol(bhue, TERTIARY, light? 0.9:0.3);
+    styls[Cols::OnTertiaryContainer] = getCol(bhue, TERTIARY, light? 0.1:0.9);
+
+    styls[Cols::Outline] = getCol(bhue, NEUTRALVARIANT, light? 0.5:0.6);
+    styls[Cols::OutlineVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.8:0.3); // Lighter
+
+    styls[Cols::Surface] = getCol(bhue, NEUTRAL, light? 0.98:0.06);
+    styls[Cols::OnSurface] = getCol(bhue, NEUTRAL, light? 0.1:0.9);
+    styls[Cols::OnSurfaceVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.3:0.8);
+
+    styls[Cols::SurfaceContainerLow] = getCol(bhue, NEUTRAL, light? 0.96:0.10);
+    styls[Cols::SurfaceContainer] = getCol(bhue, NEUTRAL, light? 0.94:0.12);
+    styls[Cols::SurfaceContainerHigh] = getCol(bhue, NEUTRAL, light? 0.92:0.17);
+    styls[Cols::SurfaceContainerHighest] = getCol(bhue, NEUTRAL, light? 0.90:0.22);
+
+    static QString mstyl = [](){
+        QFile file(":/style.qss");
+        bool ok = file.open(QIODevice::ReadOnly);
+        // Should always be ok because we're loading from a preset internal file
+        return QString::fromUtf8(file.readAll());
+    } ();
+    QString styl = mstyl;
+
+    auto it = stylRe.globalMatch(styl);
+    int offs = 0;
+    while (it.hasNext()) {
+        auto m = it.next();
+
+        QString nam = m.captured(1);
+        bool dark = nam.startsWith('!');
+        if (dark) nam = nam.sliced(1);
+
+        auto col = styls[Cols::fromName(nam)];
+        if (dark) col = colbang(col, light);
+        QString repl = col.name();
+
+        int start = m.capturedStart(0) + offs;
+        int end = m.capturedEnd(0) + offs;
+        styl.replace(start, end - start, repl);
+        offs += repl.length() - (end - start);
+    }
+
+    QString grps;
+    for (const auto& [g, inf] : ColGroups::Groups) {
+        QColor fg = styls[inf.fg];
+        QColor bg = styls[inf.bg];
+
+        grps += "*[grp="+inf.nam+"]{" +
+            "color:" + fg.name() + ";" +
+            "background-color:" + bg.name() + ";" +
+        "}*[grp="+inf.nam+"]:pressed{" +
+            "background-color:" + colbang(bg, light).name() + ";" +
+        "}";
+    }
+    styl.replace("^^grps", grps);
+
     setStyleSheet(styl);
 
     // If on Android, set the navigation icons to be dark/light with the theme
-    // Must use a timer because of weird Qt quirks
 #ifdef Q_OS_ANDROID
+    // Must use a timer because of weird Qt quirks
     if (!stylNavTimer) {
         stylNavTimer = new QTimer(this);
         stylNavTimer->setSingleShot(true);

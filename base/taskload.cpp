@@ -1,9 +1,10 @@
 #include "taskload.hpp"
 #include "task.hpp"
 #include "importance.hpp"
-#include "font.hpp"
 #include "saveesc.hpp"
 #include "tasklist.hpp"
+#include "colours.hpp"
+#include "font.hpp"
 #include "wids/confirm.hpp"
 #include "wids/taskbbl.hpp"
 #include <memory>
@@ -41,7 +42,7 @@ void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) 
     for (const auto& [k, _] : alltasks) {
         if (btns.size() <= idx) {
             auto* btn = new QPushButton(k, parent);
-            btn->setProperty("thm", k==cur? "tertiary" : "secondary");
+            ColGroups::setGrp(btn, k==cur? ColGroups::Tertiary : ColGroups::Secondary);
             btn->setProperty("btnsty", "big");
             resizeFont(btn, 1.2);
             QObject::connect(btn, &QPushButton::clicked, lay, [btn, redo](){
