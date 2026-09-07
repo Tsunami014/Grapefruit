@@ -66,12 +66,11 @@ void MainGame::genStyle() {
     if (!stylNavTimer) {
         stylNavTimer = new QTimer(this);
         stylNavTimer->setSingleShot(true);
+    } else {
+        stylNavTimer->disconnect();
     }
 
-    // Disconnect any previous lambda so we don't fire a stale `light` value
-    // from an earlier call to genStyle().
-    stylNavTimer->disconnect();
-    connect(stylNavTimer, &QTimer::timeout, this, [this, light]() {
+    auto updFn = [this, light]() {
         QNativeInterface::QAndroidApplication::runOnAndroidMainThread([light]() {
             QJniObject activity = QNativeInterface::QAndroidApplication::context();
             QJniObject window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
@@ -96,7 +95,10 @@ void MainGame::genStyle() {
                 decorView.callMethod<void>("setSystemUiVisibility", "(I)V", visibility);
             }
         });
-    });
+    };
+
+    connect(stylNavTimer, &QTimer::timeout, this, updFn);
     stylNavTimer->start(300);
+    updFn();
 #endif
 }

@@ -23,6 +23,36 @@ void MainGame::generateSettings() {
         return btn;
     };
 
+    {auto sp = new Spoiler("Style", this);
+    auto lay = new QVBoxLayout();
+        {auto labl = new QLabel("App theme", sp);
+        lay->addWidget(labl);}
+        auto opts = new QHBoxLayout();
+            {auto btn = addbtn("System", opts, sp);
+            btn->connect(btn, &QPushButton::clicked, [=](){
+                if (theme != -1) {
+                    theme = -1;
+                    genStyle();
+                }
+            });}
+            {auto btn = addbtn("Dark", opts, sp);
+            btn->connect(btn, &QPushButton::clicked, [=](){
+                if (theme != 0) {
+                    theme = 0;
+                    genStyle();
+                }
+            });}
+            {auto btn = addbtn("Light", opts, sp);
+            btn->connect(btn, &QPushButton::clicked, [=](){
+                if (theme != 1) {
+                    theme = 1;
+                    genStyle();
+                }
+            });}
+        lay->addLayout(opts);
+    sp->setContentLayout(*lay);
+    slay->addWidget(sp);}
+
     {auto sp = new Spoiler("Reset", this);
     auto opts = new QHBoxLayout();
         {auto btn = addbtn("Delete All Tasks", opts, sp);
