@@ -1,12 +1,17 @@
 #pragma once
 #include <QMainWindow>
 #include <QStackedWidget>
+#include <QColor>
 #ifdef Q_OS_ANDROID
 #include <QTimer>
 #endif
 #include "tasks.hpp"
 #include "base/converse.hpp"
 #include "wids/house.hpp"
+
+struct _extraStyls {
+    QColor cardbg;
+};
 
 class MainGame : public QMainWindow {
 public:
@@ -20,6 +25,7 @@ public:
     House* house;
 
     void genStyle();
+    _extraStyls styls;
 
 private:
     QStackedWidget* stack;

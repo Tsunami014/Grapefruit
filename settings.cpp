@@ -13,8 +13,7 @@ void MainGame::generateSettings() {
 
     auto addbtn = [=](QString txt, QBoxLayout* opts, QWidget* parent){
         auto btn = new QPushButton(txt, parent);
-        btn->setProperty("fancy", true);
-        btn->setProperty("settbtn", true);
+        btn->setProperty("thm", "secondary");
         auto wrap = new QWidget(parent);
         auto wraplay = new QHBoxLayout(wrap);
         wraplay->setContentsMargins(8,8,8,8);
@@ -92,8 +91,8 @@ void MainGame::generateSettings() {
 
     auto topsect = new QHBoxLayout();
         auto bk = new QPushButton();
-        bk->setProperty("fancy", true);
-        bk->setProperty("backbtn", true);
+        bk->setProperty("thm", "neutral");
+        bk->setProperty("btnsty", "round");
         bk->setIcon(QIcon(":/assets/UI/back.svg"));
         bk->setIconSize(QSize(48, 40));
         connect(bk, &QPushButton::clicked, this, [this](){ toMain(); });

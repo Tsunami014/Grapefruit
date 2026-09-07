@@ -59,11 +59,11 @@ RenameOverlay::RenameOverlay(QString title, QString initial,
     hlay->addWidget(le);
 
     auto btn = new QPushButton();
-    btn->setProperty("fancy", true);
+    btn->setProperty("thm", "secondary");
+    btn->setProperty("btnsty", "round");
     btn->setIcon(QIcon(":/assets/UI/check.svg"));
     int mx = le->rect().height() + 8;
     btn->setIconSize(QSize(mx, mx-4));
-    btn->setProperty("backbtn", true);
     connect(btn, &QPushButton::clicked, le, &QLineEdit::returnPressed);
     hlay->addWidget(btn);
 

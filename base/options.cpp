@@ -11,6 +11,8 @@ void setOptsLay(QLayout* lay, std::vector<Option> opts, std::function<void(Optio
 
     for (auto& o : opts) {
         auto* btn = new QPushButton(o.title, parent);
+        btn->setProperty("thm", "secondary");
+        btn->setProperty("btnsty", "big");
         btn->setProperty("fancy", true);
         btn->setProperty("optbtn", true);
         //resizeFont(btn, 1.0);

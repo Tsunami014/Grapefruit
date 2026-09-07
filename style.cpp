@@ -25,20 +25,24 @@ enum PalleteOpts {
     NEUTRALVARIANT,
 };
 
-QString getCol(float bhue, PalleteOpts palstyl, float tone) {
+QColor getCol(float bhue, PalleteOpts palstyl, float tone) {
     switch (palstyl) {
         case PRIMARY:
-            return QColor::fromHslF(bhue, 0.48, tone).name();
+            return QColor::fromHslF(bhue, 0.48, tone);
         case SECONDARY:
-            return QColor::fromHslF(bhue, 0.16, tone).name();
+            return QColor::fromHslF(bhue, 0.18, tone);
         case TERTIARY:
-            return QColor::fromHslF(std::fmod(bhue+60.0, 360.0), 0.24, tone).name();
+            return QColor::fromHslF(
+                std::fmod(bhue+(60.0f/360.0f), 1.0f), 0.24, tone);
         case NEUTRAL:
-            return QColor::fromHslF(bhue, 0.4, tone).name();
+            return QColor::fromHslF(bhue, 0.04, tone);
         case NEUTRALVARIANT:
-            return QColor::fromHslF(bhue, 0.8, tone).name();
+            return QColor::fromHslF(bhue, 0.08, tone);
     }
     return {};
+}
+inline QString getColName(float bhue, PalleteOpts palstyl, float tone) {
+    return getCol(bhue, palstyl, tone).name();
 }
 
 void MainGame::genStyle() {
@@ -49,14 +53,29 @@ void MainGame::genStyle() {
     } else { light = theme == 1; }
     float bhue = base.hueF();
 
+    styls = {
+        getCol(bhue, NEUTRAL, light? 0.94:0.12), // cardbg
+    };
+
     QFile file(":/style.qss");
     bool ok = file.open(QIODevice::ReadOnly);
     // Should always be ok because we're loading from a preset internal file
     QString styl = QString::fromUtf8(file.readAll())
-        .replace("$txt", getCol(bhue, PRIMARY, light? 0.10:0.90))
-        .replace("$invtxt", getCol(bhue, PRIMARY, light? 1.0:0.20))
-        .replace("$bg", getCol(bhue, NEUTRAL, light? 0.98:0.06))
-        .replace("$cardbg", getCol(bhue, NEUTRAL, light? 0.94:0.12))
+        .replace("$txt", getColName(bhue, PRIMARY, light? 0.1:0.9))
+        .replace("$invtxt", getColName(bhue, PRIMARY, light? 0.9:0.1))
+        .replace("$bg", getColName(bhue, NEUTRAL, light? 0.93:0.13))
+        .replace("$cardbg", styls.cardbg.name())
+        .replace("$fadecardbg", getColName(bhue, NEUTRAL, light? 0.80:0.20)) // Card BG but inline with background instead of overlay
+        .replace("$ctbg", getColName(bhue, PRIMARY, light? 0.80:0.40))
+
+        .replace("$primarydown", getColName(bhue, PRIMARY, light? 0.45:0.85))
+        .replace("$primary", getColName(bhue, PRIMARY, light? 0.50:0.80))
+        .replace("$seconddown", getColName(bhue, SECONDARY, light? 0.70:0.55))
+        .replace("$secondary", getColName(bhue, SECONDARY, light? 0.75:0.50))
+        .replace("$tertiarydown", getColName(bhue, TERTIARY, light? 0.70:0.55))
+        .replace("$tertiary", getColName(bhue, TERTIARY, light? 0.75:0.50))
+        .replace("$neutraldown", getColName(bhue, NEUTRALVARIANT, light? 0.70:0.55))
+        .replace("$neutral", getColName(bhue, NEUTRALVARIANT, light? 0.75:0.50))
     ;
     setStyleSheet(styl);
 

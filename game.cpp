@@ -22,17 +22,17 @@ MainGame::MainGame() {
     auto* curtxt = new QLabel(main);
     curtxt->setWordWrap(true);
     curtxt->setAlignment(Qt::AlignCenter);
-    curtxt->setStyleSheet("background-color: #CC88CC;");
     curtxt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     curtxt->setObjectName("curtxt");
+    curtxt->setProperty("thm", "primary");
     resizeFont(curtxt, 1.2);
     QFontMetrics fm(curtxt->font());
     curtxt->setMinimumHeight(fm.lineSpacing() * 1.2 * 2); // 2 lines plus extra space
 #ifdef APP_DEBUG
     {
         auto* btn = new QPushButton("REDO", this);
-        btn->setProperty("fancy", true);
-        btn->setProperty("optbtn", true);
+        btn->setProperty("thm", "neutral");
+        btn->setProperty("btnsty", "big");
         resizeFont(btn, 0.7);
         connect(btn, &QPushButton::clicked, this, [=](){ conv->onclick({}); });
 
@@ -56,6 +56,7 @@ MainGame::MainGame() {
         auto quickbtns = new QVBoxLayout();
             auto addBtn = [&](const QString& labl, const QString& asset, auto slot) {
                 auto btn = new IcoButton(labl, asset);
+                btn->setProperty("thm", "tertiary");
                 btn->setIconSize(QSize(0,0));
                 resizeFont(btn, 0.9);
                 connect(btn, &QPushButton::clicked, this, slot);

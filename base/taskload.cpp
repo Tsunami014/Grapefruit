@@ -41,9 +41,8 @@ void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) 
     for (const auto& [k, _] : alltasks) {
         if (btns.size() <= idx) {
             auto* btn = new QPushButton(k, parent);
-            btn->setProperty("fancy", true);
-            btn->setProperty("optbtn", true);
-            btn->setProperty("current", k==cur);
+            btn->setProperty("thm", k==cur? "tertiary" : "secondary");
+            btn->setProperty("btnsty", "big");
             resizeFont(btn, 1.2);
             QObject::connect(btn, &QPushButton::clicked, lay, [btn, redo](){
                 current = btn->text();

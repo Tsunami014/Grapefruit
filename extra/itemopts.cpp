@@ -160,8 +160,7 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
 
     auto mkbtn = [&](const QString& ico, auto slot){
         auto btn = new QPushButton(parent);
-        btn->setProperty("fancy", true);
-        btn->setProperty("tinybtn", true);
+        btn->setProperty("thm", "secondary");
         btn->setIcon(QIcon(ico));
         btn->setIconSize(QSize(32, 32));
         btn->setFocusPolicy(Qt::NoFocus);

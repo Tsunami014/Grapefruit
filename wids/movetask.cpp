@@ -40,8 +40,8 @@ bool moveTask(QWidget* parent, std::shared_ptr<Task> task) {
     for (const auto& cat : allTaskCats()) {
         if (cat == cur) continue;
         auto* btn = new QPushButton(cat, cont);
-        btn->setProperty("fancy", true);
-        btn->setProperty("optbtn", true);
+        btn->setProperty("thm", "secondary");
+        btn->setProperty("btnsty", "big");
         resizeFont(btn, 1.2);
         QObject::connect(btn, &QPushButton::clicked, [&, btn](){
             changeCat(task, btn->text(), cur);
