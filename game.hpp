@@ -1,7 +1,9 @@
 #pragma once
-
 #include <QMainWindow>
 #include <QStackedWidget>
+#ifdef Q_OS_ANDROID
+#include <QTimer>
+#endif
 #include "tasks.hpp"
 #include "base/converse.hpp"
 #include "wids/house.hpp"
@@ -24,6 +26,10 @@ private:
     QWidget* main;
     QWidget* setts;
     TaskView* tasks;
+
+#ifdef Q_OS_ANDROID
+    QTimer *stylNavTimer = nullptr;
+#endif
 
     void keyPressEvent(QKeyEvent* event) override;
 
