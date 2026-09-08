@@ -161,7 +161,7 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
 
     auto mkbtn = [&](const QString& ico, auto slot){
         auto btn = new QPushButton(parent);
-        ColGroups::setGrp(btn, ColGroups::Secondary);
+        ColGroups::setGrp(btn, ColGroups::PrimaryContainer);
         btn->setIcon(QIcon(ico));
         btn->setIconSize(QSize(32, 32));
         btn->setFocusPolicy(Qt::NoFocus);

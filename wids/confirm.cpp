@@ -1,4 +1,5 @@
 #include "confirm.hpp"
+#include "colours.hpp"
 #include "font.hpp"
 #include "extra/drag.hpp"
 #include <QApplication>
@@ -93,6 +94,7 @@ QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, Confi
     }
     lay->addWidget(btns);
     for (QPushButton* b : btns->findChildren<QPushButton*>()) {
+        ColGroups::setGrp(b, ColGroups::Primary);
         resizeFont(b, 1.5);
         b->setIcon(QIcon());
     }

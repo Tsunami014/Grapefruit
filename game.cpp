@@ -31,7 +31,7 @@ MainGame::MainGame() {
 #ifdef APP_DEBUG
     {
         auto* btn = new QPushButton("REDO", this);
-        ColGroups::setGrp(btn, ColGroups::TertiaryContainer);
+        ColGroups::setGrp(btn, ColGroups::Tertiary);
         btn->setProperty("btnsty", "big");
         resizeFont(btn, 0.7);
         connect(btn, &QPushButton::clicked, this, [=](){ conv->onclick({}); });
@@ -56,7 +56,7 @@ MainGame::MainGame() {
         auto quickbtns = new QVBoxLayout();
             auto addBtn = [&](const QString& labl, const QString& asset, auto slot) {
                 auto btn = new IcoButton(labl, asset);
-                ColGroups::setGrp(btn, ColGroups::Tertiary);
+                ColGroups::setGrp(btn, ColGroups::SecondaryContainer);
                 btn->setIconSize(QSize(0,0));
                 resizeFont(btn, 0.9);
                 connect(btn, &QPushButton::clicked, this, slot);

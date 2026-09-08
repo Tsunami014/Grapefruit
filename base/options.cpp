@@ -12,10 +12,8 @@ void setOptsLay(QLayout* lay, std::vector<Option> opts, std::function<void(Optio
 
     for (auto& o : opts) {
         auto* btn = new QPushButton(o.title, parent);
-        ColGroups::setGrp(btn, ColGroups::Secondary);
+        ColGroups::setGrp(btn, ColGroups::PrimaryContainer);
         btn->setProperty("btnsty", "big");
-        btn->setProperty("fancy", true);
-        btn->setProperty("optbtn", true);
         //resizeFont(btn, 1.0);
         lay->connect(btn, &QPushButton::clicked, lay, [=](){ func(o); });
         lay->addWidget(btn);

@@ -41,7 +41,7 @@ bool moveTask(QWidget* parent, std::shared_ptr<Task> task) {
     for (const auto& cat : allTaskCats()) {
         if (cat == cur) continue;
         auto* btn = new QPushButton(cat, cont);
-        ColGroups::setGrp(btn, ColGroups::Secondary);
+        ColGroups::setGrp(btn, ColGroups::Primary);
         btn->setProperty("btnsty", "big");
         resizeFont(btn, 1.2);
         QObject::connect(btn, &QPushButton::clicked, [&, btn](){

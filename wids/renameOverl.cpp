@@ -1,5 +1,6 @@
 #include "renameOverl.hpp"
 #include "colours.hpp"
+#include "game.hpp"
 #include "font.hpp"
 #include <QBoxLayout>
 #include <QPushButton>
@@ -60,7 +61,7 @@ RenameOverlay::RenameOverlay(QString title, QString initial,
     hlay->addWidget(le);
 
     auto btn = new QPushButton();
-    ColGroups::setGrp(btn, ColGroups::Secondary);
+    ColGroups::setGrp(btn, ColGroups::Primary);
     btn->setProperty("btnsty", "round");
     btn->setIcon(QIcon(":/assets/UI/check.svg"));
     int mx = le->rect().height() + 8;
@@ -121,6 +122,6 @@ void RenameOverlay::paintEvent(QPaintEvent* event) {
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), QColor(125, 125, 125, 125));
     painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor(255, 255, 255));
+    painter.setBrush(MG->styls[Cols::SurfaceContainer]);
     painter.drawRoundedRect(main->geometry().adjusted(-MARGIN, -MARGIN, MARGIN, MARGIN), 14, 14);
 }

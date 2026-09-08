@@ -40,9 +40,9 @@ void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) 
 
     uint idx = 0;
     for (const auto& [k, _] : alltasks) {
+        QPushButton* btn;
         if (btns.size() <= idx) {
-            auto* btn = new QPushButton(k, parent);
-            ColGroups::setGrp(btn, k==cur? ColGroups::Tertiary : ColGroups::Secondary);
+            btn = new QPushButton(k, parent);
             btn->setProperty("btnsty", "big");
             resizeFont(btn, 1.2);
             QObject::connect(btn, &QPushButton::clicked, lay, [btn, redo](){
@@ -52,12 +52,12 @@ void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) 
             lay->addWidget(btn);
             btns.push_back(btn);
         } else {
-            auto* btn = btns.at(idx);
+            btn = btns.at(idx);
             btn->setText(k);
-            btn->setProperty("current", k==cur);
-            btn->style()->unpolish(btn);
-            btn->style()->polish(btn);
         }
+        ColGroups::setGrp(btn, k==cur? ColGroups::Primary : ColGroups::SecondaryContainer);
+        btn->style()->unpolish(btn);
+        btn->style()->polish(btn);
         idx++;
     }
     while (btns.size() > idx) {

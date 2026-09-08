@@ -13,9 +13,9 @@ TaskView::TaskView() {
     mtlay->setContentsMargins(9, 9, 9, 9);
     mtlay->setSpacing(0);
 
-    auto addBtn = [&](QString asset, bool grey){
+    auto addBtn = [&](QString asset){
         auto btn = new QPushButton();
-        ColGroups::setGrp(btn, grey? ColGroups::SecondaryContainer : ColGroups::Secondary);
+        ColGroups::setGrp(btn, ColGroups::PrimaryContainer);
         btn->setIcon(QIcon(asset));
         btn->setIconSize(QSize(48, 44));
         btn->setMinimumHeight(56);
@@ -23,7 +23,7 @@ TaskView::TaskView() {
     };
 
     auto toplay = new QHBoxLayout();
-        {auto bin = addBtn(":/assets/UI/bin.svg", false);
+        {auto bin = addBtn(":/assets/UI/bin.svg");
         connect(bin, &QPushButton::clicked, this, [this](){
             if (deleteCategory(this)) redoTasks();
         });
@@ -36,7 +36,7 @@ TaskView::TaskView() {
         topheader->setAlignment(Qt::AlignCenter);
         toplay->addWidget(topheader);
 
-        newtaskbtn = addBtn(":/assets/UI/plus.svg", false);
+        newtaskbtn = addBtn(":/assets/UI/plus.svg");
         connect(newtaskbtn, &QPushButton::clicked, this, [this](){
             overlay = new TaskOverlay(newtask(), [this](){ redoTasks(); }, this, window());
             overlay->show();
@@ -74,9 +74,7 @@ TaskView::TaskView() {
     auto titlay = new QHBoxLayout();
         titlay->addStretch();
         starbtn = new QPushButton("Starred", this);
-        ColGroups::setGrp(starbtn, ColGroups::Tertiary);
         starbtn->setProperty("btnsty", "big");
-        starbtn->setProperty("current", isStarCat());
         resizeFont(starbtn, 1.2);
         QObject::connect(starbtn, &QPushButton::clicked, [this](){
             if (isStarCat()) showNoCat();
@@ -99,14 +97,14 @@ TaskView::TaskView() {
     auto bot = new QHBoxLayout();
     bot->setSpacing(8);
         {auto vlay = new QVBoxLayout();
-            {auto help = addBtn(":/assets/UI/help.svg", true);
+            {auto help = addBtn(":/assets/UI/help.svg");
             help->setProperty("btnsty", "round");
             connect(help, &QPushButton::clicked, this, [this](){
                 confirm(this, TASK_HELP, Conf_OK, true);
             });
             vlay->addWidget(help);}
 
-            {auto bk = addBtn(":/assets/UI/back.svg", true);
+            {auto bk = addBtn(":/assets/UI/back.svg");
             bk->setProperty("btnsty", "round");
             connect(bk, &QPushButton::clicked, this, [=](){ MG->toMain(); });
             vlay->addWidget(bk);}
@@ -142,7 +140,7 @@ TaskView::TaskView() {
         bot->addWidget(line);}
 
         {auto vlay = new QVBoxLayout();
-            {auto rnam = addBtn(":/assets/UI/rename.svg", false);
+            {auto rnam = addBtn(":/assets/UI/rename.svg");
             connect(rnam, &QPushButton::clicked, this, [this](){
                 if (isStarCat()) {
                     confirm(this, "Cannot rename the star category!", Conf_OK);
@@ -156,7 +154,7 @@ TaskView::TaskView() {
             });
             vlay->addWidget(rnam);}
 
-            {auto plus = addBtn(":/assets/UI/plusFoldr.svg", false);
+            {auto plus = addBtn(":/assets/UI/plusFoldr.svg");
             connect(plus, &QPushButton::clicked, this, [this](){
                 overlay = new RenameOverlay("New category", "", [this](QString s){
                     newCategory(this, s.trimmed());
@@ -173,7 +171,7 @@ TaskView::TaskView() {
 }
 
 void TaskView::redoTasks() {
-    starbtn->setProperty("current", isStarCat());
+    ColGroups::setGrp(starbtn, isStarCat()? ColGroups::Tertiary : ColGroups::TertiaryContainer);
     starbtn->style()->unpolish(starbtn);
     starbtn->style()->polish(starbtn);
     starbtn->update();

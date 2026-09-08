@@ -49,6 +49,7 @@ TaskBubble::TaskBubble(std::shared_ptr<Task> t, QWidget* parent) : QWidget(paren
     main->addLayout(sub, 1);
     {auto btn = new QPushButton(this);
     btn->setProperty("bubblebtn", true);
+    btn->setProperty("starred", t->star);
     btn->setIcon(QIcon(t->star? ":/assets/UI/starred.svg" : ":/assets/UI/starOff.svg"));
     btn->setIconSize(QSize(48, 48));
     btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
