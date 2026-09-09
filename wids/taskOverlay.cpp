@@ -75,8 +75,8 @@ void HlTxtEdit::highlight() {
                 sel.format.setBackground(MG->styls[Cols::OutlineVariant]);
                 sel.format.setFontStrikeOut(true);
             } else {
-                sel.format.setForeground(MG->styls[Cols::OnPrimary]);
-                sel.format.setBackground(MG->styls[Cols::Primary]);
+                sel.format.setForeground(MG->styls[Cols::OnPrimaryContainer]);
+                sel.format.setBackground(MG->styls[Cols::PrimaryContainer]);
             }
             sels << sel;
         }}

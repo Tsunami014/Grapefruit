@@ -65,11 +65,17 @@ TaskBubble QLabel[bubble=top] {
     border-top-left-radius: 12px;
     padding: 8px; padding-bottom: 4px;
 }
+TaskBubble[pressed=true] QLabel[bubble=top] {
+    background-color: $!PrimContnr;
+}
 TaskBubble QLabel[bubble=bot] {
     color: $OnSecContnr;
     background-color: $SecContnr;
     border-bottom-left-radius: 12px;
     padding: 8px; padding-top: 4px;
+}
+TaskBubble[pressed=true] QLabel[bubble=bot] {
+    background-color: $!SecContnr;
 }
 QPushButton[bubblebtn=true] {
     border-width: 2px;

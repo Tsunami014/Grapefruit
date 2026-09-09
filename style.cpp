@@ -70,22 +70,27 @@ void MainGame::genStyle(bool sig) {
     } else { light = theme == 1; }
     float bhue = base.hueF();
 
-    styls[Cols::Primary] = getCol(bhue, PRIMARY, light? 0.4:0.8);
-    styls[Cols::OnPrimary] = getCol(bhue, PRIMARY, light? 1.0:0.2);
-    styls[Cols::PrimaryContainer] = getCol(bhue, PRIMARY, light? 0.9:0.3);
-    styls[Cols::OnPrimaryContainer] = getCol(bhue, PRIMARY, light? 0.1:0.9);
+    {const float bg = light? 0.5:0.8;
+    const float fg = light? 1.0:0.2;
+    const float bgcont = light? 0.8:0.3;
+    const float fgcont = light? 0.1:0.9;
+    styls[Cols::Primary] = getCol(bhue, PRIMARY, bg);
+    styls[Cols::OnPrimary] = getCol(bhue, PRIMARY, fg);
+    styls[Cols::PrimaryContainer] = getCol(bhue, PRIMARY, bgcont);
+    styls[Cols::OnPrimaryContainer] = getCol(bhue, PRIMARY, fgcont);
     styls[Cols::PrimaryInverse] = getCol(bhue, PRIMARY, light? 0.9:0.3);
     styls[Cols::OnPrimaryInverse] = getCol(bhue, PRIMARY, light? 0.1:0.9);
 
-    styls[Cols::Secondary] = getCol(bhue, SECONDARY, light? 0.4:0.8);
-    styls[Cols::OnSecondary] = getCol(bhue, SECONDARY, light? 1.0:0.2);
-    styls[Cols::SecondaryContainer] = getCol(bhue, SECONDARY, light? 0.9:0.3);
-    styls[Cols::OnSecondaryContainer] = getCol(bhue, SECONDARY, light? 0.1:0.9);
+    styls[Cols::Secondary] = getCol(bhue, SECONDARY, bg);
+    styls[Cols::OnSecondary] = getCol(bhue, SECONDARY, fg);
+    styls[Cols::SecondaryContainer] = getCol(bhue, SECONDARY, bgcont);
+    styls[Cols::OnSecondaryContainer] = getCol(bhue, SECONDARY, fgcont);
 
-    styls[Cols::Tertiary] = getCol(bhue, TERTIARY, light? 0.4:0.8);
-    styls[Cols::OnTertiary] = getCol(bhue, TERTIARY, light? 1.0:0.2);
-    styls[Cols::TertiaryContainer] = getCol(bhue, TERTIARY, light? 0.9:0.3);
-    styls[Cols::OnTertiaryContainer] = getCol(bhue, TERTIARY, light? 0.1:0.9);
+    styls[Cols::Tertiary] = getCol(bhue, TERTIARY, bg);
+    styls[Cols::OnTertiary] = getCol(bhue, TERTIARY, fg);
+    styls[Cols::TertiaryContainer] = getCol(bhue, TERTIARY, bgcont);
+    styls[Cols::OnTertiaryContainer] = getCol(bhue, TERTIARY, fgcont);
+    }
 
     {float each = 1.0f/6.0f;
     constexpr float bg = 0.85;
@@ -111,11 +116,11 @@ void MainGame::genStyle(bool sig) {
     styls[Cols::OnSurface] = getCol(bhue, NEUTRAL, light? 0.1:0.9);
     styls[Cols::OnSurfaceVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.3:0.8);
 
-    styls[Cols::SurfaceContainerLow] = getCol(bhue, NEUTRAL, light? 0.96:0.10);
-    styls[Cols::SurfaceContainer] = getCol(bhue, NEUTRAL, light? 0.94:0.12);
-    styls[Cols::SurfaceContainerHigh] = getCol(bhue, NEUTRAL, light? 0.92:0.17);
-    styls[Cols::SurfaceContainerHighest] = getCol(bhue, NEUTRAL, light? 0.90:0.22);
-    styls[Cols::SurfaceContainerHighestest] = getCol(bhue, NEUTRAL, light? 0.86:0.26);
+    styls[Cols::SurfaceContainerLow] = getCol(bhue, NEUTRAL, light? 0.94:0.10);
+    styls[Cols::SurfaceContainer] = getCol(bhue, NEUTRAL, light? 0.92:0.12);
+    styls[Cols::SurfaceContainerHigh] = getCol(bhue, NEUTRAL, light? 0.90:0.17);
+    styls[Cols::SurfaceContainerHighest] = getCol(bhue, NEUTRAL, light? 0.88:0.22);
+    styls[Cols::SurfaceContainerHighestest] = getCol(bhue, NEUTRAL, light? 0.84:0.26);
 
     static QString mstyl = [](){
         QFile file(":/style.qss");

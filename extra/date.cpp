@@ -280,6 +280,9 @@ QDate getDate(const QDate& initial) {
         layout->addSpacing(8);
         layout->addWidget(btns);
         for (QPushButton* b : btns->findChildren<QPushButton*>()) {
+            ColGroups::setGrp(b, ColGroups::Primary);
+            b->style()->unpolish(b);
+            b->style()->polish(b);
             resizeFont(b, 1.5);
             b->setIcon(QIcon());
         }
