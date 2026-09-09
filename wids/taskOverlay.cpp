@@ -37,7 +37,7 @@ void HlTxtEdit::paintEvent(QPaintEvent* event) {
         QRectF r = doc->documentLayout()->blockBoundingRect(block).translated(offset);
         r.setLeft(0);
         r.setWidth(viewport()->width());
-        painter.fillRect(r, QColor("#AAA"));
+        painter.fillRect(r, MG->styls[Cols::SurfaceContainerHighestest]);
     }
 
     TxtEdit::paintEvent(event);
@@ -54,7 +54,7 @@ void HlTxtEdit::highlight() {
             sel.cursor = QTextCursor(block);
             sel.cursor.setPosition(block.position());
             sel.cursor.setPosition(block.position() + block.length() - 1, QTextCursor::KeepAnchor);
-            sel.format.setForeground(QColor("#555"));
+            sel.format.setForeground(MG->styls[Cols::OnSurfaceVariant]);
             sel.format.setProperty(QTextFormat::FullWidthSelection, true);
             sels << sel;}
             {QTextEdit::ExtraSelection sel;
@@ -70,8 +70,14 @@ void HlTxtEdit::highlight() {
             sel.cursor = QTextCursor(block);
             sel.cursor.setPosition(block.position() + m.capturedStart(0));
             sel.cursor.setPosition(block.position() + m.capturedEnd(0), QTextCursor::KeepAnchor);
-            sel.format.setBackground(QColor(done ? "#C9C" : "#EAE"));
-            if (done) sel.format.setFontStrikeOut(true);
+            if (done) {
+                sel.format.setForeground(MG->styls[Cols::OnSurfaceVariant]);
+                sel.format.setBackground(MG->styls[Cols::OutlineVariant]);
+                sel.format.setFontStrikeOut(true);
+            } else {
+                sel.format.setForeground(MG->styls[Cols::OnPrimary]);
+                sel.format.setBackground(MG->styls[Cols::Primary]);
+            }
             sels << sel;
         }}
         {auto m = dateRe.match(line);
@@ -83,25 +89,32 @@ void HlTxtEdit::highlight() {
             sel.cursor = QTextCursor(block);
             sel.cursor.setPosition(block.position() + m.capturedStart(0));
             sel.cursor.setPosition(block.position() + m.capturedEnd(0), QTextCursor::KeepAnchor);
-            QColor col;
-            if (!date.isValid()) col = QColor("#F9F");
-            else {
-                int days2 = QDate::currentDate().daysTo(date);
-                col = QColor(
-                    days2 < 0? "#F99" :
-                    days2 <= 1? "#FC8" :
-                    days2 <= 7? "#EEA" :
-                    days2 <= 14? "#CE8" :
-                    "#8EC"
-                );
-            }
             if (done) {
-                col.setHsv(col.hue(),
-                        qBound(0, col.saturation() - 50, 255),
-                        qBound(0, col.value() - 50, 255));
+                sel.format.setForeground(MG->styls[Cols::OnSurfaceVariant]);
+                sel.format.setBackground(MG->styls[Cols::OutlineVariant]);
                 sel.format.setFontStrikeOut(true);
+            } else if (!date.isValid()) {
+                sel.format.setForeground(MG->styls[Cols::OnPurpleFixed]);
+                sel.format.setBackground(MG->styls[Cols::PurpleFixed]);
+            } else {
+                int days2 = QDate::currentDate().daysTo(date);
+                if (days2 < 0) {
+                    sel.format.setForeground(MG->styls[Cols::OnRedFixed]);
+                    sel.format.setBackground(MG->styls[Cols::RedFixed]);
+                } else if (days2 <= 1) {
+                    sel.format.setForeground(MG->styls[Cols::OnOrangeFixed]);
+                    sel.format.setBackground(MG->styls[Cols::OrangeFixed]);
+                } else if (days2 <= 7) {
+                    sel.format.setForeground(MG->styls[Cols::OnYellowFixed]);
+                    sel.format.setBackground(MG->styls[Cols::YellowFixed]);
+                } else if (days2 <= 14) {
+                    sel.format.setForeground(MG->styls[Cols::OnGreenFixed]);
+                    sel.format.setBackground(MG->styls[Cols::GreenFixed]);
+                } else {
+                    sel.format.setForeground(MG->styls[Cols::OnBlueFixed]);
+                    sel.format.setBackground(MG->styls[Cols::BlueFixed]);
+                }
             }
-            sel.format.setBackground(col);
             sels << sel;
         }}
     }

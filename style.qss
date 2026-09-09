@@ -1,5 +1,6 @@
 * { color: $OnSurf; }
-QMainWindow, *[bg=true] { background-color: $Surf; }
+QMainWindow { background-color: $Surf; }
+*[bg=true] { background-color: $SurfContnrLow }
 #card {
     background-color: $SurfContnr;
     border-radius: 8px;
@@ -40,7 +41,7 @@ QFrame[frameShape="4"], QFrame[frameShape="5"] {
 Spoiler QToolButton {
     color: $OnSecContnr;
     background-color: $SecContnr;
-    padding: 12px 6px;
+    padding: 9px 6px;
     border-radius: 6px;
     qproperty-lineColour: $OutlVar;
     qproperty-lineWidth: 3px;

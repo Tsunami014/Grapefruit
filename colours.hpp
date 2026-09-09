@@ -25,6 +25,19 @@ namespace Cols {
         TertiaryContainer,
         OnTertiaryContainer,
 
+        RedFixed,
+        OnRedFixed,
+        OrangeFixed,
+        OnOrangeFixed,
+        YellowFixed,
+        OnYellowFixed,
+        GreenFixed,
+        OnGreenFixed,
+        BlueFixed,
+        OnBlueFixed,
+        PurpleFixed,
+        OnPurpleFixed,
+
         Outline,
         OutlineVariant,
 
@@ -36,6 +49,7 @@ namespace Cols {
         SurfaceContainer,
         SurfaceContainerHigh,
         SurfaceContainerHighest,
+        SurfaceContainerHighestest,
 
     Count};
 
@@ -57,6 +71,19 @@ namespace Cols {
         u"TertContnr",
         u"OnTertContnr",
 
+        u"Red",
+        u"OnRed",
+        u"Orange",
+        u"OnOrange",
+        u"Yellow",
+        u"OnYellow",
+        u"Green",
+        u"OnGreen",
+        u"Blue",
+        u"OnBlue",
+        u"Purple",
+        u"OnPurple",
+
         u"Outl",
         u"OutlVar",
 
@@ -68,6 +95,7 @@ namespace Cols {
         u"SurfContnr",
         u"SurfContnrHigh",
         u"SurfContnrHighest",
+        u"SurfContnrHighestest",
     };
 
     constexpr Colour fromName(QStringView name) {

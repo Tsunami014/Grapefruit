@@ -19,6 +19,7 @@ void MainGame::setupStyle() {
 
 
 enum PalleteOpts {
+    FIXED,
     PRIMARY,
     SECONDARY,
     TERTIARY,
@@ -28,6 +29,8 @@ enum PalleteOpts {
 
 QColor getCol(float bhue, PalleteOpts palstyl, float tone) {
     switch (palstyl) {
+        case FIXED:
+            return QColor::fromHslF(bhue, 0.42, tone);
         case PRIMARY:
             return QColor::fromHslF(bhue, 0.48, tone);
         case SECONDARY:
@@ -41,6 +44,16 @@ QColor getCol(float bhue, PalleteOpts palstyl, float tone) {
             return QColor::fromHslF(bhue, 0.08, tone);
     }
     return {};
+}
+
+QColor fixcol(QColor inp, float xtratone) {
+    bool light;
+    if (MG->theme == -1) {
+        Qt::ColorScheme scheme = qApp->styleHints()->colorScheme();
+        light = scheme != Qt::ColorScheme::Dark;
+    } else { light = MG->theme == 1; }
+
+    return QColor::fromHslF(inp.hueF(), 0.48, std::clamp(light? 0.4f+xtratone:0.8f-xtratone, 0.0f, 1.0f));
 }
 
 constexpr int diff = 10;
@@ -74,6 +87,23 @@ void MainGame::genStyle(bool sig) {
     styls[Cols::TertiaryContainer] = getCol(bhue, TERTIARY, light? 0.9:0.3);
     styls[Cols::OnTertiaryContainer] = getCol(bhue, TERTIARY, light? 0.1:0.9);
 
+    {float each = 1.0f/6.0f;
+    constexpr float bg = 0.85;
+    constexpr float on = 0.15;
+    styls[Cols::RedFixed] = getCol(0, FIXED, bg);
+    styls[Cols::OnRedFixed] = getCol(0, FIXED, on);
+    styls[Cols::OrangeFixed] = getCol(each*0.5f, FIXED, bg);
+    styls[Cols::OnOrangeFixed] = getCol(each*0.5f, FIXED, on);
+    styls[Cols::YellowFixed] = getCol(each, FIXED, bg);
+    styls[Cols::OnYellowFixed] = getCol(each, FIXED, on);
+    styls[Cols::GreenFixed] = getCol(each*2, FIXED, bg);
+    styls[Cols::OnGreenFixed] = getCol(each*2, FIXED, on);
+    styls[Cols::BlueFixed] = getCol(each*3.5f, FIXED, bg);
+    styls[Cols::OnBlueFixed] = getCol(each*3.5f, FIXED, on);
+    styls[Cols::PurpleFixed] = getCol(each*5, FIXED, bg);
+    styls[Cols::OnPurpleFixed] = getCol(each*5, FIXED, on);
+    }
+
     styls[Cols::Outline] = getCol(bhue, NEUTRALVARIANT, light? 0.5:0.6);
     styls[Cols::OutlineVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.8:0.4); // Lighter
 
@@ -85,6 +115,7 @@ void MainGame::genStyle(bool sig) {
     styls[Cols::SurfaceContainer] = getCol(bhue, NEUTRAL, light? 0.94:0.12);
     styls[Cols::SurfaceContainerHigh] = getCol(bhue, NEUTRAL, light? 0.92:0.17);
     styls[Cols::SurfaceContainerHighest] = getCol(bhue, NEUTRAL, light? 0.90:0.22);
+    styls[Cols::SurfaceContainerHighestest] = getCol(bhue, NEUTRAL, light? 0.86:0.26);
 
     static QString mstyl = [](){
         QFile file(":/style.qss");
