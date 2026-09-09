@@ -103,7 +103,7 @@ QScrollBar:horizontal {
     margin: 0px 2px 0px 2px;
 }
 QScrollBar::handle {
-    background: rgba(0, 0, 0, 90);
+    background: $OnPrimContnr;
     border-radius: 3px;
     min-height: 24px;
 }
@@ -114,7 +114,7 @@ QScrollBar::add-line, QScrollBar::sub-line {
 
 QSlider, QSlider::groove {
     border: none;
-    background: #E2E4E9;
+    background: $SurfContnrHighest;
     border-radius: 3px;
     margin: 0px;
 }
@@ -124,14 +124,16 @@ QSlider::groove:horizontal { height: 18px; }
 QSlider::groove:vertical { width: 18px; }
 
 QSlider::sub-page { border-radius: 3px; }
-QSlider::sub-page:horizontal, QSlider::add-page:vertical { background: #4F8EF7; }
+QSlider::sub-page:horizontal, QSlider::add-page:vertical { background: $PrimContnr; }
 
 QSlider::handle {
-    background: $SurfContnrHigh;
-    border: 2px solid #3B6FD1;
+    background: $Sec;
     border-radius: 6px;
     width: 16px;
     height: 16px;
+}
+QSlider::handle[sliding=true] {
+    background: $!Sec;
 }
 
 QWidget#navigation {

@@ -65,8 +65,8 @@ void QualityEdit::updtxt() {
             sel.cursor = QTextCursor(block);
             sel.cursor.setPosition(block.position() + start);
             sel.cursor.setPosition(block.position() + i, QTextCursor::KeepAnchor);
-            sel.format.setForeground(MG->styls[Cols::OnTertiary]);
-            sel.format.setBackground(MG->styls[Cols::Tertiary]);
+            sel.format.setForeground(MG->styls[Cols::OnPrimary]);
+            sel.format.setBackground(MG->styls[Cols::Primary]);
             sels << sel;
         }
     }

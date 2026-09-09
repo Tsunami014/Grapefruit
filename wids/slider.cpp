@@ -10,6 +10,9 @@ void Slidr::mousePressEvent(QMouseEvent* event) {
     dragging = true;
     setSliderDown(true);
     applyValueFromPos(event->pos());
+    setProperty("sliding", true);
+    style()->unpolish(this);
+    style()->polish(this);
     event->accept();
 }
 void Slidr::mouseMoveEvent(QMouseEvent* event) {
@@ -26,6 +29,9 @@ void Slidr::mouseReleaseEvent(QMouseEvent* event) {
         applyValueFromPos(event->pos());
         dragging = false;
         setSliderDown(false);
+        setProperty("sliding", false);
+        style()->unpolish(this);
+        style()->polish(this);
         event->accept();
         return;
     }
@@ -46,7 +52,7 @@ void Slidr::paintEvent(QPaintEvent* event) {
 
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing, false);
-    QPen pen(MG->styls[Cols::OnSurface]);
+    QPen pen(MG->styls[Cols::OnPrimaryContainer]);
     pen.setWidth(2);
     p.setPen(pen);
 
