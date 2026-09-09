@@ -17,7 +17,7 @@ bool moveTask(QWidget* parent, std::shared_ptr<Task> task) {
     QEventLoop loop;
     QString cur = taskCategory(task);
     bool moved = false;
-    auto ovrl = new ConfirmOverlay(topLevel, true);
+    auto ovrl = new ConfirmOverlay(topLevel, true, parent);
 
     auto lay = new QVBoxLayout(ovrl->inner);
     auto txt = new QLabel(cur + " → ...", ovrl);

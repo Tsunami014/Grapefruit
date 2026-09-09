@@ -12,7 +12,8 @@
 #include <QScrollArea>
 #include <QPushButton>
 
-ConfirmOverlay::ConfirmOverlay(QWidget* parent, bool scroll) : QWidget(parent) {
+ConfirmOverlay::ConfirmOverlay(QWidget* parent, bool scroll, QWidget* ref)
+        : QWidget(parent), ref(ref) {
     auto* outerV = new QVBoxLayout(this);
     outerV->setContentsMargins(0,0,0,0);
     auto* outerH = new QHBoxLayout();
@@ -28,15 +29,26 @@ ConfirmOverlay::ConfirmOverlay(QWidget* parent, bool scroll) : QWidget(parent) {
 
     inner->setObjectName("card");
 
-    setGeometry(QGuiApplication::primaryScreen()->geometry());
+    setSze();
     if (parent) parent->installEventFilter(this);
     else qApp->installEventFilter(this);
 }
 bool ConfirmOverlay::eventFilter(QObject* watched, QEvent* event) {
     if (watched == parent() && event->type() == QEvent::Resize) {
-        setGeometry(QGuiApplication::primaryScreen()->geometry());
+        setSze();
     }
     return QWidget::eventFilter(watched, event);
+}
+void ConfirmOverlay::setSze() {
+    auto geom = QGuiApplication::primaryScreen()->geometry();
+    QRect av(ref->mapToGlobal(QPoint(0, 0)), ref->size());
+    setGeometry(geom);
+    setContentsMargins(
+        av.left()-geom.left(),
+        av.top()-geom.top(),
+        geom.right()-av.right(),
+        geom.bottom()-av.bottom()
+    );
 }
 
 void ConfirmOverlay::mousePressEvent(QMouseEvent* event) {
@@ -56,7 +68,7 @@ QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, Confi
     auto topLevel = parent ? parent->window() : nullptr;
     if (!topLevel) return QDialogButtonBox::RejectRole;
 
-    auto ovrl = new ConfirmOverlay(topLevel, scroll);
+    auto ovrl = new ConfirmOverlay(topLevel, scroll, parent);
 
     auto lay = new QVBoxLayout(ovrl->inner);
     auto txt = new QLabel(text, ovrl);
