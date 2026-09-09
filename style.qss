@@ -24,12 +24,16 @@ IcoButton, QPushButton {
 
 ^^grps
 
-*[btnsty=round] {
-    border-radius: 24px;
+*[btnsty~=round] {
+    border-radius: 18px;
 }
-*[btnsty=big] {
+*[btnsty~=big] {
     padding: 10px 18px;
     border-radius: 16px;
+}
+*[btnsty~=outline] {
+    background: transparent;
+    border: 2px solid $Outl;
 }
 
 #confirmButtons QPushButton {
@@ -71,13 +75,13 @@ TaskBubble[pressed=true] QLabel[bubble=top] {
     background-color: $!PrimContnr;
 }
 TaskBubble QLabel[bubble=bot] {
-    color: $OnSecContnr;
-    background-color: $SecContnr;
+    color: $OnPrimContnr;
+    background-color: $!PrimContnr;
     border-bottom-left-radius: 12px;
     padding: 8px; padding-top: 4px;
 }
 TaskBubble[pressed=true] QLabel[bubble=bot] {
-    background-color: $!SecContnr;
+    background-color: $!!PrimContnr;
 }
 QPushButton[bubblebtn=true] {
     border-radius: 0;

@@ -57,11 +57,11 @@ QColor fixcol(QColor inp, float xtratone) {
 }
 
 constexpr int diff = 10;
-inline QColor colbang(QColor orig, bool light) {
-    return QColor(orig.red() - diff, orig.green() - diff, orig.blue() - diff);
+inline QColor colbang(QColor orig, bool light, int amnt = 1) {
+    return QColor(orig.red() - diff*amnt, orig.green() - diff*amnt, orig.blue() - diff*amnt);
 }
 
-const QRegularExpression stylRe(R"(\$(!?[a-zA-Z]+)\$?)");
+const QRegularExpression stylRe(R"(\$(!*)([a-zA-Z]+)\$?)");
 void MainGame::genStyle(bool sig) {
     bool light;
     if (theme == -1) {
@@ -141,12 +141,8 @@ void MainGame::genStyle(bool sig) {
     while (it.hasNext()) {
         auto m = it.next();
 
-        QString nam = m.captured(1);
-        bool dark = nam.startsWith('!');
-        if (dark) nam = nam.sliced(1);
-
-        auto col = styls[Cols::fromName(nam)];
-        if (dark) col = colbang(col, light);
+        auto col = styls[Cols::fromName(m.captured(2))];
+        col = colbang(col, light, m.captured(1).length());
         QString repl = col.name();
 
         int start = m.capturedStart(0) + offs;

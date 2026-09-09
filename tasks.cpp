@@ -104,7 +104,7 @@ TaskView::TaskView() {
             vlay->addWidget(help);}
 
             {auto bk = addBtn(":/assets/UI/back.svg");
-            bk->setProperty("btnsty", "round");
+            bk->setProperty("btnsty", "round outline");
             connect(bk, &QPushButton::clicked, this, [=](){ MG->toMain(); });
             vlay->addWidget(bk);}
         bot->addLayout(vlay);}

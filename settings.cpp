@@ -93,7 +93,7 @@ void MainGame::generateSettings() {
     auto topsect = new QHBoxLayout();
         auto bk = new QPushButton();
         ColGroups::setGrp(bk, ColGroups::SecondaryContainer);
-        bk->setProperty("btnsty", "round");
+        bk->setProperty("btnsty", "round outline");
         setColIco(bk, ":/assets/UI/back.svg");
         bk->setIconSize(QSize(48, 40));
         connect(bk, &QPushButton::clicked, this, [this](){ toMain(); });

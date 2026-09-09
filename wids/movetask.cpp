@@ -65,6 +65,7 @@ bool moveTask(QWidget* parent, std::shared_ptr<Task> task) {
     auto* btns = new QDialogButtonBox(QDialogButtonBox::Cancel, ovrl);
     lay->addWidget(btns);
     for (QPushButton* b : btns->findChildren<QPushButton*>()) {
+        b->setProperty("btnsty", "outline");
         ColGroups::setGrp(b, ColGroups::Secondary);
         b->style()->unpolish(b);
         b->style()->polish(b);

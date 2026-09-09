@@ -109,7 +109,10 @@ QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, Confi
     for (QPushButton* b : btns->findChildren<QPushButton*>()) {
         ColGroups::Group g;
         switch (btns->buttonRole(b)) {
-            case QDialogButtonBox::RejectRole: g = ColGroups::Secondary; break;
+            case QDialogButtonBox::RejectRole:
+                g = ColGroups::Secondary;
+                b->setProperty("btnsty", "outline");
+                break;
             default: g = ColGroups::Primary;
         }
         ColGroups::setGrp(b, g);
