@@ -1,25 +1,23 @@
 * { color: $OnSurf; }
 QMainWindow { background-color: $Surf; }
-*[bg=true] {
-    background-color: $SurfContnrLow;
+
+*[bg=true], #card, #highcard, #curtxt,
+IcoButton, QPushButton {
     border-radius: 12px;
 }
-#card {
-    background-color: $SurfContnr;
-    border-radius: 12px;
-}
+
+*[bg=true] { background-color: $SurfContnrLow; }
+#card { background-color: $SurfContnr; }
+#highcard { background-color: $SurfContnrHigh; }
+
 #cardcont { background-color: $SurfContnr; }
 #transpbg { background: transparent; }
 
-#curtxt {
-    padding: 8px;
-    border-radius: 12px;
-}
+#curtxt { padding: 8px; }
 
 IcoButton, QPushButton {
     padding: 4px;
     border-width: 2px;
-    border-radius: 12px;
 }
 
 ^^grps
@@ -100,13 +98,14 @@ QTextEdit, QLineEdit {
     border-style: solid;
     border-width: 2px;
     border-color: $OutlVar;
-    border-radius: 12px;
     padding: 4px;
 }
 QTextEdit:focus, QLineEdit:focus {
     border-color: $Outl;
 }
-QLineEdit { border-radius: 12px; }
+QTextEdit, QLineEdit {
+    border-radius: 12px;
+}
 
 QScrollBar {
     background: transparent;

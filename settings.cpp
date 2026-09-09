@@ -58,7 +58,20 @@ void MainGame::generateSettings() {
         line->setFrameShape(QFrame::HLine);
         lay->addWidget(line);}
 
-        auto opts2 = new QHBoxLayout();
+        {auto scrl = new QScrollArea(this);
+        scrl->setFrameShape(QFrame::NoFrame);
+        scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        scrl->setProperty("bg", true);
+
+        scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+        scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
+        auto tcatdrag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
+
+        auto* catcont = new QWidget(this);
+        catcont->setObjectName("transpbg");
+        auto opts2 = new QHBoxLayout(catcont);
             const int size = 50;
             for (const QColor& c : cols) {
                 auto* btn = new QPushButton(sp);
@@ -81,7 +94,10 @@ void MainGame::generateSettings() {
                 );
                 opts2->addWidget(btn);
             }
-        lay->addLayout(opts2);
+        tcatdrag->installOn(opts2);
+        scrl->setWidget(catcont);
+        scrl->setWidgetResizable(true);
+        lay->addWidget(scrl);}
     sp->setContentLayout(*lay);
     slay->addWidget(sp);}
 

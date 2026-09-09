@@ -117,7 +117,7 @@ TaskView::TaskView() {
         {scrl = new QScrollArea(this);
         scrl->setFrameShape(QFrame::NoFrame);
         scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        scrl->setProperty("bg", true);
+        scrl->setProperty("highcard", true);
 
         scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
