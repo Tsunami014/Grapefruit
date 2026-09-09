@@ -136,30 +136,33 @@ QSlider::handle[sliding=true] {
     background: $!Sec;
 }
 
+/* Some calendar things */
+
 QWidget#navigation {
     background-color: $SurfContnrHigh;
     padding: 6px 4px;
-    border-bottom: 2px solid #EEF0F3;
+    border-bottom: 2px solid $OutlVar;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
 }
 
 QWidget#navigation QPushButton {
-    color: #3B82F6;
-    background-color: transparent;
+    color: $OnPrim;
+    background-color: $Prim;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 4px 10px;
     margin: 2px;
     font-weight: 600;
 }
-QWidget#navigation QPushButton:hover {
-    background-color: #E8F0FE;
-}
 QWidget#navigation QPushButton:pressed {
-    background-color: #D2E3FC;
+    background-color: $!Prim;
 }
 
 /* Get rid of a yucky line */
-QCalendarWidget QAbstractItemView:enabled {
+QCalendarWidget QAbstractItemView {
+    background-color: $SurfContnr;
+    border: none;
     outline: 0;
     gridline-color: transparent;
     selection-background-color: transparent;

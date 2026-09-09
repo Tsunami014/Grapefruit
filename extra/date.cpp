@@ -24,6 +24,30 @@ public:
     void paint(QPainter* painter, const QStyleOptionViewItem& option,
                const QModelIndex& index) const override {
         const QString text = index.data(Qt::DisplayRole).toString();
+
+        // Weekday header row -> paint it ourselves
+        if (index.row() == 0) {
+            painter->save();
+            if (index.column() == 0) {
+                painter->setRenderHint(QPainter::Antialiasing);
+
+                // Full-row rect
+                const auto* view = qobject_cast<const QAbstractItemView*>(option.widget);
+                const int fullWidth = view ? view->viewport()->width() : option.rect.width();
+                QRect rowRect(0, option.rect.y(), fullWidth, option.rect.height());
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(MG->styls[Cols::SurfaceContainerHigh]);
+                constexpr int rad = 12;
+                painter->drawRoundedRect(rowRect, rad,rad);
+                painter->fillRect(QRect{rowRect.topLeft(), QPoint{rowRect.right(), rowRect.top()+rad}},
+                    MG->styls[Cols::SurfaceContainerHigh]);
+            }
+
+            painter->setPen(MG->styls[Cols::OnSurface]);
+            painter->drawText(option.rect, Qt::AlignCenter, text);
+            painter->restore();
+            return;
+        }
         bool ok = false;
         const int day = text.toInt(&ok);
         // Not a day cell -> fall back to default paint
@@ -236,11 +260,18 @@ QDate getDate(const QDate& initial) {
             view->verticalHeader()->setDefaultSectionSize(32);
             view->setShowGrid(false);
             view->setMouseTracking(true);
+            view->viewport()->setAttribute(Qt::WA_Hover, true);
         }
-        auto fmt = QTextCharFormat();
-        fmt.setForeground(QBrush(MG->styls[Cols::OnSurface]));
+
+        {auto fmt = QTextCharFormat();
+        fmt.setForeground(QBrush(MG->styls[Cols::OnSecondaryContainer]));
+        for (int day = Qt::Monday; day < Qt::Saturday; ++day) {
+            calendar->setWeekdayTextFormat(static_cast<Qt::DayOfWeek>(day), fmt);
+        }}
+        {auto fmt = QTextCharFormat();
+        fmt.setForeground(QBrush(MG->styls[Cols::OnTertiaryContainer]));
         calendar->setWeekdayTextFormat(Qt::Saturday, fmt);
-        calendar->setWeekdayTextFormat(Qt::Sunday, fmt);
+        calendar->setWeekdayTextFormat(Qt::Sunday, fmt);}
 
         calendar->setSelectedDate(initial.isNull()? QDate::currentDate():initial);
         layout->addWidget(calendar);
