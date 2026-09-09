@@ -27,7 +27,7 @@ void MainGame::setupStyle() {
               qApp, [this](Qt::ColorScheme scheme) {
         if (theme == -1) genStyle();
     });
-    genStyle(false);
+    genStyle(true);
 }
 
 
@@ -75,7 +75,7 @@ inline QColor colbang(QColor orig, bool light, int amnt = 1) {
 }
 
 const QRegularExpression stylRe(R"(\$(!*)([a-zA-Z]+)\$?)");
-void MainGame::genStyle(bool sig) {
+void MainGame::genStyle(bool init) {
     bool light;
     if (theme == -1) {
         Qt::ColorScheme scheme = qApp->styleHints()->colorScheme();
@@ -182,14 +182,6 @@ void MainGame::genStyle(bool sig) {
 
     // If on Android, set the navigation icons to be dark/light with the theme
 #ifdef Q_OS_ANDROID
-    // Must use a timer because of weird Qt quirks
-    if (!stylNavTimer) {
-        stylNavTimer = new QTimer(this);
-        stylNavTimer->setSingleShot(true);
-    } else {
-        stylNavTimer->disconnect();
-    }
-
     auto updFn = [this, light]() {
         QNativeInterface::QAndroidApplication::runOnAndroidMainThread([light]() {
             QJniObject activity = QNativeInterface::QAndroidApplication::context();
@@ -217,10 +209,11 @@ void MainGame::genStyle(bool sig) {
         });
     };
 
-    connect(stylNavTimer, &QTimer::timeout, this, updFn);
-    stylNavTimer->start(300);
-    updFn();
+    // It will be annoyed if you try to run this immediately on startup, so we queue it
+    if (init) {
+        QTimer::singleShot(0, updFn);
+    } else { updFn(); }
 #endif
 
-    if (sig) emit themeChange();
+    if (!init) emit themeChange();
 }
