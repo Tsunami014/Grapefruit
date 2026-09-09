@@ -81,7 +81,7 @@ void MainGame::generateSettings() {
         opts->addWidget(labl);
 
         {auto btn = addbtn("Reload", opts, sp);
-        btn->connect(btn, &QPushButton::pressed, labl, [=](){
+        btn->connect(btn, &QPushButton::clicked, labl, [=](){
             labl->setText(getAllTasksDebugInfo());
             sp->updateHeights();
         });}

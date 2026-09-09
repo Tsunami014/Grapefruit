@@ -38,17 +38,20 @@ QFrame[frameShape="4"], QFrame[frameShape="5"] {
 }
 
 Spoiler QToolButton {
-    color: $OnSurf;
-    background-color: $SurfContnrHigh;
-    padding: 5px;
+    color: $OnSecContnr;
+    background-color: $SecContnr;
+    padding: 12px 6px;
     border-radius: 6px;
     qproperty-lineColour: $OutlVar;
     qproperty-lineWidth: 3px;
 }
+Spoiler QToolButton:pressed {
+    background-color: $!SecContnr;
+}
 Spoiler #contentArea {
     color: $OnSurf;
     background-color: $SurfContnr;
-    border-radius: 5px;
+    border-radius: 6px;
 }
 
 TaskBubble { background: transparent; }

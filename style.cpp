@@ -43,12 +43,12 @@ QColor getCol(float bhue, PalleteOpts palstyl, float tone) {
     return {};
 }
 
-constexpr int diff = 15;
+constexpr int diff = 10;
 inline QColor colbang(QColor orig, bool light) {
     return QColor(orig.red() - diff, orig.green() - diff, orig.blue() - diff);
 }
 
-const QRegularExpression stylRe(R"(\$([a-zA-Z]+)\$?)");
+const QRegularExpression stylRe(R"(\$(!?[a-zA-Z]+)\$?)");
 void MainGame::genStyle(bool sig) {
     bool light;
     if (theme == -1) {
