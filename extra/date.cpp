@@ -34,7 +34,7 @@ public:
 
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing);
-        painter->fillRect(option.rect, QColor("#ffffff"));
+        painter->fillRect(option.rect, MG->styls[Cols::SurfaceContainer]);
 
         const bool isSelected = option.state & QStyle::State_Selected;
         const bool isHovered = option.state & QStyle::State_MouseOver;
@@ -50,41 +50,46 @@ public:
         QRect rect(0, 0, diam, diam);
         rect.moveCenter(option.rect.center());
 
-        QColor textColour;
+        Cols::Colour textColour;
         if (!isEnabled) {  // Out of range
-            textColour = QColor("#E2E4E9");
+            textColour = Cols::OutlineVariant;
         } else if (isOtherMonth) {  // Other month
-            textColour = QColor("#C2C7D0");
+            textColour = Cols::Outline;
         } else {  // Normal
-            textColour = QColor("#1F2937");
+            textColour = Cols::OnSurface;
         }
 
         if (isSelected) {
-            painter->setPen(Qt::NoPen);
-            painter->setBrush(QColor("#3B82F6"));
-            painter->drawEllipse(rect);
-            textColour = Qt::white;
-        } else if (isEnabled && !isOtherMonth && cellDate == QDate::currentDate()) {
-            painter->setPen(QPen(QColor("#3B82F6"), 1.5));
-            painter->setBrush(Qt::NoBrush);
-            painter->drawEllipse(rect);
+            painter->setBrush(MG->styls[Cols::Primary]);
             if (cellDate == orig) {
-                textColour = QColor("#A8B0AE");
+                painter->setPen(QPen(MG->styls[Cols::Secondary], 2.5));
             } else {
-                textColour = QColor("#3B82F6");
+                painter->setPen(Qt::NoPen);
             }
-        } else if (isEnabled && !isOtherMonth && cellDate == orig) {
-            painter->setPen(QPen(QColor("#A8B0AE"), 1.5));
-            painter->setBrush(Qt::NoBrush);
+            textColour = Cols::OnPrimary;
             painter->drawEllipse(rect);
-            textColour = QColor("#A8B0AE");
+        } else if (isEnabled && cellDate == QDate::currentDate()) {
+            painter->setBrush(MG->styls[Cols::TertiaryContainer]);
+            if (cellDate == orig) {
+                painter->setPen(QPen(MG->styls[Cols::Secondary], 2.5));
+                textColour = Cols::OnSecondaryContainer;
+            } else {
+                painter->setPen(Qt::NoPen);
+                textColour = Cols::OnTertiaryContainer;
+            }
+            painter->drawEllipse(rect);
+        } else if (isEnabled && cellDate == orig) {
+            painter->setPen(QPen(MG->styls[Cols::Secondary], 2.5));
+            painter->setBrush(Qt::NoBrush);
+            textColour = Cols::Secondary;
+            painter->drawEllipse(rect);
         } else if (isHovered && isEnabled) {
             painter->setPen(Qt::NoPen);
-            painter->setBrush(QColor("#D8E0DE"));
+            painter->setBrush(MG->styls[Cols::SurfaceContainerHigh]);
             painter->drawEllipse(rect);
         }
 
-        painter->setPen(textColour);
+        painter->setPen(MG->styls[textColour]);
         painter->drawText(option.rect, Qt::AlignCenter, text);
         painter->restore();
     }
@@ -233,7 +238,7 @@ QDate getDate(const QDate& initial) {
             view->setMouseTracking(true);
         }
         auto fmt = QTextCharFormat();
-        fmt.setForeground(QBrush(Qt::black));
+        fmt.setForeground(QBrush(MG->styls[Cols::OnSurface]));
         calendar->setWeekdayTextFormat(Qt::Saturday, fmt);
         calendar->setWeekdayTextFormat(Qt::Sunday, fmt);
 

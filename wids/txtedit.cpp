@@ -1,4 +1,6 @@
 #include "txtedit.hpp"
+#include "colours.hpp"
+#include "game.hpp"
 #include "font.hpp"
 #include "extra/drag.hpp"
 #include <QScrollBar>
@@ -79,7 +81,7 @@ void BulletArea::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
 
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(Qt::black);
+    painter.setBrush(MG->styls[Cols::OnSurface]);
     painter.setPen(Qt::NoPen);
 
     QTextDocument* doc = edit->document();

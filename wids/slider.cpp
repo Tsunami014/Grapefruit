@@ -1,4 +1,6 @@
 #include "slider.hpp"
+#include "colours.hpp"
+#include "game.hpp"
 
 void Slidr::mousePressEvent(QMouseEvent* event) {
     if (event->button() != Qt::LeftButton) {
@@ -44,7 +46,7 @@ void Slidr::paintEvent(QPaintEvent* event) {
 
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing, false);
-    QPen pen(Qt::black);
+    QPen pen(MG->styls[Cols::OnSurface]);
     pen.setWidth(2);
     p.setPen(pen);
 

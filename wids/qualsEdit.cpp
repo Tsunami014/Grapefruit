@@ -1,4 +1,6 @@
 #include "qualsEdit.hpp"
+#include "colours.hpp"
+#include "game.hpp"
 #include "font.hpp"
 #include <QTextBlock>
 
@@ -63,7 +65,8 @@ void QualityEdit::updtxt() {
             sel.cursor = QTextCursor(block);
             sel.cursor.setPosition(block.position() + start);
             sel.cursor.setPosition(block.position() + i, QTextCursor::KeepAnchor);
-            sel.format.setBackground(QColor("#9C9"));
+            sel.format.setForeground(MG->styls[Cols::OnTertiary]);
+            sel.format.setBackground(MG->styls[Cols::Tertiary]);
             sels << sel;
         }
     }

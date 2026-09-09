@@ -75,7 +75,7 @@ void MainGame::genStyle(bool sig) {
     styls[Cols::OnTertiaryContainer] = getCol(bhue, TERTIARY, light? 0.1:0.9);
 
     styls[Cols::Outline] = getCol(bhue, NEUTRALVARIANT, light? 0.5:0.6);
-    styls[Cols::OutlineVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.8:0.3); // Lighter
+    styls[Cols::OutlineVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.8:0.4); // Lighter
 
     styls[Cols::Surface] = getCol(bhue, NEUTRAL, light? 0.98:0.06);
     styls[Cols::OnSurface] = getCol(bhue, NEUTRAL, light? 0.1:0.9);
