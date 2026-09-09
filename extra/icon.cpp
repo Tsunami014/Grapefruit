@@ -65,3 +65,12 @@ void setColIco(QAbstractButton* wid, const QString& path) {
     update();
     QObject::connect(MG, &MainGame::themeChange, wid, update);
 }
+void setPlainColIco(QAbstractButton* wid, const QString& path, QColor col) {
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qFatal() << "Could not open" << path;
+    }
+    QString svg = QString::fromUtf8(file.readAll());
+    svg = svg.replace("#1C274C", col.name(), Qt::CaseInsensitive);
+    wid->setIcon(QIcon(new SvgIconEngine(svg.toUtf8())));
+}

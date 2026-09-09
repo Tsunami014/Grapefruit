@@ -58,10 +58,44 @@ void MainGame::generateSettings() {
         line->setFrameShape(QFrame::HLine);
         lay->addWidget(line);}
 
+        auto opts2 = new QHBoxLayout();
+        const int colbtnsize = 50;
+            {auto* btn = new QPushButton(sp);
+            btn->setFixedSize(colbtnsize, colbtnsize);
+            const int icosze = colbtnsize*0.7;
+            btn->setIconSize(QSize(icosze, icosze));
+            ColGroups::setGrp(btn, ColGroups::PrimaryContainer);
+
+            auto restyl = [=](){
+                btn->setStyleSheet(QString(
+                    "background-color: %1;"
+                    "border: 3px solid %2;"
+                    "border-radius: %3px;"
+                )
+                    .arg(base.name())
+                    .arg(base.darker(150).name())
+                    .arg(colbtnsize / 2)
+                );
+                double lum = (0.299 * base.red() + 0.587 * base.green() + 0.114 * base.blue());
+                bool light = lum > 128.0;
+                setPlainColIco(btn, ":/assets/UI/paint.svg",
+                    QColor::fromHslF(std::fmod(base.hueF()+0.12f, 1.0f), 0.48, light? 0.2:0.9));
+            };
+            restyl();
+            connect(this, &MainGame::themeChange, btn, [=](){
+                    restyl();
+                btn->style()->unpolish(btn);
+                btn->style()->polish(btn);
+            });
+            opts2->addWidget(btn);}
+        {QFrame* line = new QFrame();
+        line->setFrameShape(QFrame::VLine);
+        opts2->addWidget(line);}
+
         {auto scrl = new QScrollArea(this);
         scrl->setFrameShape(QFrame::NoFrame);
         scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        scrl->setProperty("bg", true);
+        scrl->setObjectName("highcard");
 
         scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -71,11 +105,10 @@ void MainGame::generateSettings() {
 
         auto* catcont = new QWidget(this);
         catcont->setObjectName("transpbg");
-        auto opts2 = new QHBoxLayout(catcont);
-            const int size = 50;
+        auto opts2inr = new QHBoxLayout(catcont);
             for (const QColor& c : cols) {
                 auto* btn = new QPushButton(sp);
-                btn->setFixedSize(size, size);
+                btn->setFixedSize(colbtnsize, colbtnsize);
 
                 btn->connect(btn, &QPushButton::clicked, this, [=](){
                     base = c;
@@ -90,14 +123,15 @@ void MainGame::generateSettings() {
                 )
                     .arg(c.name())
                     .arg(c.darker(150).name())
-                    .arg(size / 2)
+                    .arg(colbtnsize / 2)
                 );
-                opts2->addWidget(btn);
+                opts2inr->addWidget(btn);
             }
-        tcatdrag->installOn(opts2);
+        tcatdrag->installOn(opts2inr);
         scrl->setWidget(catcont);
         scrl->setWidgetResizable(true);
-        lay->addWidget(scrl);}
+        opts2->addWidget(scrl);}
+        lay->addLayout(opts2);
     sp->setContentLayout(*lay);
     slay->addWidget(sp);}
 
