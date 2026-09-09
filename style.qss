@@ -1,9 +1,12 @@
 * { color: $OnSurf; }
 QMainWindow { background-color: $Surf; }
-*[bg=true] { background-color: $SurfContnrLow }
+*[bg=true] {
+    background-color: $SurfContnrLow;
+    border-radius: 12px;
+}
 #card {
     background-color: $SurfContnr;
-    border-radius: 8px;
+    border-radius: 12px;
 }
 #cardcont { background-color: $SurfContnr; }
 #transpbg { background: transparent; }

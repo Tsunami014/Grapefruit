@@ -51,6 +51,7 @@ void MainGame::init() {
     auto botsect = new QHBoxLayout();
         auto optcontnr = new QWidget(main);
         optcontnr->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        optcontnr->setProperty("bg", true);
         auto* olay = new FlowLayout(optcontnr, 8, 8, 16);
         botsect->addWidget(optcontnr);
 

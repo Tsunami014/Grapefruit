@@ -417,6 +417,8 @@ void TaskOverlay::generateBot() {
         // Calculate sizes! (both width AND height)
         bflow->activate();
         container->setFixedSize(bflow->lastSize());
+        int sb = scrl->horizontalScrollBar()->sizeHint().height();
+        scrl->setFixedHeight(bflow->lastSize().height() + sb);
         drag->installOn(bflow);
     } else {
         bitsWid = new QWidget(bbar);
