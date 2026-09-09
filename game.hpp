@@ -26,6 +26,9 @@ public:
     void genStyle(bool sig = true);
     std::unordered_map<Cols::Colour, QColor> styls;
 
+    /// -1: system, 0: dark, 1: light
+    int theme = -1;
+
 signals:
     void themeChange();
 
@@ -36,8 +39,6 @@ private:
     TaskView* tasks;
 
     void setupStyle();
-    /// -1: system, 0: dark, 1: light
-    int theme = -1;
 
 #ifdef Q_OS_ANDROID
     QTimer *stylNavTimer = nullptr;

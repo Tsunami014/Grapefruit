@@ -33,6 +33,7 @@ void MainGame::generateSettings() {
                 if (theme != -1) {
                     theme = -1;
                     genStyle();
+                    saveTasks();
                 }
             });}
             {auto btn = addbtn("Dark", opts, sp);
@@ -40,6 +41,7 @@ void MainGame::generateSettings() {
                 if (theme != 0) {
                     theme = 0;
                     genStyle();
+                    saveTasks();
                 }
             });}
             {auto btn = addbtn("Light", opts, sp);
@@ -47,6 +49,7 @@ void MainGame::generateSettings() {
                 if (theme != 1) {
                     theme = 1;
                     genStyle();
+                    saveTasks();
                 }
             });}
         lay->addLayout(opts);

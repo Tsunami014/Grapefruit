@@ -9,10 +9,10 @@
 MainGame::MainGame() {
     stack = new QStackedWidget(this);
     setCentralWidget(stack);
-
-    setupStyle();
 }
 void MainGame::init() {
+    setupStyle(); // Before everything else in init()
+
     // Create the main screen
     main = new QWidget();
     stack->addWidget(main);

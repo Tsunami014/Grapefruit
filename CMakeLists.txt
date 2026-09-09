@@ -17,6 +17,7 @@ set(CORE
     base/externs.cpp
     base/scenes.cpp
     base/quals.cpp
+    base/setts.cpp
     base/importance.cpp
 
     extra/itemopts.cpp

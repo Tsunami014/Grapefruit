@@ -1,5 +1,6 @@
 #include "taskload.hpp"
 #include "task.hpp"
+#include "setts.hpp"
 #include "importance.hpp"
 #include "saveesc.hpp"
 #include "tasklist.hpp"
@@ -346,7 +347,12 @@ void loadTasks() {
         if (line == "") {
         } else if (line[0] == '\5') {
             auto parts = line.mid(1).split(';');
-            qWarning() << "Unknown setting key:" << parts[0];
+            if (parts.length() != 2) {
+                qWarning() << "Found settings key with" << parts.length()
+                    << "parts, needed 2!";
+            } else {
+                loadSetting(deescape(parts[0]), deescape(parts[1]));
+            }
         } else if (line[0] == '\4') {
             if (!title.isNull()) {
                 alltasks[title] = tl;
@@ -370,11 +376,14 @@ void saveTasks() {
         return;
     }
     QTextStream out(&file);
+    for (const auto& [k, v] : saveSettings()) {
+        out << '\5' << escape(k) << ';' << escape(v) << '\n';
+    }
     for (const auto& [key, tasks] : alltasks) {
-        out << "\4" << escape(key) << "\n";
+        out << '\4' << escape(key) << '\n';
         for (const auto& tsk : tasks) {
             if (!tsk) continue;
-            out << tsk->toSave() << "\n";
+            out << tsk->toSave() << '\n';
         }
     }
     file.close();

@@ -14,9 +14,10 @@ int main(int argc, char* argv[]) {
     font.setPointSize(16);
     QApplication::setFont(font);
 
+    MG = new MainGame();
+
     loadTasks();
     loadRatios();
-    MG = new MainGame();
     MG->init();
 
     MG->setWindowFlags(MG->windowFlags() | Qt::ExpandedClientAreaHint);
