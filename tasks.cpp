@@ -67,7 +67,6 @@ TaskView::TaskView() {
 
     {QFrame* line = new QFrame();
     line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Raised);
     mtlay->addWidget(line);}
     mtlay->addSpacing(8);
 
@@ -112,7 +111,6 @@ TaskView::TaskView() {
 
         {QFrame* line = new QFrame();
         line->setFrameShape(QFrame::VLine);
-        line->setFrameShadow(QFrame::Raised);
         bot->addWidget(line);}
 
         {scrl = new QScrollArea(this);
@@ -136,7 +134,6 @@ TaskView::TaskView() {
 
         {QFrame* line = new QFrame();
         line->setFrameShape(QFrame::VLine);
-        line->setFrameShadow(QFrame::Raised);
         bot->addWidget(line);}
 
         {auto vlay = new QVBoxLayout();

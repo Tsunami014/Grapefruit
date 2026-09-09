@@ -32,27 +32,23 @@ IcoButton, QPushButton {
     padding: 4px 8px;
 }
 
+QFrame[frameShape="4"], QFrame[frameShape="5"] {
+    background-color: $Outl;
+    color: $Outl;
+}
+
 Spoiler QToolButton {
-    background-color: #A0C4B5;
-    border-radius: 4px;
+    color: $OnSurf;
+    background-color: $SurfContnrHigh;
     padding: 5px;
-    border-style: outset;
-    border-width: 2px;
     border-radius: 6px;
-    border-color: #588D77;
-    qproperty-lineColour: #555;
+    qproperty-lineColour: $OutlVar;
     qproperty-lineWidth: 3px;
 }
-Spoiler QToolButton:pressed {
-    background-color: #72A791;
-    border-style: inset;
-}
 Spoiler #contentArea {
-    background-color: #D7E6DF;
-    border-style: solid;
-    border-width: 2px;
+    color: $OnSurf;
+    background-color: $SurfContnr;
     border-radius: 5px;
-    border-color: #B2CDBA;
 }
 
 TaskBubble { background: transparent; }
@@ -84,15 +80,16 @@ QPushButton[starred=true] {
 }
 
 QTextEdit, QLineEdit {
+    color: $OnSurf;
     background-color: $SurfContnrHighest;
     border-style: solid;
     border-width: 2px;
-    border-color: #888;
+    border-color: $OutlVar;
     border-radius: 6px;
     padding: 4px;
 }
 QTextEdit:focus, QLineEdit:focus {
-    border-color: #555;
+    border-color: $Outl;
 }
 QLineEdit { border-radius: 12px; }
 
