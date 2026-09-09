@@ -12,9 +12,9 @@ void MainGame::generateSettings() {
     auto slay = new QVBoxLayout(setts);
     slay->setSpacing(16);
 
-    auto addbtn = [=](QString txt, QBoxLayout* opts, QWidget* parent){
+    auto addbtn = [=](QString txt, QBoxLayout* opts, QWidget* parent, bool bad = false){
         auto btn = new QPushButton(txt, parent);
-        ColGroups::setGrp(btn, ColGroups::PrimaryContainer);
+        ColGroups::setGrp(btn, bad? ColGroups::ErrorContainer : ColGroups::PrimaryContainer);
         auto wrap = new QWidget(parent);
         auto wraplay = new QHBoxLayout(wrap);
         wraplay->setContentsMargins(8,8,8,8);
@@ -28,37 +28,34 @@ void MainGame::generateSettings() {
         {auto labl = new QLabel("App theme", sp);
         lay->addWidget(labl);}
         auto opts = new QHBoxLayout();
-            {auto btn = addbtn("System", opts, sp);
-            btn->connect(btn, &QPushButton::clicked, [=](){
-                if (theme != -1) {
-                    theme = -1;
-                    genStyle();
-                    saveTasks();
+            auto mkThemeBtn = [=](QString thmtxt, const int thmval) {
+                auto btn = addbtn(thmtxt, opts, sp);
+                btn->connect(btn, &QPushButton::clicked, [=](){
+                    if (theme != thmval) {
+                        theme = thmval;
+                        genStyle();
+                        saveTasks();
+                    }
+                });
+                connect(this, &MainGame::themeChange, btn, [=](){
+                    ColGroups::setGrp(btn, theme == thmval? ColGroups::Primary : ColGroups::PrimaryContainer);
+                    btn->style()->unpolish(btn);
+                    btn->style()->polish(btn);
+                });
+                if (theme == thmval) {
+                    ColGroups::setGrp(btn, ColGroups::Primary);
                 }
-            });}
-            {auto btn = addbtn("Dark", opts, sp);
-            btn->connect(btn, &QPushButton::clicked, [=](){
-                if (theme != 0) {
-                    theme = 0;
-                    genStyle();
-                    saveTasks();
-                }
-            });}
-            {auto btn = addbtn("Light", opts, sp);
-            btn->connect(btn, &QPushButton::clicked, [=](){
-                if (theme != 1) {
-                    theme = 1;
-                    genStyle();
-                    saveTasks();
-                }
-            });}
+            };
+            mkThemeBtn("System", -1);
+            mkThemeBtn("Dark", 0);
+            mkThemeBtn("Light", 1);
         lay->addLayout(opts);
     sp->setContentLayout(*lay);
     slay->addWidget(sp);}
 
     {auto sp = new Spoiler("Reset", this);
     auto opts = new QHBoxLayout();
-        {auto btn = addbtn("Delete All Tasks", opts, sp);
+        {auto btn = addbtn("Delete All Tasks", opts, sp, true);
         btn->connect(btn, &QPushButton::clicked, [=](){
             if (confirm(setts, "Are you sure you want to delete ALL your tasks?", Conf_YESNO)
                 == QDialogButtonBox::YesRole) {
@@ -67,7 +64,7 @@ void MainGame::generateSettings() {
                 }
         });}
 
-        {auto btn = addbtn("Reset Tasks", opts, sp);
+        {auto btn = addbtn("Reset Tasks", opts, sp, true);
         btn->connect(btn, &QPushButton::clicked, [=](){
             if (confirm(setts, "Are you sure you want to reset ALL your tasks with the defaults?", Conf_YESNO)
                 == QDialogButtonBox::YesRole) {

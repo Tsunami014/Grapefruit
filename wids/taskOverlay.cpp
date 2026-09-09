@@ -193,7 +193,7 @@ TaskOverlay::TaskOverlay(
             sublay1->addWidget(mov, Qt::AlignVCenter);}
             {auto bin = new QPushButton(this);
             topparts.push_back(bin);
-            ColGroups::setGrp(bin, ColGroups::PrimaryContainer);
+            ColGroups::setGrp(bin, ColGroups::ErrorContainer);
             setColIco(bin, ":/assets/UI/bin.svg");
             bin->setIconSize(QSize(32, 30));
             bin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);

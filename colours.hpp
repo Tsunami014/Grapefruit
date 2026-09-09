@@ -25,6 +25,11 @@ namespace Cols {
         TertiaryContainer,
         OnTertiaryContainer,
 
+        Error,
+        OnError,
+        ErrorContainer,
+        OnErrorContainer,
+
         RedFixed,
         OnRedFixed,
         OrangeFixed,
@@ -70,6 +75,11 @@ namespace Cols {
         u"OnTert",
         u"TertContnr",
         u"OnTertContnr",
+
+        u"Err",
+        u"OnErr",
+        u"ErrContnr",
+        u"OnErrContnr",
 
         u"Red",
         u"OnRed",
@@ -147,6 +157,8 @@ namespace ColGroups {
         SecondaryContainer,
         Tertiary,
         TertiaryContainer,
+        Error,
+        ErrorContainer,
     };
     inline const std::unordered_map<Group, ColGrp> Groups = {
         { Primary, { Cols::OnPrimary, Cols::Primary } },
@@ -156,6 +168,8 @@ namespace ColGroups {
         { SecondaryContainer, { Cols::OnSecondaryContainer, Cols::SecondaryContainer } },
         { Tertiary, { Cols::OnTertiary, Cols::Tertiary } },
         { TertiaryContainer, { Cols::OnTertiaryContainer, Cols::TertiaryContainer } },
+        { Error, { Cols::OnError, Cols::Error } },
+        { ErrorContainer, { Cols::OnErrorContainer, Cols::ErrorContainer } },
     };
 
     inline QString nam(Group g) { return Groups.at(g).nam; }

@@ -14,9 +14,9 @@ TaskView::TaskView() {
     mtlay->setContentsMargins(9, 9, 9, 9);
     mtlay->setSpacing(0);
 
-    auto addBtn = [&](QString asset){
+    auto addBtn = [&](QString asset, bool bad = false){
         auto btn = new QPushButton();
-        ColGroups::setGrp(btn, ColGroups::PrimaryContainer);
+        ColGroups::setGrp(btn, bad? ColGroups::ErrorContainer : ColGroups::PrimaryContainer);
         setColIco(btn, asset);
         btn->setIconSize(QSize(48, 44));
         btn->setMinimumHeight(56);
@@ -24,7 +24,7 @@ TaskView::TaskView() {
     };
 
     auto toplay = new QHBoxLayout();
-        {auto bin = addBtn(":/assets/UI/bin.svg");
+        {auto bin = addBtn(":/assets/UI/bin.svg", true);
         connect(bin, &QPushButton::clicked, this, [this](){
             if (deleteCategory(this)) redoTasks();
         });
@@ -98,7 +98,6 @@ TaskView::TaskView() {
     bot->setSpacing(8);
         {auto vlay = new QVBoxLayout();
             {auto help = addBtn(":/assets/UI/help.svg");
-            help->setProperty("btnsty", "round");
             connect(help, &QPushButton::clicked, this, [this](){
                 confirm(this, TASK_HELP, Conf_OK, true);
             });

@@ -90,6 +90,12 @@ void MainGame::genStyle(bool sig) {
     styls[Cols::OnTertiary] = getCol(bhue, TERTIARY, fg);
     styls[Cols::TertiaryContainer] = getCol(bhue, TERTIARY, bgcont);
     styls[Cols::OnTertiaryContainer] = getCol(bhue, TERTIARY, fgcont);
+
+    float errh = 0.99f;
+    styls[Cols::Error] = getCol(errh, PRIMARY, bg);
+    styls[Cols::OnError] = getCol(errh, PRIMARY, fg);
+    styls[Cols::ErrorContainer] = getCol(errh, PRIMARY, bgcont);
+    styls[Cols::OnErrorContainer] = getCol(errh, PRIMARY, fgcont);
     }
 
     {float each = 1.0f/6.0f;

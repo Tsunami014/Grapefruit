@@ -25,7 +25,7 @@ IcoButton, QPushButton {
 ^^grps
 
 *[btnsty=round] {
-    border-radius: 18px;
+    border-radius: 24px;
 }
 *[btnsty=big] {
     padding: 10px 18px;
@@ -46,6 +46,8 @@ Spoiler QToolButton {
     background-color: $SecContnr;
     padding: 9px 6px;
     border-radius: 6px;
+    border-top-right-radius: 12px;
+    border-top-left-radius: 12px;
     qproperty-lineColour: $OutlVar;
     qproperty-lineWidth: 3px;
 }
@@ -78,7 +80,6 @@ TaskBubble[pressed=true] QLabel[bubble=bot] {
     background-color: $!SecContnr;
 }
 QPushButton[bubblebtn=true] {
-    border-width: 2px;
     border-radius: 0;
     border-top-right-radius: 12px;
     border-bottom-right-radius: 12px;
@@ -92,7 +93,7 @@ QTextEdit, QLineEdit {
     border-style: solid;
     border-width: 2px;
     border-color: $OutlVar;
-    border-radius: 6px;
+    border-radius: 12px;
     padding: 4px;
 }
 QTextEdit:focus, QLineEdit:focus {
@@ -113,7 +114,7 @@ QScrollBar:horizontal {
     margin: 0px 2px 0px 2px;
 }
 QScrollBar::handle {
-    background: $OnPrimContnr;
+    background: $OutlVar;
     border-radius: 3px;
     min-height: 24px;
 }
@@ -125,7 +126,7 @@ QScrollBar::add-line, QScrollBar::sub-line {
 QSlider, QSlider::groove {
     border: none;
     background: $SurfContnrHighest;
-    border-radius: 3px;
+    border-radius: 4px;
     margin: 0px;
 }
 QSlider:horizontal { height: 24px; }
@@ -133,17 +134,17 @@ QSlider:vertical { width: 24px; }
 QSlider::groove:horizontal { height: 18px; }
 QSlider::groove:vertical { width: 18px; }
 
-QSlider::sub-page { border-radius: 3px; }
+QSlider::sub-page { border-radius: 4px; }
 QSlider::sub-page:horizontal, QSlider::add-page:vertical { background: $PrimContnr; }
 
 QSlider::handle {
-    background: $Sec;
+    background: $Prim;
     border-radius: 6px;
     width: 16px;
     height: 16px;
 }
 QSlider::handle[sliding=true] {
-    background: $!Sec;
+    background: $!Prim;
 }
 
 /* Some calendar things */
