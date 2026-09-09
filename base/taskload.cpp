@@ -35,6 +35,19 @@ void showNoCat() { current = {}; }
 void showStar() { current = "\3"; }
 bool isStarCat() { return current == "\3"; }
 
+bool canModifCat(QString op, QWidget* parent) {
+    QString cur = getCurrent();
+    if (cur.isNull()) {
+        confirm(parent, "Cannot "+op+" as no category is selected!", Conf_OK);
+        return false;
+    }
+    if (cur == "\3") {
+        confirm(parent, "Cannot "+op+" the star category!", Conf_OK);
+        return false;
+    }
+    return true;
+}
+
 void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent) {
     static std::vector<QPushButton*> btns;
     auto cur = getCurrent();

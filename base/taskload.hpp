@@ -7,6 +7,7 @@ QString curCatName();
 void showNoCat();
 void showStar();
 bool isStarCat();
+bool canModifCat(QString op, QWidget* parent);
 
 void setTasksCatsLay(QLayout* lay, std::function<void()> redo, QWidget* parent = nullptr);
 void setTasksLay(QLayout* lay, std::function<void(std::shared_ptr<Task>)> press, std::function<void()> reload, QWidget* parent = nullptr);

@@ -26,6 +26,7 @@ TaskView::TaskView() {
     auto toplay = new QHBoxLayout();
         {auto bin = addBtn(":/assets/UI/bin.svg", true);
         connect(bin, &QPushButton::clicked, this, [this](){
+            if (!canModifCat("delete", this)) return;
             if (deleteCategory(this)) redoTasks();
         });
         toplay->addWidget(bin);}
@@ -139,10 +140,7 @@ TaskView::TaskView() {
         {auto vlay = new QVBoxLayout();
             {auto rnam = addBtn(":/assets/UI/rename.svg");
             connect(rnam, &QPushButton::clicked, this, [this](){
-                if (isStarCat()) {
-                    confirm(this, "Cannot rename the star category!", Conf_OK);
-                    return;
-                }
+                if (!canModifCat("rename", this)) return;
                 QString cur = getCurrent();
                 overlay = new RenameOverlay("Rename category '" + cur + "'", cur, [this](QString s){
                     if (renameCategory(this, s.trimmed())) redoTasks();
