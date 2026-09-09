@@ -32,8 +32,11 @@ IcoButton, QPushButton {
     border-radius: 16px;
 }
 *[btnsty~=outline] {
-    background: transparent;
+    background: $SurfContnrHighest;
     border: 2px solid $Outl;
+}
+*[btnsty~=outline]:pressed {
+    background: $!SurfContnrHighest;
 }
 
 #confirmButtons QPushButton {

@@ -66,7 +66,7 @@ bool moveTask(QWidget* parent, std::shared_ptr<Task> task) {
     lay->addWidget(btns);
     for (QPushButton* b : btns->findChildren<QPushButton*>()) {
         b->setProperty("btnsty", "outline");
-        ColGroups::setGrp(b, ColGroups::Secondary);
+        ColGroups::setGrp(b, ColGroups::SecondaryContainer);
         b->style()->unpolish(b);
         b->style()->polish(b);
         resizeFont(b, 1.5);

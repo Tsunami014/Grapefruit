@@ -30,7 +30,7 @@ enum PalleteOpts {
 QColor getCol(float bhue, PalleteOpts palstyl, float tone) {
     switch (palstyl) {
         case FIXED:
-            return QColor::fromHslF(bhue, 0.42, tone);
+            return QColor::fromHslF(bhue, 0.32, tone);
         case PRIMARY:
             return QColor::fromHslF(bhue, 0.48, tone);
         case SECONDARY:
@@ -70,7 +70,7 @@ void MainGame::genStyle(bool sig) {
     } else { light = theme == 1; }
     float bhue = base.hueF();
 
-    {const float bg = light? 0.5:0.8;
+    {const float bg = light? 0.5:0.75;
     const float fg = light? 1.0:0.2;
     const float bgcont = light? 0.8:0.3;
     const float fgcont = light? 0.1:0.9;
@@ -99,8 +99,8 @@ void MainGame::genStyle(bool sig) {
     }
 
     {float each = 1.0f/6.0f;
-    constexpr float bg = 0.85;
-    constexpr float on = 0.15;
+    constexpr float bg = 0.8;
+    constexpr float on = 0.2;
     styls[Cols::RedFixed] = getCol(0, FIXED, bg);
     styls[Cols::OnRedFixed] = getCol(0, FIXED, on);
     styls[Cols::OrangeFixed] = getCol(each*0.5f, FIXED, bg);
@@ -115,8 +115,8 @@ void MainGame::genStyle(bool sig) {
     styls[Cols::OnPurpleFixed] = getCol(each*5, FIXED, on);
     }
 
-    styls[Cols::Outline] = getCol(bhue, NEUTRALVARIANT, light? 0.5:0.6);
-    styls[Cols::OutlineVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.8:0.4); // Lighter
+    styls[Cols::Outline] = getCol(bhue, NEUTRALVARIANT, light? 0.5:0.55);
+    styls[Cols::OutlineVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.7:0.45); // Lighter
 
     styls[Cols::Surface] = getCol(bhue, NEUTRAL, light? 0.98:0.06);
     styls[Cols::OnSurface] = getCol(bhue, NEUTRAL, light? 0.1:0.9);
