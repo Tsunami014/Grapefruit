@@ -11,6 +11,7 @@
 #include <QDialogButtonBox>
 #include <QScrollArea>
 #include <QPushButton>
+#include <QStyle>
 
 ConfirmOverlay::ConfirmOverlay(QWidget* parent, bool scroll, QWidget* ref)
         : QWidget(parent), ref(ref) {
@@ -106,7 +107,14 @@ QDialogButtonBox::ButtonRole confirm(QWidget* parent, const QString& text, Confi
     }
     lay->addWidget(btns);
     for (QPushButton* b : btns->findChildren<QPushButton*>()) {
-        ColGroups::setGrp(b, ColGroups::Primary);
+        ColGroups::Group g;
+        switch (btns->buttonRole(b)) {
+            case QDialogButtonBox::RejectRole: g = ColGroups::Secondary;
+            default: g = ColGroups::Primary;
+        }
+        ColGroups::setGrp(b, g);
+        b->style()->unpolish(b);
+        b->style()->polish(b);
         resizeFont(b, 1.5);
         b->setIcon(QIcon());
     }

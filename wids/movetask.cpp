@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QScrollArea>
 #include <QPushButton>
+#include <QStyle>
 
 
 bool moveTask(QWidget* parent, std::shared_ptr<Task> task) {
@@ -64,6 +65,9 @@ bool moveTask(QWidget* parent, std::shared_ptr<Task> task) {
     auto* btns = new QDialogButtonBox(QDialogButtonBox::Cancel, ovrl);
     lay->addWidget(btns);
     for (QPushButton* b : btns->findChildren<QPushButton*>()) {
+        ColGroups::setGrp(b, ColGroups::Secondary);
+        b->style()->unpolish(b);
+        b->style()->polish(b);
         resizeFont(b, 1.5);
         b->setIcon(QIcon());
     }
