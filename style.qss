@@ -65,8 +65,6 @@ TaskBubble QLabel[bubble=bot] {
     padding: 8px; padding-top: 4px;
 }
 QPushButton[bubblebtn=true] {
-    color: $OnTertContnr;
-    background-color: $TertContnr;
     border-width: 2px;
     border-radius: 0;
     border-top-right-radius: 12px;
@@ -74,14 +72,10 @@ QPushButton[bubblebtn=true] {
     border-left: 0px;
     padding: 8px; padding-top: 4px;
 }
-QPushButton[starred=true] {
-    color: $OnTert;
-    background-color: $Tert;
-}
 
 QTextEdit, QLineEdit {
     color: $OnSurf;
-    background-color: $SurfContnrHighest;
+    background-color: $SurfContnrHigh;
     border-style: solid;
     border-width: 2px;
     border-color: $OutlVar;
@@ -130,7 +124,7 @@ QSlider::sub-page { border-radius: 3px; }
 QSlider::sub-page:horizontal, QSlider::add-page:vertical { background: #4F8EF7; }
 
 QSlider::handle {
-    background: $SurfContnrHighest;
+    background: $SurfContnrHigh;
     border: 2px solid #3B6FD1;
     border-radius: 6px;
     width: 16px;
@@ -138,7 +132,7 @@ QSlider::handle {
 }
 
 QWidget#navigation {
-    background-color: $SurfContnrHighest;
+    background-color: $SurfContnrHigh;
     padding: 6px 4px;
     border-bottom: 2px solid #EEF0F3;
 }

@@ -1,6 +1,7 @@
 #include "itemopts.hpp"
 #include "date.hpp"
 #include "colours.hpp"
+#include "extra/icon.hpp"
 #include <QLayoutItem>
 #include <QPushButton>
 #include <QTextCursor>
@@ -162,7 +163,7 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
     auto mkbtn = [&](const QString& ico, auto slot){
         auto btn = new QPushButton(parent);
         ColGroups::setGrp(btn, ColGroups::PrimaryContainer);
-        btn->setIcon(QIcon(ico));
+        setColIco(btn, ico);
         btn->setIconSize(QSize(32, 32));
         btn->setFocusPolicy(Qt::NoFocus);
         parent->connect(btn, &QPushButton::clicked, edit, slot);

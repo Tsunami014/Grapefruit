@@ -11,8 +11,10 @@
 #include "wids/house.hpp"
 
 class MainGame : public QMainWindow {
+    Q_OBJECT
 public:
     MainGame();
+    void init();
 
     void toMain() { stack->setCurrentWidget(main); }
     void toSetts() { stack->setCurrentWidget(setts); }
@@ -21,8 +23,11 @@ public:
     Conversation* conv;
     House* house;
 
-    void genStyle();
+    void genStyle(bool sig = true);
     std::unordered_map<Cols::Colour, QColor> styls;
+
+signals:
+    void themeChange();
 
 private:
     QStackedWidget* stack;

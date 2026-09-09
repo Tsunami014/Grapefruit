@@ -1,6 +1,7 @@
 #include "tasks.hpp"
 #include "game.hpp"
 #include "base/taskload.hpp"
+#include "extra/icon.hpp"
 #include "extra/help.hpp"
 #include "wids/taskOverlay.hpp"
 #include "wids/renameOverl.hpp"
@@ -16,7 +17,7 @@ TaskView::TaskView() {
     auto addBtn = [&](QString asset){
         auto btn = new QPushButton();
         ColGroups::setGrp(btn, ColGroups::PrimaryContainer);
-        btn->setIcon(QIcon(asset));
+        setColIco(btn, asset);
         btn->setIconSize(QSize(48, 44));
         btn->setMinimumHeight(56);
         return btn;

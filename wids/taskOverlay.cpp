@@ -5,6 +5,7 @@
 #include "extra/itemopts.hpp"
 #include "extra/drag.hpp"
 #include "extra/date.hpp"
+#include "extra/icon.hpp"
 #include "wids/confirm.hpp"
 #include "wids/movetask.hpp"
 #include "wids/slider.hpp"
@@ -165,7 +166,7 @@ TaskOverlay::TaskOverlay(
             {auto mov = new QPushButton(this);
             topparts.push_back(mov);
             ColGroups::setGrp(mov, ColGroups::PrimaryContainer);
-            mov->setIcon(QIcon(":/assets/UI/move.svg"));
+            setColIco(mov, ":/assets/UI/move.svg");
             mov->setIconSize(QSize(32, 30));
             mov->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
             connect(mov, &QPushButton::clicked, sl1wid, [=](){
@@ -180,7 +181,7 @@ TaskOverlay::TaskOverlay(
             {auto bin = new QPushButton(this);
             topparts.push_back(bin);
             ColGroups::setGrp(bin, ColGroups::PrimaryContainer);
-            bin->setIcon(QIcon(":/assets/UI/bin.svg"));
+            setColIco(bin, ":/assets/UI/bin.svg");
             bin->setIconSize(QSize(32, 30));
             bin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
             connect(bin, &QPushButton::clicked, sl1wid, [=](){

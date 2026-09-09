@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <cstdint>
 #include <array>
+#include <optional>
 
 namespace Cols {
     enum Colour : uint8_t {
@@ -131,4 +132,13 @@ namespace ColGroups {
 
     inline QString nam(Group g) { return Groups.at(g).nam; }
     inline void setGrp(QWidget* wid, Group g) { wid->setProperty("grp", Groups.at(g).nam); }
+    inline std::optional<Group> getGrp(QWidget* wid) {
+        const QString nam = wid->property("grp").toString();
+        if (nam.isEmpty()) return std::nullopt;
+
+        for (const auto& [grp, cgrp] : Groups) {
+            if (cgrp.nam == nam) return grp;
+        }
+        return std::nullopt;
+    }
 }

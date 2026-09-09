@@ -1,4 +1,6 @@
 #pragma once
+#include "colours.hpp"
+#include "extra/icon.hpp"
 #include <QToolButton>
 
 class IcoButton : public QToolButton {
@@ -8,7 +10,8 @@ public:
         : QToolButton(parent) {
             setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
             setText(text);
-            setIcon(QIcon(asset));
+            ColGroups::setGrp(this, ColGroups::SecondaryContainer);
+            setColIco(this, asset);
             setAccessibleDescription(text);
         }
 };

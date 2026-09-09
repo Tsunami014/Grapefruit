@@ -22,6 +22,7 @@ set(CORE
     extra/itemopts.cpp
     extra/drag.cpp
     extra/bgitem.cpp
+    extra/icon.cpp
     extra/date.cpp
     extra/help.cpp
 

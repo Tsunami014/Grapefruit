@@ -2,6 +2,7 @@
 #include "colours.hpp"
 #include "game.hpp"
 #include "font.hpp"
+#include "extra/icon.hpp"
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QLabel>
@@ -63,7 +64,7 @@ RenameOverlay::RenameOverlay(QString title, QString initial,
     auto btn = new QPushButton();
     ColGroups::setGrp(btn, ColGroups::Primary);
     btn->setProperty("btnsty", "round");
-    btn->setIcon(QIcon(":/assets/UI/check.svg"));
+    setColIco(btn, ":/assets/UI/check.svg");
     int mx = le->rect().height() + 8;
     btn->setIconSize(QSize(mx, mx-4));
     connect(btn, &QPushButton::clicked, le, &QLineEdit::returnPressed);

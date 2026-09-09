@@ -14,7 +14,7 @@ void MainGame::setupStyle() {
               qApp, [this](Qt::ColorScheme scheme) {
         if (theme == -1) genStyle();
     });
-    genStyle();
+    genStyle(false);
 }
 
 
@@ -49,7 +49,7 @@ inline QColor colbang(QColor orig, bool light) {
 }
 
 const QRegularExpression stylRe(R"(\$([a-zA-Z]+)\$?)");
-void MainGame::genStyle() {
+void MainGame::genStyle(bool sig) {
     bool light;
     if (theme == -1) {
         Qt::ColorScheme scheme = qApp->styleHints()->colorScheme();
@@ -170,4 +170,6 @@ void MainGame::genStyle() {
     stylNavTimer->start(300);
     updFn();
 #endif
+
+    if (sig) emit themeChange();
 }

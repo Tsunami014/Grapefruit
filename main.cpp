@@ -17,6 +17,7 @@ int main(int argc, char* argv[]) {
     loadTasks();
     loadRatios();
     MG = new MainGame();
+    MG->init();
 
     MG->setWindowFlags(MG->windowFlags() | Qt::ExpandedClientAreaHint);
     MG->show();

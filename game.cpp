@@ -10,6 +10,9 @@ MainGame::MainGame() {
     stack = new QStackedWidget(this);
     setCentralWidget(stack);
 
+    setupStyle();
+}
+void MainGame::init() {
     // Create the main screen
     main = new QWidget();
     stack->addWidget(main);
@@ -56,7 +59,6 @@ MainGame::MainGame() {
         auto quickbtns = new QVBoxLayout();
             auto addBtn = [&](const QString& labl, const QString& asset, auto slot) {
                 auto btn = new IcoButton(labl, asset);
-                ColGroups::setGrp(btn, ColGroups::SecondaryContainer);
                 btn->setIconSize(QSize(0,0));
                 resizeFont(btn, 0.9);
                 connect(btn, &QPushButton::clicked, this, slot);
@@ -89,7 +91,6 @@ MainGame::MainGame() {
     stack->addWidget(tasks);
 
     // Last initialisation!
-    setupStyle();
     stack->setCurrentWidget(main);
 }
 

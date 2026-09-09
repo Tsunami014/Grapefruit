@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "font.hpp"
 #include "base/taskload.hpp"
+#include "extra/icon.hpp"
 #include "wids/secret.hpp"
 #include "wids/confirm.hpp"
 #include <QLabel>
@@ -93,7 +94,7 @@ void MainGame::generateSettings() {
         auto bk = new QPushButton();
         ColGroups::setGrp(bk, ColGroups::SecondaryContainer);
         bk->setProperty("btnsty", "round");
-        bk->setIcon(QIcon(":/assets/UI/back.svg"));
+        setColIco(bk, ":/assets/UI/back.svg");
         bk->setIconSize(QSize(48, 40));
         connect(bk, &QPushButton::clicked, this, [this](){ toMain(); });
         topsect->addWidget(bk, 0, Qt::AlignHCenter);
