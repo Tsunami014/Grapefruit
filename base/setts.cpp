@@ -14,6 +14,8 @@ void loadSetting(QString name, QString conts) {
         } else {
             qWarning() << "Theme value not a number:" << conts;
         }
+    } else if (name == "col") {
+        MG->base = QColor::fromString(conts);
     } else {
         qWarning() << "Unknown setting key:" << name;
     }
@@ -21,5 +23,6 @@ void loadSetting(QString name, QString conts) {
 std::unordered_map<QString, QString> saveSettings() {
     std::unordered_map<QString, QString> out;
     out["thm"] = QString::number(MG->theme+1);
+    out["col"] = MG->base.name();
     return out;
 }

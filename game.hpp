@@ -28,6 +28,7 @@ public:
 
     /// -1: system, 0: dark, 1: light
     int theme = -1;
+    QColor base;
 
 signals:
     void themeChange();
@@ -37,6 +38,8 @@ private:
     QWidget* main;
     QWidget* setts;
     TaskView* tasks;
+
+    std::vector<QColor> cols;
 
     void setupStyle();
 

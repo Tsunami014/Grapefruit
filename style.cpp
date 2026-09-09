@@ -1,15 +1,28 @@
 #include "game.hpp"
+#include "base/taskload.hpp"
 #include <QFile>
 #include <QStyleHints>
+#include <QRandomGenerator>
 #include <QRegularExpression>
 #ifdef Q_OS_ANDROID
 #include <QJniObject>
 #include <QtCore/qnativeinterface.h>
 #endif
 
-const QColor base(236, 161, 211);
-
 void MainGame::setupStyle() {
+    cols = {
+        {179, 59, 21}, // Red
+        {245, 226, 158}, // Yellow
+        {178, 234, 211}, // Green
+        {137, 232, 232}, // Aqua
+        {118, 156, 223}, // Blue
+        {150, 123, 182}, // Purple
+        {237, 189, 213}, // Pink
+    };
+    if (!base.isValid()) {
+        base = cols[QRandomGenerator::global()->bounded(int(cols.size()))];
+        QTimer::singleShot(0, [](){ saveTasks(); }); // So it doesn't change each time
+    }
     QObject::connect(qApp->styleHints(), &QStyleHints::colorSchemeChanged,
               qApp, [this](Qt::ColorScheme scheme) {
         if (theme == -1) genStyle();
