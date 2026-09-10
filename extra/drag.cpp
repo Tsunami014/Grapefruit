@@ -3,6 +3,7 @@
 #include <QMouseEvent>
 #include <QAbstractButton>
 #include <QScrollBar>
+#include <QScrollArea>
 #include <QLayout>
 #include <QLayoutItem>
 
@@ -18,7 +19,9 @@ DragScroll::DragScroll(QWidget* viewp, QScrollBar* scrollb)
 }
 
 void DragScroll::installOn(QWidget* w) {
-    if (!w || installed.contains(w)) return;
+    if (!w) return;
+    if (qobject_cast<QScrollArea*>(w)) return;
+    if (installed.contains(w)) return;
     installed.insert(w);
     connect(w, &QObject::destroyed, this, [this, w](){ installed.remove(w); });
     w->installEventFilter(this);

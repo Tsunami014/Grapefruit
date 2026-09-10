@@ -12,23 +12,42 @@ void MainGame::generateSettings() {
     auto slay = new QVBoxLayout(setts);
     slay->setSpacing(16);
 
+    QVBoxLayout* mslay;
+    DragScroll* sdrag;
+    {auto mainscrl = new QScrollArea(this);
+    mainscrl->setFrameShape(QFrame::NoFrame);
+    mainscrl->setProperty("bg", true);
+
+    mainscrl->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    mainscrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    mainscrl->verticalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    mainscrl->verticalScrollBar()->setFocusPolicy(Qt::NoFocus);
+    sdrag = new DragScroll(mainscrl->viewport(), mainscrl->verticalScrollBar());
+
+    auto* tcont = new QWidget(this);
+    tcont->setObjectName("transpbg");
+    mslay = new QVBoxLayout(tcont);
+    mslay->setSpacing(16);
+    mslay->setAlignment(Qt::AlignTop);
+    mainscrl->setWidget(tcont);
+    mainscrl->setWidgetResizable(true);
+    slay->addWidget(mainscrl);}
+
+
     auto addbtn = [=](const QString& txt, QWidget* parent, bool bad = false){
         auto btn = new QPushButton(txt, parent);
         ColGroups::setGrp(btn, bad? ColGroups::ErrorContainer : ColGroups::PrimaryContainer);
         btn->setProperty("btnsty", "big");
         return btn;
     };
-
     auto fmtLay = [](QBoxLayout* lay) {
         lay->setSpacing(12);
         lay->setContentsMargins(12,12,12,12);
     };
 
-    {auto sp = new Spoiler("Style", this);
+    {auto sp = new Spoiler("App Style", this);
     auto lay = new QVBoxLayout();
     fmtLay(lay);
-        {auto labl = new QLabel("App theme", sp);
-        lay->addWidget(labl);}
         auto opts = new QHBoxLayout();
             auto mkThemeBtn = [=](QString thmtxt, const int thmval) {
                 auto btn = addbtn(thmtxt, sp);
@@ -174,7 +193,7 @@ void MainGame::generateSettings() {
         scrl->setWidgetResizable(true);
         lay->addWidget(scrl);}
     sp->setContentLayout(*lay);
-    slay->addWidget(sp);}
+    mslay->addWidget(sp);}
 
     {auto sp = new Spoiler("Reset", this);
     auto opts = new QHBoxLayout();
@@ -199,7 +218,7 @@ void MainGame::generateSettings() {
         });
         opts->addWidget(btn);}
     sp->setContentLayout(*opts);
-    slay->addWidget(sp);}
+    mslay->addWidget(sp);}
 
     {auto sp = new Spoiler("Debug", this);
     auto opts = new QVBoxLayout();
@@ -214,9 +233,9 @@ void MainGame::generateSettings() {
         });
         opts->addWidget(btn);}
     sp->setContentLayout(*opts);
-    slay->addWidget(sp);}
+    mslay->addWidget(sp);}
 
-    slay->addStretch();
+    sdrag->installOn(mslay);
 
     auto topsect = new QHBoxLayout();
         auto bk = new QPushButton();
