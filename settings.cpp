@@ -223,10 +223,10 @@ void MainGame::generateSettings() {
     {auto sp = new Spoiler("Debug", this);
     auto opts = new QVBoxLayout();
     fmtLay(opts);
-        auto labl = new QLabel("Task info...", sp);
+        auto labl = new QLabel("Task info will go here...", sp);
         opts->addWidget(labl);
 
-        {auto btn = addbtn("Reload", sp);
+        {auto btn = addbtn("Reload task info", sp);
         btn->connect(btn, &QPushButton::clicked, labl, [=](){
             labl->setText(getAllTasksDebugInfo());
             sp->updateHeights();
