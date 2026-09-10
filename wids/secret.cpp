@@ -55,6 +55,9 @@ Spoiler::Spoiler(const QString& title, QWidget* parent) : QWidget(parent) {
             setProperty("open", open);
             toggleButton.style()->unpolish(&toggleButton);
             toggleButton.style()->polish(&toggleButton);
+            // NOTE: We only have open-dependent styles on the button, so don't restyle *everything*
+            /*contentArea.style()->unpolish(&contentArea);
+            contentArea.style()->polish(&contentArea);*/
         }
         emit heightChanged();
     });

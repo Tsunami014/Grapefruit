@@ -56,7 +56,7 @@ QFrame[frameShape="4"], QFrame[frameShape="5"] {
     color: $Outl;
 }
 
-Spoiler QToolButton {
+Spoiler > QToolButton {
     color: $OnSecContnr;
     background-color: $SecContnr;
     padding: 9px 6px;
@@ -64,17 +64,17 @@ Spoiler QToolButton {
     qproperty-lineColour: $OutlVar;
     qproperty-lineWidth: 3px;
 }
-Spoiler QToolButton:pressed {
+Spoiler > QToolButton:pressed {
     background-color: $!SecContnr;
 }
-Spoiler QToolButton:hover, Spoiler QToolButton:pressed {
+Spoiler > QToolButton:hover, Spoiler > QToolButton:pressed {
     border-radius: 9px;
 }
-Spoiler[open=true] QToolButton {
+Spoiler[open=true] > QToolButton {
     border-bottom-right-radius: 6px;
     border-bottom-left-radius: 6px;
 }
-Spoiler #contentArea {
+Spoiler > #contentArea {
     color: $OnSurf;
     background-color: $SurfContnr;
     border-radius: 6px;
