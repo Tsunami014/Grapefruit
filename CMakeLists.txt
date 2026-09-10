@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 set(APP_NAME Grapefruit)
 project(${APP_NAME} LANGUAGES CXX)
+enable_language(C)
 
 set(CORE
     main.cpp game.cpp
@@ -19,6 +20,8 @@ set(CORE
     base/quals.cpp
     base/setts.cpp
     base/importance.cpp
+
+    extra/hsluv.c
 
     extra/itemopts.cpp
     extra/drag.cpp

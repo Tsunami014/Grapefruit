@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "base/taskload.hpp"
+#include "extra/hsluv.h"
 #include <QFile>
 #include <QStyleHints>
 #include <QRandomGenerator>
@@ -42,59 +43,59 @@ enum PalleteOpts {
 PALLETE_COUNT};
 
 struct RoleStyle {
-    float saturation = 0.0f; // Saturation (0-1)
-    int hueShiftDeg = 0; // Added to the base hue (in degrees)
-    float toneContrast = 1.0f; // Multiplied to tone, scaled from 0.5
+    double saturation = 0; // Saturation (0-100)
+    double hueShiftDeg = 0; // Added to the base hue (in degrees)
+    double toneContrast = 1.0f; // Multiplied to tone, scaled from 0.5
 };
 using ThemeRow = std::array<RoleStyle, PALLETE_COUNT>;
 inline const ThemeRow& themeRow(Themes::Theme thm) {
     static const ThemeRow tonal = {{
-        { 0.32f }, // FIXED
-        { 0.48f }, // PRIMARY
-        { 0.16f }, // SECONDARY
-        { 0.24f, 60 }, // TERTIARY
-        { 0.04f }, // NEUTRAL
-        { 0.08f }, // NEUTRALVARIANT
+        { 32 }, // FIXED
+        { 48 }, // PRIMARY
+        { 16 }, // SECONDARY
+        { 24, 60 }, // TERTIARY
+        { 4 }, // NEUTRAL
+        { 8 }, // NEUTRALVARIANT
     }};
     static const ThemeRow muted = {{
-        { 0.18f }, // FIXED
-        { 0.28f }, // PRIMARY
-        { 0.10f }, // SECONDARY
-        { 0.14f, 45 }, // TERTIARY
-        { 0.03f }, // NEUTRAL
-        { 0.05f }, // NEUTRALVARIANT
+        { 18 }, // FIXED
+        { 28 }, // PRIMARY
+        { 10 }, // SECONDARY
+        { 14, 45 }, // TERTIARY
+        { 3 }, // NEUTRAL
+        { 5 }, // NEUTRALVARIANT
     }};
     static const ThemeRow vivid = {{
-        { 0.35f, 0, 0.9f }, // FIXED
-        { 0.78f, 0, 0.9f }, // PRIMARY
-        { 0.60f, 0, 0.9f }, // SECONDARY
-        { 0.75f, 25, 0.9f }, // TERTIARY
-        { 0.09f, 0, 0.9f }, // NEUTRAL
-        { 0.18f, 0, 0.9f }, // NEUTRALVARIANT
+        { 35, 0, 0.9 }, // FIXED
+        { 78, 0, 0.9 }, // PRIMARY
+        { 60, 0, 0.9 }, // SECONDARY
+        { 75, 25, 0.9 }, // TERTIARY
+        { 9, 0, 0.9 }, // NEUTRAL
+        { 18, 0, 0.9 }, // NEUTRALVARIANT
     }};
     static const ThemeRow grayscale = {{
-        { 0.01f, 0, 1.2f }, // FIXED
-        { 0.01f, 0, 1.2f }, // PRIMARY
-        { 0.0f, 0, 1.2f }, // SECONDARY
-        { 0.0f, 0, 1.2f }, // TERTIARY
-        { 0.0f, 0, 1.2f }, // NEUTRAL
-        { 0.0f, 0, 1.2f }, // NEUTRALVARIANT
+        { 1, 0, 1.2 }, // FIXED
+        { 1, 0, 1.2 }, // PRIMARY
+        { 0, 0, 1.2 }, // SECONDARY
+        { 0, 0, 1.2 }, // TERTIARY
+        { 0, 0, 1.2 }, // NEUTRAL
+        { 0, 0, 1.2 }, // NEUTRALVARIANT
     }};
     static const ThemeRow expressive = {{
-        { 0.35f }, // FIXED
-        { 0.60f }, // PRIMARY
-        { 0.55f, -50 }, // SECONDARY
-        { 0.55f, -160 }, // TERTIARY
-        { 0.06f }, // NEUTRAL
-        { 0.10f }, // NEUTRALVARIANT
+        { 35 }, // FIXED
+        { 60 }, // PRIMARY
+        { 55, -50 }, // SECONDARY
+        { 55, -160 }, // TERTIARY
+        { 6 }, // NEUTRAL
+        { 10 }, // NEUTRALVARIANT
     }};
     static const ThemeRow fruitsalad = {{
-        { 0.30f }, // FIXED
-        { 0.55f }, // PRIMARY
-        { 0.25f, 150 }, // SECONDARY
-        { 0.30f, 260 }, // TERTIARY
-        { 0.05f }, // NEUTRAL
-        { 0.10f }, // NEUTRALVARIANT
+        { 30 }, // FIXED
+        { 55 }, // PRIMARY
+        { 25, 150 }, // SECONDARY
+        { 30, 260 }, // TERTIARY
+        { 5 }, // NEUTRAL
+        { 10 }, // NEUTRALVARIANT
     }};
 
     switch (thm) {
@@ -108,30 +109,27 @@ inline const ThemeRow& themeRow(Themes::Theme thm) {
     }
 }
 
-QColor getCol(float bhue, PalleteOpts palstyl, float tone, Themes::Theme theme) {
+QColor getCol(double bhue, PalleteOpts palstyl, double tone, Themes::Theme theme) {
     const auto& styl = themeRow(theme)[static_cast<std::size_t>(palstyl)];
 
-    float hue = std::fmod(bhue + styl.hueShiftDeg / 360.0f, 1.0f);
-    if (hue < 0.0f) hue += 1.0f; // fmod can be negative
+    double hue = std::fmod(bhue + styl.hueShiftDeg, 360.);
+    if (hue < 0.) hue += 360.;
 
-    float t = std::clamp(0.5f + (tone - 0.5f) * styl.toneContrast, 0.0f, 1.0f);
-
-    return QColor::fromHslF(hue, styl.saturation, t);
-}
-
-QColor fixcol(QColor inp, float xtratone) {
-    bool light;
-    if (MG->theme == -1) {
-        Qt::ColorScheme scheme = qApp->styleHints()->colorScheme();
-        light = scheme != Qt::ColorScheme::Dark;
-    } else { light = MG->theme == 1; }
-
-    return QColor::fromHslF(inp.hueF(), 0.48, std::clamp(light? 0.4f+xtratone:0.8f-xtratone, 0.0f, 1.0f));
+    double t = std::clamp(50. + (tone - 50.) * styl.toneContrast, 0., 100.);
+    double r, g, b;
+    hsluv2rgb(hue, styl.saturation, t, &r, &g, &b);
+    return QColor::fromRgbF(r, g, b);
 }
 
 constexpr int diff = 10;
 inline QColor colbang(QColor orig, bool light, int amnt = 1) {
     return QColor(orig.red() - diff*amnt, orig.green() - diff*amnt, orig.blue() - diff*amnt);
+}
+
+double getHue(QColor col) {
+    double h, s, l;
+    rgb2hsluv(col.redF(), col.greenF(), col.blueF(), &h, &s, &l);
+    return h;
 }
 
 const QRegularExpression stylRe(R"(\$(!*)([a-zA-Z]+)\$?)");
@@ -141,18 +139,18 @@ void MainGame::genStyle(bool init) {
         Qt::ColorScheme scheme = qApp->styleHints()->colorScheme();
         light = scheme != Qt::ColorScheme::Dark; // Includes unknown
     } else { light = theme == 1; }
-    float bhue = base.hueF();
+    double bhue = getHue(base);
 
-    {const float bg = light? 0.5:0.75;
-    const float fg = light? 1.0:0.2;
-    const float bgcont = light? 0.8:0.3;
-    const float fgcont = light? 0.1:0.9;
+    {const double bg = light? 50:75;
+    const double fg = light? 100:20;
+    const double bgcont = light? 80:30;
+    const double fgcont = light? 10:90;
     styls[Cols::Primary] = getCol(bhue, PRIMARY, bg, colthm);
     styls[Cols::OnPrimary] = getCol(bhue, PRIMARY, fg, colthm);
     styls[Cols::PrimaryContainer] = getCol(bhue, PRIMARY, bgcont, colthm);
     styls[Cols::OnPrimaryContainer] = getCol(bhue, PRIMARY, fgcont, colthm);
-    styls[Cols::PrimaryInverse] = getCol(bhue, PRIMARY, light? 0.9:0.3, colthm);
-    styls[Cols::OnPrimaryInverse] = getCol(bhue, PRIMARY, light? 0.1:0.9, colthm);
+    styls[Cols::PrimaryInverse] = getCol(bhue, PRIMARY, light? 90:30, colthm);
+    styls[Cols::OnPrimaryInverse] = getCol(bhue, PRIMARY, light? 10:90, colthm);
 
     styls[Cols::Secondary] = getCol(bhue, SECONDARY, bg, colthm);
     styls[Cols::OnSecondary] = getCol(bhue, SECONDARY, fg, colthm);
@@ -164,42 +162,42 @@ void MainGame::genStyle(bool init) {
     styls[Cols::TertiaryContainer] = getCol(bhue, TERTIARY, bgcont, colthm);
     styls[Cols::OnTertiaryContainer] = getCol(bhue, TERTIARY, fgcont, colthm);
 
-    float errh = 0.99f;
+    double errh = 355;
     styls[Cols::Error] = getCol(errh, PRIMARY, bg, colthm);
     styls[Cols::OnError] = getCol(errh, PRIMARY, fg, colthm);
     styls[Cols::ErrorContainer] = getCol(errh, PRIMARY, bgcont, colthm);
     styls[Cols::OnErrorContainer] = getCol(errh, PRIMARY, fgcont, colthm);
     }
 
-    {float each = 1.0f/6.0f;
-    constexpr float bg = 0.8;
-    constexpr float on = 0.2;
+    {double each = 30;
+    const double bg = 80;
+    const double on = 20;
     styls[Cols::RedFixed] = getCol(0, FIXED, bg, colthm);
     styls[Cols::OnRedFixed] = getCol(0, FIXED, on, colthm);
-    styls[Cols::OrangeFixed] = getCol(each*0.5f, FIXED, bg, colthm);
-    styls[Cols::OnOrangeFixed] = getCol(each*0.5f, FIXED, on, colthm);
+    styls[Cols::OrangeFixed] = getCol(each*0.5, FIXED, bg, colthm);
+    styls[Cols::OnOrangeFixed] = getCol(each*0.5, FIXED, on, colthm);
     styls[Cols::YellowFixed] = getCol(each, FIXED, bg, colthm);
     styls[Cols::OnYellowFixed] = getCol(each, FIXED, on, colthm);
     styls[Cols::GreenFixed] = getCol(each*2, FIXED, bg, colthm);
     styls[Cols::OnGreenFixed] = getCol(each*2, FIXED, on, colthm);
-    styls[Cols::BlueFixed] = getCol(each*3.5f, FIXED, bg, colthm);
-    styls[Cols::OnBlueFixed] = getCol(each*3.5f, FIXED, on, colthm);
+    styls[Cols::BlueFixed] = getCol(each*3.5, FIXED, bg, colthm);
+    styls[Cols::OnBlueFixed] = getCol(each*3.5, FIXED, on, colthm);
     styls[Cols::PurpleFixed] = getCol(each*5, FIXED, bg, colthm);
     styls[Cols::OnPurpleFixed] = getCol(each*5, FIXED, on, colthm);
     }
 
-    styls[Cols::Outline] = getCol(bhue, NEUTRALVARIANT, light? 0.5:0.55, colthm);
-    styls[Cols::OutlineVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.7:0.45, colthm); // Lighter
+    styls[Cols::Outline] = getCol(bhue, NEUTRALVARIANT, light? 50:55, colthm);
+    styls[Cols::OutlineVariant] = getCol(bhue, NEUTRALVARIANT, light? 70:45, colthm); // Lighter
 
-    styls[Cols::Surface] = getCol(bhue, NEUTRAL, light? 0.98:0.06, colthm);
-    styls[Cols::OnSurface] = getCol(bhue, NEUTRAL, light? 0.1:0.9, colthm);
-    styls[Cols::OnSurfaceVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.3:0.8, colthm);
+    styls[Cols::Surface] = getCol(bhue, NEUTRAL, light? 98:6, colthm);
+    styls[Cols::OnSurface] = getCol(bhue, NEUTRAL, light? 10:90, colthm);
+    styls[Cols::OnSurfaceVariant] = getCol(bhue, NEUTRALVARIANT, light? 30:80, colthm);
 
-    styls[Cols::SurfaceContainerLow] = getCol(bhue, NEUTRAL, light? 0.94:0.10, colthm);
-    styls[Cols::SurfaceContainer] = getCol(bhue, NEUTRAL, light? 0.92:0.12, colthm);
-    styls[Cols::SurfaceContainerHigh] = getCol(bhue, NEUTRAL, light? 0.90:0.17, colthm);
-    styls[Cols::SurfaceContainerHighest] = getCol(bhue, NEUTRAL, light? 0.88:0.22, colthm);
-    styls[Cols::SurfaceContainerHighestest] = getCol(bhue, NEUTRAL, light? 0.84:0.26, colthm);
+    styls[Cols::SurfaceContainerLow] = getCol(bhue, NEUTRAL, light? 94:10, colthm);
+    styls[Cols::SurfaceContainer] = getCol(bhue, NEUTRAL, light? 92:12, colthm);
+    styls[Cols::SurfaceContainerHigh] = getCol(bhue, NEUTRAL, light? 90:17, colthm);
+    styls[Cols::SurfaceContainerHighest] = getCol(bhue, NEUTRAL, light? 88:22, colthm);
+    styls[Cols::SurfaceContainerHighestest] = getCol(bhue, NEUTRAL, light? 84:26, colthm);
 
     static QString mstyl = [](){
         QFile file(":/style.qss");
