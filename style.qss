@@ -50,14 +50,16 @@ Spoiler QToolButton {
     color: $OnSecContnr;
     background-color: $SecContnr;
     padding: 9px 6px;
-    border-radius: 6px;
-    border-top-right-radius: 12px;
-    border-top-left-radius: 12px;
+    border-radius: 12px;
     qproperty-lineColour: $OutlVar;
     qproperty-lineWidth: 3px;
 }
 Spoiler QToolButton:pressed {
     background-color: $!SecContnr;
+}
+Spoiler[open=true] QToolButton {
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
 }
 Spoiler #contentArea {
     color: $OnSurf;

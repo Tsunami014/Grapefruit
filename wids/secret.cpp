@@ -47,8 +47,17 @@ Spoiler::Spoiler(const QString& title, QWidget* parent) : QWidget(parent) {
     // start out collapsed
     contentArea.setMaximumHeight(0);
     contentArea.setMinimumHeight(0);
+    setProperty("open", false);
     auto* contentAnim = new QPropertyAnimation(&contentArea, "maximumHeight");
-    connect(contentAnim, &QPropertyAnimation::valueChanged, this, &Spoiler::heightChanged);
+    connect(contentAnim, &QPropertyAnimation::valueChanged, this, [this](const QVariant& value){
+        const bool open = value.toInt() > 0;
+        if (property("open").toBool() != open) {
+            setProperty("open", open);
+            toggleButton.style()->unpolish(&toggleButton);
+            toggleButton.style()->polish(&toggleButton);
+        }
+        emit heightChanged();
+    });
     toggleAnimation.addAnimation(contentAnim);
     // don't waste space
     mainLayout.setContentsMargins(0, 0, 0, 0);
