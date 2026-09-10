@@ -38,25 +38,49 @@ enum PalleteOpts {
     TERTIARY,
     NEUTRAL,
     NEUTRALVARIANT,
-};
 
-QColor getCol(float bhue, PalleteOpts palstyl, float tone) {
-    switch (palstyl) {
-        case FIXED:
-            return QColor::fromHslF(bhue, 0.32, tone);
-        case PRIMARY:
-            return QColor::fromHslF(bhue, 0.48, tone);
-        case SECONDARY:
-            return QColor::fromHslF(bhue, 0.16, tone);
-        case TERTIARY:
-            return QColor::fromHslF(
-                std::fmod(bhue+(60.0f/360.0f), 1.0f), 0.24, tone);
-        case NEUTRAL:
-            return QColor::fromHslF(bhue, 0.04, tone);
-        case NEUTRALVARIANT:
-            return QColor::fromHslF(bhue, 0.08, tone);
+PALLETE_COUNT};
+
+struct RoleStyle {
+    float saturation = 0.0f; // Saturation (0-1)
+    int hueShiftDeg = 0; // Added to the base hue (in degrees)
+    float toneContrast = 1.0f; // Multiplied to tone, scaled from 0.5
+};
+using ThemeRow = std::array<RoleStyle, PALLETE_COUNT>;
+inline const ThemeRow& themeRow(Themes::Theme thm) {
+    static const ThemeRow tonal = {{
+        { 0.32f }, // FIXED
+        { 0.48f }, // PRIMARY
+        { 0.16f }, // SECONDARY
+        { 0.24f, 60 }, // TERTIARY
+        { 0.04f }, // NEUTRAL
+        { 0.08f }, // NEUTRALVARIANT
+    }};
+    static const ThemeRow muted = {{
+        { 0.18f }, // FIXED
+        { 0.28f }, // PRIMARY
+        { 0.10f }, // SECONDARY
+        { 0.14f, 45 }, // TERTIARY
+        { 0.03f }, // NEUTRAL
+        { 0.05f }, // NEUTRALVARIANT
+    }};
+
+    switch (thm) {
+        case Themes::Tonal: return tonal;
+        case Themes::Muted: return muted;
+        default: return tonal;
     }
-    return {};
+}
+
+QColor getCol(float bhue, PalleteOpts palstyl, float tone, Themes::Theme theme) {
+    const auto& styl = themeRow(theme)[static_cast<std::size_t>(palstyl)];
+
+    float hue = std::fmod(bhue + styl.hueShiftDeg / 360.0f, 1.0f);
+    if (hue < 0.0f) hue += 1.0f; // fmod can be negative
+
+    float t = std::clamp(0.5f + (tone - 0.5f) * styl.toneContrast, 0.0f, 1.0f);
+
+    return QColor::fromHslF(hue, styl.saturation, t);
 }
 
 QColor fixcol(QColor inp, float xtratone) {
@@ -87,59 +111,59 @@ void MainGame::genStyle(bool init) {
     const float fg = light? 1.0:0.2;
     const float bgcont = light? 0.8:0.3;
     const float fgcont = light? 0.1:0.9;
-    styls[Cols::Primary] = getCol(bhue, PRIMARY, bg);
-    styls[Cols::OnPrimary] = getCol(bhue, PRIMARY, fg);
-    styls[Cols::PrimaryContainer] = getCol(bhue, PRIMARY, bgcont);
-    styls[Cols::OnPrimaryContainer] = getCol(bhue, PRIMARY, fgcont);
-    styls[Cols::PrimaryInverse] = getCol(bhue, PRIMARY, light? 0.9:0.3);
-    styls[Cols::OnPrimaryInverse] = getCol(bhue, PRIMARY, light? 0.1:0.9);
+    styls[Cols::Primary] = getCol(bhue, PRIMARY, bg, colthm);
+    styls[Cols::OnPrimary] = getCol(bhue, PRIMARY, fg, colthm);
+    styls[Cols::PrimaryContainer] = getCol(bhue, PRIMARY, bgcont, colthm);
+    styls[Cols::OnPrimaryContainer] = getCol(bhue, PRIMARY, fgcont, colthm);
+    styls[Cols::PrimaryInverse] = getCol(bhue, PRIMARY, light? 0.9:0.3, colthm);
+    styls[Cols::OnPrimaryInverse] = getCol(bhue, PRIMARY, light? 0.1:0.9, colthm);
 
-    styls[Cols::Secondary] = getCol(bhue, SECONDARY, bg);
-    styls[Cols::OnSecondary] = getCol(bhue, SECONDARY, fg);
-    styls[Cols::SecondaryContainer] = getCol(bhue, SECONDARY, bgcont);
-    styls[Cols::OnSecondaryContainer] = getCol(bhue, SECONDARY, fgcont);
+    styls[Cols::Secondary] = getCol(bhue, SECONDARY, bg, colthm);
+    styls[Cols::OnSecondary] = getCol(bhue, SECONDARY, fg, colthm);
+    styls[Cols::SecondaryContainer] = getCol(bhue, SECONDARY, bgcont, colthm);
+    styls[Cols::OnSecondaryContainer] = getCol(bhue, SECONDARY, fgcont, colthm);
 
-    styls[Cols::Tertiary] = getCol(bhue, TERTIARY, bg);
-    styls[Cols::OnTertiary] = getCol(bhue, TERTIARY, fg);
-    styls[Cols::TertiaryContainer] = getCol(bhue, TERTIARY, bgcont);
-    styls[Cols::OnTertiaryContainer] = getCol(bhue, TERTIARY, fgcont);
+    styls[Cols::Tertiary] = getCol(bhue, TERTIARY, bg, colthm);
+    styls[Cols::OnTertiary] = getCol(bhue, TERTIARY, fg, colthm);
+    styls[Cols::TertiaryContainer] = getCol(bhue, TERTIARY, bgcont, colthm);
+    styls[Cols::OnTertiaryContainer] = getCol(bhue, TERTIARY, fgcont, colthm);
 
     float errh = 0.99f;
-    styls[Cols::Error] = getCol(errh, PRIMARY, bg);
-    styls[Cols::OnError] = getCol(errh, PRIMARY, fg);
-    styls[Cols::ErrorContainer] = getCol(errh, PRIMARY, bgcont);
-    styls[Cols::OnErrorContainer] = getCol(errh, PRIMARY, fgcont);
+    styls[Cols::Error] = getCol(errh, PRIMARY, bg, colthm);
+    styls[Cols::OnError] = getCol(errh, PRIMARY, fg, colthm);
+    styls[Cols::ErrorContainer] = getCol(errh, PRIMARY, bgcont, colthm);
+    styls[Cols::OnErrorContainer] = getCol(errh, PRIMARY, fgcont, colthm);
     }
 
     {float each = 1.0f/6.0f;
     constexpr float bg = 0.8;
     constexpr float on = 0.2;
-    styls[Cols::RedFixed] = getCol(0, FIXED, bg);
-    styls[Cols::OnRedFixed] = getCol(0, FIXED, on);
-    styls[Cols::OrangeFixed] = getCol(each*0.5f, FIXED, bg);
-    styls[Cols::OnOrangeFixed] = getCol(each*0.5f, FIXED, on);
-    styls[Cols::YellowFixed] = getCol(each, FIXED, bg);
-    styls[Cols::OnYellowFixed] = getCol(each, FIXED, on);
-    styls[Cols::GreenFixed] = getCol(each*2, FIXED, bg);
-    styls[Cols::OnGreenFixed] = getCol(each*2, FIXED, on);
-    styls[Cols::BlueFixed] = getCol(each*3.5f, FIXED, bg);
-    styls[Cols::OnBlueFixed] = getCol(each*3.5f, FIXED, on);
-    styls[Cols::PurpleFixed] = getCol(each*5, FIXED, bg);
-    styls[Cols::OnPurpleFixed] = getCol(each*5, FIXED, on);
+    styls[Cols::RedFixed] = getCol(0, FIXED, bg, colthm);
+    styls[Cols::OnRedFixed] = getCol(0, FIXED, on, colthm);
+    styls[Cols::OrangeFixed] = getCol(each*0.5f, FIXED, bg, colthm);
+    styls[Cols::OnOrangeFixed] = getCol(each*0.5f, FIXED, on, colthm);
+    styls[Cols::YellowFixed] = getCol(each, FIXED, bg, colthm);
+    styls[Cols::OnYellowFixed] = getCol(each, FIXED, on, colthm);
+    styls[Cols::GreenFixed] = getCol(each*2, FIXED, bg, colthm);
+    styls[Cols::OnGreenFixed] = getCol(each*2, FIXED, on, colthm);
+    styls[Cols::BlueFixed] = getCol(each*3.5f, FIXED, bg, colthm);
+    styls[Cols::OnBlueFixed] = getCol(each*3.5f, FIXED, on, colthm);
+    styls[Cols::PurpleFixed] = getCol(each*5, FIXED, bg, colthm);
+    styls[Cols::OnPurpleFixed] = getCol(each*5, FIXED, on, colthm);
     }
 
-    styls[Cols::Outline] = getCol(bhue, NEUTRALVARIANT, light? 0.5:0.55);
-    styls[Cols::OutlineVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.7:0.45); // Lighter
+    styls[Cols::Outline] = getCol(bhue, NEUTRALVARIANT, light? 0.5:0.55, colthm);
+    styls[Cols::OutlineVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.7:0.45, colthm); // Lighter
 
-    styls[Cols::Surface] = getCol(bhue, NEUTRAL, light? 0.98:0.06);
-    styls[Cols::OnSurface] = getCol(bhue, NEUTRAL, light? 0.1:0.9);
-    styls[Cols::OnSurfaceVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.3:0.8);
+    styls[Cols::Surface] = getCol(bhue, NEUTRAL, light? 0.98:0.06, colthm);
+    styls[Cols::OnSurface] = getCol(bhue, NEUTRAL, light? 0.1:0.9, colthm);
+    styls[Cols::OnSurfaceVariant] = getCol(bhue, NEUTRALVARIANT, light? 0.3:0.8, colthm);
 
-    styls[Cols::SurfaceContainerLow] = getCol(bhue, NEUTRAL, light? 0.94:0.10);
-    styls[Cols::SurfaceContainer] = getCol(bhue, NEUTRAL, light? 0.92:0.12);
-    styls[Cols::SurfaceContainerHigh] = getCol(bhue, NEUTRAL, light? 0.90:0.17);
-    styls[Cols::SurfaceContainerHighest] = getCol(bhue, NEUTRAL, light? 0.88:0.22);
-    styls[Cols::SurfaceContainerHighestest] = getCol(bhue, NEUTRAL, light? 0.84:0.26);
+    styls[Cols::SurfaceContainerLow] = getCol(bhue, NEUTRAL, light? 0.94:0.10, colthm);
+    styls[Cols::SurfaceContainer] = getCol(bhue, NEUTRAL, light? 0.92:0.12, colthm);
+    styls[Cols::SurfaceContainerHigh] = getCol(bhue, NEUTRAL, light? 0.90:0.17, colthm);
+    styls[Cols::SurfaceContainerHighest] = getCol(bhue, NEUTRAL, light? 0.88:0.22, colthm);
+    styls[Cols::SurfaceContainerHighestest] = getCol(bhue, NEUTRAL, light? 0.84:0.26, colthm);
 
     static QString mstyl = [](){
         QFile file(":/style.qss");

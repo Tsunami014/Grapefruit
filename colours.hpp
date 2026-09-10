@@ -184,3 +184,17 @@ namespace ColGroups {
         return std::nullopt;
     }
 }
+
+
+namespace Themes {
+    enum Theme : uint8_t {
+        Tonal,
+        Muted,
+
+    Count};
+
+    inline constexpr std::array<std::pair<QStringView, Theme>, Count> names = {{
+        { u"Tonal", Tonal },
+        { u"Muted", Muted },
+    }};
+}

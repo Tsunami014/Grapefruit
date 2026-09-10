@@ -12,11 +12,10 @@ void MainGame::generateSettings() {
     auto slay = new QVBoxLayout(setts);
     slay->setSpacing(16);
 
-    auto addbtn = [=](QString txt, QBoxLayout* opts, QWidget* parent, bool bad = false){
+    auto addbtn = [=](const QString& txt, QWidget* parent, bool bad = false){
         auto btn = new QPushButton(txt, parent);
         ColGroups::setGrp(btn, bad? ColGroups::ErrorContainer : ColGroups::PrimaryContainer);
         btn->setProperty("btnsty", "big");
-        opts->addWidget(btn);
         return btn;
     };
 
@@ -32,7 +31,7 @@ void MainGame::generateSettings() {
         lay->addWidget(labl);}
         auto opts = new QHBoxLayout();
             auto mkThemeBtn = [=](QString thmtxt, const int thmval) {
-                auto btn = addbtn(thmtxt, opts, sp);
+                auto btn = addbtn(thmtxt, sp);
                 btn->connect(btn, &QPushButton::clicked, this, [=](){
                     if (theme != thmval) {
                         theme = thmval;
@@ -40,14 +39,14 @@ void MainGame::generateSettings() {
                         saveTasks();
                     }
                 });
+                auto colour = [=]() { ColGroups::setGrp(btn, theme == thmval? ColGroups::Primary : ColGroups::PrimaryContainer); };
                 connect(this, &MainGame::themeChange, btn, [=](){
-                    ColGroups::setGrp(btn, theme == thmval? ColGroups::Primary : ColGroups::PrimaryContainer);
+                    colour();
                     btn->style()->unpolish(btn);
                     btn->style()->polish(btn);
                 });
-                if (theme == thmval) {
-                    ColGroups::setGrp(btn, ColGroups::Primary);
-                }
+                colour();
+                opts->addWidget(btn);
             };
             mkThemeBtn("System", -1);
             mkThemeBtn("Dark", 0);
@@ -101,11 +100,11 @@ void MainGame::generateSettings() {
         scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
         scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
-        auto tcatdrag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
+        auto drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
 
-        auto* catcont = new QWidget(this);
-        catcont->setObjectName("transpbg");
-        auto opts2inr = new QHBoxLayout(catcont);
+        auto* cont = new QWidget(this);
+        cont->setObjectName("transpbg");
+        auto opts2inr = new QHBoxLayout(cont);
             for (const QColor& c : cols) {
                 auto* btn = new QPushButton(sp);
                 btn->setFixedSize(colbtnsize, colbtnsize);
@@ -127,34 +126,78 @@ void MainGame::generateSettings() {
                 );
                 opts2inr->addWidget(btn);
             }
-        tcatdrag->installOn(opts2inr);
-        scrl->setWidget(catcont);
+        drag->installOn(opts2inr);
+        scrl->setWidget(cont);
         scrl->setWidgetResizable(true);
         opts2->addWidget(scrl);}
         lay->addLayout(opts2);
+
+        {QFrame* line = new QFrame();
+        line->setFrameShape(QFrame::HLine);
+        lay->addWidget(line);}
+
+        {auto scrl = new QScrollArea(this);
+        scrl->setFrameShape(QFrame::NoFrame);
+        scrl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        scrl->setObjectName("highcard");
+
+        scrl->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+        scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
+        auto drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
+
+        auto* cont = new QWidget(this);
+        cont->setObjectName("transpbg");
+        auto thmopts = new FlowLayout(cont);
+        thmopts->vertical(2);
+        for (const auto& th : Themes::names) {
+            auto btn = addbtn(th.first.toString(), sp);
+            btn->connect(btn, &QPushButton::clicked, this, [=](){
+                if (colthm != th.second) {
+                    colthm = th.second;
+                    genStyle();
+                    saveTasks();
+                }
+            });
+            auto colour = [=]() { ColGroups::setGrp(btn, colthm == th.second? ColGroups::Primary : ColGroups::PrimaryContainer); };
+            connect(this, &MainGame::themeChange, btn, [=](){
+                colour();
+                btn->style()->unpolish(btn);
+                btn->style()->polish(btn);
+            });
+            colour();
+            thmopts->addWidget(btn);
+        }
+        drag->installOn(thmopts);
+        scrl->setWidget(cont);
+        scrl->setWidgetResizable(true);
+        lay->addWidget(scrl);}
     sp->setContentLayout(*lay);
     slay->addWidget(sp);}
 
     {auto sp = new Spoiler("Reset", this);
     auto opts = new QHBoxLayout();
     fmtLay(opts);
-        {auto btn = addbtn("Delete All Tasks", opts, sp, true);
+        {auto btn = addbtn("Delete All Tasks", sp, true);
         btn->connect(btn, &QPushButton::clicked, [=](){
             if (confirm(setts, "Are you sure you want to delete ALL your tasks?", Conf_YESNO)
                 == QDialogButtonBox::YesRole) {
                     delAllTasks();
                     tasks->redoTasks();
                 }
-        });}
+        });
+        opts->addWidget(btn);}
 
-        {auto btn = addbtn("Reset Tasks", opts, sp, true);
+        {auto btn = addbtn("Reset Tasks", sp, true);
         btn->connect(btn, &QPushButton::clicked, [=](){
             if (confirm(setts, "Are you sure you want to reset ALL your tasks with the defaults?", Conf_YESNO)
                 == QDialogButtonBox::YesRole) {
                     resetTasks();
                     tasks->redoTasks();
                 }
-        });}
+        });
+        opts->addWidget(btn);}
     sp->setContentLayout(*opts);
     slay->addWidget(sp);}
 
@@ -164,11 +207,12 @@ void MainGame::generateSettings() {
         auto labl = new QLabel("Task info...", sp);
         opts->addWidget(labl);
 
-        {auto btn = addbtn("Reload", opts, sp);
+        {auto btn = addbtn("Reload", sp);
         btn->connect(btn, &QPushButton::clicked, labl, [=](){
             labl->setText(getAllTasksDebugInfo());
             sp->updateHeights();
-        });}
+        });
+        opts->addWidget(btn);}
     sp->setContentLayout(*opts);
     slay->addWidget(sp);}
 

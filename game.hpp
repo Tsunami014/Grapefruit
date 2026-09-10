@@ -25,6 +25,7 @@ public:
 
     /// -1: system, 0: dark, 1: light
     int theme = -1;
+    Themes::Theme colthm = Themes::Tonal;
     QColor base;
 
 signals:
