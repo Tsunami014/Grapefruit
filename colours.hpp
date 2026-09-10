@@ -160,7 +160,7 @@ namespace ColGroups {
         Error,
         ErrorContainer,
     };
-    inline const std::unordered_map<Group, ColGrp> Groups = {
+    inline const std::map<Group, ColGrp> Groups = {
         { Primary, { Cols::OnPrimary, Cols::Primary } },
         { PrimaryContainer, { Cols::OnPrimaryContainer, Cols::PrimaryContainer } },
         { PrimaryInverse, { Cols::OnPrimaryInverse, Cols::PrimaryInverse } },
@@ -190,11 +190,19 @@ namespace Themes {
     enum Theme : uint8_t {
         Tonal,
         Muted,
+        Vivid,
+        Greyscale,
+        Expressive,
+        FruitSalad,
 
     Count};
 
     inline constexpr std::array<std::pair<QStringView, Theme>, Count> names = {{
         { u"Tonal", Tonal },
         { u"Muted", Muted },
+        { u"Vivid", Vivid },
+        { u"Greyscale", Greyscale },
+        { u"Expressive", Expressive },
+        { u"Fruit Salad", FruitSalad },
     }};
 }

@@ -64,10 +64,46 @@ inline const ThemeRow& themeRow(Themes::Theme thm) {
         { 0.03f }, // NEUTRAL
         { 0.05f }, // NEUTRALVARIANT
     }};
+    static const ThemeRow vivid = {{
+        { 0.35f, 0, 0.9f }, // FIXED
+        { 0.78f, 0, 0.9f }, // PRIMARY
+        { 0.60f, 0, 0.9f }, // SECONDARY
+        { 0.75f, 25, 0.9f }, // TERTIARY
+        { 0.09f, 0, 0.9f }, // NEUTRAL
+        { 0.18f, 0, 0.9f }, // NEUTRALVARIANT
+    }};
+    static const ThemeRow grayscale = {{
+        { 0.01f, 0, 1.2f }, // FIXED
+        { 0.01f, 0, 1.2f }, // PRIMARY
+        { 0.0f, 0, 1.2f }, // SECONDARY
+        { 0.0f, 0, 1.2f }, // TERTIARY
+        { 0.0f, 0, 1.2f }, // NEUTRAL
+        { 0.0f, 0, 1.2f }, // NEUTRALVARIANT
+    }};
+    static const ThemeRow expressive = {{
+        { 0.35f }, // FIXED
+        { 0.60f }, // PRIMARY
+        { 0.55f, -50 }, // SECONDARY
+        { 0.55f, -160 }, // TERTIARY
+        { 0.06f }, // NEUTRAL
+        { 0.10f }, // NEUTRALVARIANT
+    }};
+    static const ThemeRow fruitsalad = {{
+        { 0.30f }, // FIXED
+        { 0.55f }, // PRIMARY
+        { 0.25f, 150 }, // SECONDARY
+        { 0.30f, 260 }, // TERTIARY
+        { 0.05f }, // NEUTRAL
+        { 0.10f }, // NEUTRALVARIANT
+    }};
 
     switch (thm) {
         case Themes::Tonal: return tonal;
         case Themes::Muted: return muted;
+        case Themes::Vivid: return vivid;
+        case Themes::Greyscale: return grayscale;
+        case Themes::Expressive: return expressive;
+        case Themes::FruitSalad: return fruitsalad;
         default: return tonal;
     }
 }
