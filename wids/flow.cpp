@@ -58,6 +58,10 @@ void FlowLayout::setGeometry(const QRect& rect) {
 
 QSize FlowLayout::sizeHint() const { return minimumSize(); }
 QSize FlowLayout::minimumSize() const {
+    if (maxRows > 0) {
+        doLayout(QRect(0, 0, std::numeric_limits<int>::max() / 2, 0), true);
+        return _lastSze;
+    }
     QSize size;
     for (const QLayoutItem* item : std::as_const(itemList)) {
         size = size.expandedTo(item->minimumSize());
@@ -155,11 +159,17 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
             rowits[idx].push_back({wid, x, x + item->sizeHint().width() + spaceX});
             heights[idx] = qMax(heights[idx], item->sizeHint().height() + spaceY);
         }
-        if (testOnly) return std::accumulate(heights.begin(), heights.end(), effectiveRect.y());
-        int y = effectiveRect.y();
         int maxRight = effectiveRect.x();
         for (int i = 0; i < maxRows; i++) {
             maxRight = qMax(maxRight, rowits[i].back().right);
+        }
+        int totalHeight = std::accumulate(heights.begin(), heights.end(), effectiveRect.y());
+        _lastSze = QSize(maxRight + right, totalHeight + bottom);
+
+        if (testOnly) return totalHeight;
+
+        int y = effectiveRect.y();
+        for (int i = 0; i < maxRows; i++) {
             int ladj = qMax((effectiveRect.width() - rowits[i].back().right)/int(rowits[i].size()), 0);
             uint i2 = 0;
             for (auto& it : rowits[i]) {
@@ -168,7 +178,6 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
             }
             y += heights[i];
         }
-        _lastSze = QSize(maxRight + right, y + bottom);
         return y;
     }
 }
