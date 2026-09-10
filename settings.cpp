@@ -135,14 +135,17 @@ void MainGame::generateSettings() {
                     saveTasks();
                 });
 
-                btn->setStyleSheet(QString(
+                btn->setStyleSheet(QString("QPushButton{"
                     "background-color: %1;"
                     "border: 3px solid %2;"
                     "border-radius: %3px;"
-                )
+                "}QPushButton:hover,QPushButton:pressed{"
+                    "border-radius: %4px;"
+                "}")
                     .arg(c.name())
                     .arg(c.darker(150).name())
                     .arg(colbtnsize / 2)
+                    .arg(colbtnsize/2 - 3)
                 );
                 opts2inr->addWidget(btn);
             }

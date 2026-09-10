@@ -73,15 +73,25 @@ void TaskBubble::mouseReleaseEvent(QMouseEvent* event) {
     refreshStyle();
     emit clicked();
 }
-void TaskBubble::leaveEvent(QEvent* event) {
-    QWidget::leaveEvent(event);
-    if (!pressed) return;
-    event->accept();
-    pressed = false;
+
+void TaskBubble::enterEvent(QEnterEvent* event) {
+    QWidget::enterEvent(event);
+    hovered = true;
     refreshStyle();
 }
+void TaskBubble::leaveEvent(QEvent* event) {
+    QWidget::leaveEvent(event);
+    hovered = false;
+    if (pressed) {
+        event->accept();
+        pressed = false;
+    }
+    refreshStyle();
+}
+
 void TaskBubble::refreshStyle() {
     setProperty("pressed", pressed);
+    setProperty("hovered", hovered);
     style()->unpolish(this);
     style()->polish(this);
     for (QLabel* labl : findChildren<QLabel*>()) {

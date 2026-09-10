@@ -5,6 +5,10 @@ QMainWindow { background-color: $Surf; }
 IcoButton, QPushButton {
     border-radius: 12px;
 }
+IcoButton:hover, IcoButton:pressed,
+QPushButton:hover, QPushButton:pressed {
+    border-radius: 9px;
+}
 
 *[bg=true] { background-color: $SurfContnrLow; }
 #card { background-color: $SurfContnr; }
@@ -25,9 +29,15 @@ IcoButton, QPushButton {
 *[btnsty~=round] {
     border-radius: 18px;
 }
+*[btnsty~=round]:hover, *[btnsty~=round]:pressed {
+    border-radius: 15px;
+}
 *[btnsty~=big] {
     padding: 10px 18px;
     border-radius: 16px;
+}
+*[btnsty~=big]:hover, *[btnsty~=big]:pressed {
+    border-radius: 13px;
 }
 *[btnsty~=outline] {
     background: $SurfContnrHighest;
@@ -57,6 +67,9 @@ Spoiler QToolButton {
 Spoiler QToolButton:pressed {
     background-color: $!SecContnr;
 }
+Spoiler QToolButton:hover, Spoiler QToolButton:pressed {
+    border-radius: 9px;
+}
 Spoiler[open=true] QToolButton {
     border-bottom-right-radius: 6px;
     border-bottom-left-radius: 6px;
@@ -77,6 +90,11 @@ TaskBubble QLabel[bubble=top] {
 TaskBubble[pressed=true] QLabel[bubble=top] {
     background-color: $!PrimContnr;
 }
+TaskBubble[hovered=true] QLabel[bubble=top],
+TaskBubble[pressed=true] QLabel[bubble=top] {
+    border-top-left-radius: 9px;
+}
+
 TaskBubble QLabel[bubble=bot] {
     color: $OnPrimContnr;
     background-color: $!PrimContnr;
@@ -86,12 +104,22 @@ TaskBubble QLabel[bubble=bot] {
 TaskBubble[pressed=true] QLabel[bubble=bot] {
     background-color: $!!PrimContnr;
 }
+TaskBubble[hovered=true] QLabel[bubble=bot],
+TaskBubble[pressed=true] QLabel[bubble=bot] {
+    border-bottom-left-radius: 9px;
+}
+
 QPushButton[bubblebtn=true] {
     border-radius: 0;
     border-top-right-radius: 12px;
     border-bottom-right-radius: 12px;
     border-left: 0px;
     padding: 8px; padding-top: 4px;
+}
+QPushButton[bubblebtn=true]:hover,
+QPushButton[bubblebtn=true]:pressed {
+    border-top-right-radius: 9px;
+    border-bottom-right-radius: 9px;
 }
 
 QTextEdit, QLineEdit {
@@ -176,6 +204,10 @@ QWidget#navigation QPushButton {
 }
 QWidget#navigation QPushButton:pressed {
     background-color: $!Prim;
+}
+QWidget#navigation QPushButton:hover,
+QWidget#navigation QPushButton:pressed {
+    border-radius: 9px;
 }
 
 /* Get rid of a yucky line */

@@ -15,8 +15,10 @@ signals:
 protected:
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
+    void enterEvent(QEnterEvent* event) override;
     void leaveEvent(QEvent* event) override;
     bool pressed = false;
+    bool hovered = false;
 
 private:
     void refreshStyle();
