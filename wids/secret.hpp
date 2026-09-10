@@ -26,10 +26,17 @@ class Spoiler : public QWidget {
 public:
     explicit Spoiler(const QString& title = "", QWidget* parent = 0);
     void setContentLayout(QLayout& contentLayout);
-    void updateHeights();
-private:
+    void updateHeights(int forWidth = -1);
+    QWidget contentArea;
+
+signals:
+    void heightChanged();
+
+protected:
+    void resizeEvent(QResizeEvent* event) override;
+    int contentHeightFor(int width) const;
+
     QVBoxLayout mainLayout;
     HeaderButton toggleButton;
     QParallelAnimationGroup toggleAnimation;
-    QWidget contentArea;
 };

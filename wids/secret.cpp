@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QStyleOptionToolButton>
 #include <QStyle>
+#include <QResizeEvent>
 
 const int animationDuration = 200;
 
@@ -46,7 +47,9 @@ Spoiler::Spoiler(const QString& title, QWidget* parent) : QWidget(parent) {
     // start out collapsed
     contentArea.setMaximumHeight(0);
     contentArea.setMinimumHeight(0);
-    toggleAnimation.addAnimation(new QPropertyAnimation(&contentArea, "maximumHeight"));
+    auto* contentAnim = new QPropertyAnimation(&contentArea, "maximumHeight");
+    connect(contentAnim, &QPropertyAnimation::valueChanged, this, &Spoiler::heightChanged);
+    toggleAnimation.addAnimation(contentAnim);
     // don't waste space
     mainLayout.setContentsMargins(0, 0, 0, 0);
     mainLayout.setSpacing(0);
@@ -65,7 +68,7 @@ void Spoiler::setContentLayout(QLayout& contentLayout) {
     delete contentArea.layout();
     contentArea.setLayout(&contentLayout);
     const auto collapsedHeight = sizeHint().height() - contentArea.maximumHeight();
-    auto contentHeight = contentLayout.sizeHint().height();
+    auto contentHeight = contentHeightFor(contentArea.width());
     for (int i = 0; i < toggleAnimation.animationCount() - 1; ++i) {
         QPropertyAnimation* spoilerAnimation = static_cast<QPropertyAnimation*>(toggleAnimation.animationAt(i));
         spoilerAnimation->setDuration(animationDuration);
@@ -78,25 +81,36 @@ void Spoiler::setContentLayout(QLayout& contentLayout) {
     contentAnimation->setEndValue(contentHeight);
 }
 
-void Spoiler::updateHeights() {
+int Spoiler::contentHeightFor(int width) const {
+    QLayout* cl = contentArea.layout();
+    if (!cl) return 0;
+    if (width <= 0) width = contentArea.width();
+    return cl->hasHeightForWidth() ? cl->heightForWidth(width) : cl->sizeHint().height();
+}
+
+void Spoiler::resizeEvent(QResizeEvent* event) {
+    QWidget::resizeEvent(event);
+    if (event->oldSize().width() != event->size().width()) {
+        updateHeights(event->size().width());
+    }
+}
+
+void Spoiler::updateHeights(int forWidth) {
     if (!contentArea.layout()) return;
     contentArea.layout()->activate();
 
-    const int newhei = contentArea.layout()->sizeHint().height();
+    const int newhei = contentHeightFor(forWidth);
     auto* anim = static_cast<QPropertyAnimation*>(
         toggleAnimation.animationAt(toggleAnimation.animationCount() - 1)
     );
 
     const int oldhei = anim->endValue().toInt();
-    // How far open are we right now? (0 = closed, 1 = open)
-    double t;
-    if (oldhei > 0) {
-        t = double(contentArea.maximumHeight()) / oldhei;
-    } else { t = 0.0; }
+    double t = oldhei > 0 ? double(contentArea.maximumHeight()) / oldhei : 0.0;
 
     anim->setEndValue(newhei);
     // Instantly set to the right height
     contentArea.setMaximumHeight(qRound(t*newhei));
 
     updateGeometry();
+    emit heightChanged();
 }

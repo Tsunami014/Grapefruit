@@ -8,6 +8,8 @@
 #include <QBoxLayout>
 #include <QPushButton>
 
+constexpr int colbtnsize = 50;
+
 void MainGame::generateSettings() {
     auto slay = new QVBoxLayout(setts);
     slay->setSpacing(16);
@@ -40,7 +42,7 @@ void MainGame::generateSettings() {
         btn->setProperty("btnsty", "big");
         return btn;
     };
-    auto fmtLay = [](QBoxLayout* lay) {
+    auto fmtLay = [](QLayout* lay) {
         lay->setSpacing(12);
         lay->setContentsMargins(12,12,12,12);
     };
@@ -77,7 +79,6 @@ void MainGame::generateSettings() {
         lay->addWidget(line);}
 
         auto opts2 = new QHBoxLayout();
-        const int colbtnsize = 50;
             {auto* btn = new QPushButton(sp);
             btn->setFixedSize(colbtnsize, colbtnsize);
             const int icosze = colbtnsize*0.7;
@@ -192,6 +193,39 @@ void MainGame::generateSettings() {
         scrl->setWidget(cont);
         scrl->setWidgetResizable(true);
         lay->addWidget(scrl);}
+
+        {auto sp2 = new Spoiler("Colour Test", this);
+        sp2->contentArea.setObjectName("highcard");
+        auto opts = new FlowLayout(8, 8, 8);
+        fmtLay(opts);
+            for (const auto& [g, inf] : ColGroups::Groups) {
+                auto* btn = new QPushButton(sp2);
+                btn->setFixedSize(colbtnsize, colbtnsize);
+
+                auto inf2 = inf; // So it doesn't complain
+                auto styl = [=](){
+                    btn->setStyleSheet(QString(
+                        "background-color: %1;"
+                        "border: %3px solid %2;"
+                        "border-radius: %4px;"
+                    )
+                        .arg(styls[inf2.fg].name())
+                        .arg(styls[inf2.bg].name())
+                        .arg(colbtnsize * 0.35)
+                        .arg(colbtnsize * 0.25)
+                    );
+                };
+                connect(this, &MainGame::themeChange, btn, [=](){
+                    styl();
+                    btn->style()->unpolish(btn);
+                    btn->style()->polish(btn);
+                });
+                styl();
+                opts->addWidget(btn);
+            }
+        sp2->setContentLayout(*opts);
+        connect(sp2, &Spoiler::heightChanged, sp, [sp](){ sp->updateHeights(); });
+        lay->addWidget(sp2);}
     sp->setContentLayout(*lay);
     mslay->addWidget(sp);}
 
