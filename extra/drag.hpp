@@ -14,7 +14,7 @@ protected:
 
 private:
     void ontick();
-    QSet<QObject*> installed;
+    static bool eventClaimed;
 
     QWidget* viewp;
     QScrollBar* scrollb;

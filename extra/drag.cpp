@@ -10,6 +10,8 @@
 const double FRICTION = 0.9;
 const int THRESHOLD = 8;  // px needed to move by to count as dragging
 
+bool DragScroll::eventClaimed = false;
+
 
 DragScroll::DragScroll(QWidget* viewp, QScrollBar* scrollb)
         : QObject(viewp), viewp(viewp), scrollb(scrollb) {
@@ -21,9 +23,6 @@ DragScroll::DragScroll(QWidget* viewp, QScrollBar* scrollb)
 void DragScroll::installOn(QWidget* w) {
     if (!w) return;
     if (qobject_cast<QScrollArea*>(w)) return;
-    if (installed.contains(w)) return;
-    installed.insert(w);
-    connect(w, &QObject::destroyed, this, [this, w](){ installed.remove(w); });
     w->installEventFilter(this);
     if (w->layout()) installOn(w->layout()); // Use the widget's internal layout
 }
@@ -44,6 +43,8 @@ bool DragScroll::eventFilter(QObject* obj, QEvent* ev) {
         case QEvent::MouseButtonPress:
             if (me->button() != Qt::LeftButton) return false;
             if (pressed) return false;
+            if (eventClaimed) return false;
+            eventClaimed = true;
             tick.stop();
             velocity = 0;
             startPos = lastPos = me->globalPosition().toPoint();
@@ -91,6 +92,7 @@ bool DragScroll::eventFilter(QObject* obj, QEvent* ev) {
         case QEvent::MouseButtonRelease: {
             if (!pressed) return false;
             pressed = false;
+            eventClaimed = false;
             bool drag = dragging;
             if (drag) viewp->releaseMouse();
             if (std::abs(velocity) > 0.03) tick.start(16);
