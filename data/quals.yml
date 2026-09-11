@@ -1,97 +1,62 @@
-tiring:
-  2: [motivated, happy, relaxed]
-  -1: [bored, sad]
-  -2: [tired, stressed]
-
-fun:
-  2: [unsure]
-  1: [stuck, bored]
-  -1: [stressed, motivated]
-
-repetitive:
-  2: [bored]
-  1: [depressed, sad]
-  -2: [motivated, happy, relaxed]
-
-interesting:
-  2: [bored, unsure]
-  1: [sad, relaxed]
-  -1: [motivated, depressed, stressed]
-
-small:
+simple:
+  fact: true
   2: [stuck, depressed, unsure]
   1: [bored, sad, tired]
-  -1: [motivated, relaxed]
+  -1: [relaxed]
+  -2: [motivated]
 
-time-consuming:
-  2: [motivated]
-  1: [relaxed, happy]
-  -1: [sad]
-  -2: [depressed, stressed]
-  -3: [tired]
-
-overwhelming:
-  2: [motivated, happy, relaxed]
-  -1: [unsure, bored]
-  -3: [stressed, stuck, tired, depressed]
-
-distracting:
-  2: [sad, depressed, stressed, stuck]
-  1: [bored]
+enjoyable:
+  fact: true
+  2: [stressed, depressed]
+  1: [sad, tired, stuck]
   -1: [happy]
   -2: [relaxed, motivated]
 
-irritating:
-  2: [motivated, happy, relaxed]
-  -1: [unsure, bored]
-  -2: [sad]
-  -3: [stressed, stuck, tired, depressed]
-
-boring:
-  2: [motivated, happy, relaxed]
-  -1: [unsure, bored]
-  -2: [sad]
-  -3: [stressed, stuck, tired, depressed]
-
-energising:
-  2: [depressed, tired, stressed]
-  1: [stuck, sad]
-  -1: [happy]
-  -2: [relaxed, motivated]
-
-frustrating:
+demanding:
+  fact: true
   2: [motivated]
-  1: [relaxed, happy]
-  -1: [sad]
-  -2: [stuck, depressed, tired]
+  1: [happy, relaxed]
+  -1: [sad, bored]
+  -2: [tired, stressed, depressed]
+
+lengthy:
+  fact: true
+  2: [relaxed, motivated]
+  1: [happy]
+  -1: [depressed]
+  -2: [stressed, tired, stuck]
 
 complex:
-  2: [motivated, relaxed, happy]
-  -2: [stuck, depressed, tired]
+  fact: true
+  2: [motivated]
+  1: [happy, relaxed]
+  -1: [unsure, bored]
+  -2: [tired, stressed, stuck, depressed]
 
-immersive:
-  2: [sad, stuck]
+interesting:
+  fact: true
+  2: [bored]
+  1: [unsure, sad]
+  -1: [tired, stressed]
+  -2: [depressed]
+
+
+
+obligation:
+  fact: false
+  3: [motivated]
   1: [unsure]
-  -1: [depressed, relaxed, happy]
-  -2: [motivated]
+  -1: [sad, tired]
+  -2: [depressed, stressed]
 
-satisfying:
-  2: [depressed, stuck]
-  1: [sad, tired, unsure]
-  -1: [relaxed, happy]
-  -2: [motivated]
+growth:
+  fact: false
+  1: [bored, unsure, sad]
+  -1: [stressed, stuck]
+  -2: [tired]
 
-impactful:
-  2: [sad, stuck, unsure]
-  -1: [depressed]
-  -2: [motivated]
-
-straightforward:
-  2: [depressed, sad, tired, stuck]
-  1: [unsure]
-  -1: [motivated, relaxed]
-
-empowering:
-  3: [depressed, stressed, stuck]
-  2: [sad]
-  -2: [relaxed, happy, motivating]
+reward:
+  fact: false
+  2: [stuck, depressed]
+  1: [sad, tired]
+  -1: [happy, relaxed, motivated]

@@ -2,6 +2,7 @@
 #include "colours.hpp"
 #include "game.hpp"
 #include "font.hpp"
+#include "base/quals.hpp"
 #include <QTextBlock>
 
 QualityEdit::QualityEdit(std::set<QString> words, QWidget* parent)
@@ -65,8 +66,9 @@ void QualityEdit::updtxt() {
             sel.cursor = QTextCursor(block);
             sel.cursor.setPosition(block.position() + start);
             sel.cursor.setPosition(block.position() + i, QTextCursor::KeepAnchor);
-            sel.format.setForeground(MG->styls[Cols::OnPrimary]);
-            sel.format.setBackground(MG->styls[Cols::Primary]);
+            bool fact = isQualFact(block.text().toLower());
+            sel.format.setForeground(MG->styls[fact? Cols::OnPrimary : Cols::OnTertiary]);
+            sel.format.setBackground(MG->styls[fact? Cols::Primary : Cols::Tertiary]);
             sels << sel;
         }
     }

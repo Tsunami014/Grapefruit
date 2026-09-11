@@ -123,11 +123,14 @@ This file is a mapping from quality name to a list of conversation context tags 
 Each quality contains a mapping containing a score, and a list of all the quality keys which can give this score. All the scores will be tallied and the quality will be given an "overall score", which is 0 if negative, 1 if zero or 2 if positive. All qualities on a task will have their overall scores summed together and normalised between 0 and 1 for its overall score.
 Although, the quality list's 'best quality' is based on the total score sum, not the "overall score" (with a +-1 point randomness on each).
 
+Each quality also contains a flag stating whether the quality is a fact about the task or something else (e.g. a reason for doing the task)
+
 For example:
 ```
 tiring:
+  fact: true
   2: [motivated, happy]
   -1: [bored]
   -2: [tired, stressed]
 ```
-Remember, this is "should this task, which has this quality, be done now?" so it should value opposite tags to the quality
+Remember, the tags determine "should this task, which has this quality, be done now?" so it should value opposite context tags to the quality

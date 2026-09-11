@@ -402,15 +402,17 @@ void TaskOverlay::generateBot() {
         auto* container = new FlowContainer(bbar);
         bitsWid = container;
         auto* bflow = new FlowLayout(container, -1, 16, 16);
-        bflow->vertical(3);
+        bflow->vertical(2);
 
         // Create the buttons!
-        for (const auto& k : qualkeys()) {
-            auto btn = new QPushButton(k, bbar);
+        auto qs = qualities();
+        for (auto it = qs.cbegin(); it != qs.cend(); ++it) {
+            QString nam = it.key();
+            auto btn = new QPushButton(nam, bbar);
             resizeFont(btn, 1.3);
-            ColGroups::setGrp(btn, ColGroups::PrimaryContainer);
+            ColGroups::setGrp(btn, it.value().fact? ColGroups::PrimaryContainer : ColGroups::TertiaryContainer);
             btn->setFocusPolicy(Qt::NoFocus);
-            connect(btn, &QPushButton::clicked, quals, [=](){ quals->toggleWord(k); });
+            connect(btn, &QPushButton::clicked, quals, [=](){ quals->toggleWord(nam); });
             bflow->addWidget(btn);
         }
 
