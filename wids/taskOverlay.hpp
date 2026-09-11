@@ -7,7 +7,7 @@
 #include "wids/txtedit.hpp"
 #include "wids/qualsEdit.hpp"
 
-enum class BotSection { Overview, Edit, Reasons, Quals };
+enum class BotSection { Overview, Edit, Goals, Quals };
 
 class HlTxtEdit : public TxtEdit {
     Q_OBJECT
@@ -40,8 +40,8 @@ private:
     QWidget* editWid;
     HlTxtEdit* edit;
     QWidget* midwid;
-    QWidget* reasonsWid;
-    TxtEdit* reasons;
+    QWidget* goalsWid;
+    TxtEdit* goals;
     QWidget* qualsWid;
     QualityEdit* quals;
     QPointer<QLabel> tbtxt;

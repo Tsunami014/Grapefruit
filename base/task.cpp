@@ -12,8 +12,8 @@
 
 uint nxtid = 0;
 
-Task::Task(const QString& nam, const QString& items, int import, std::set<QString> quals, const QString& reasons, bool star)
-    : id(nxtid++), name(nam), items(items), import(import), quals(quals), reasons(reasons), star(star) {}
+Task::Task(const QString& nam, const QString& items, int import, std::set<QString> quals, const QString& goals, bool star)
+    : id(nxtid++), name(nam), items(items), import(import), quals(quals), goals(goals), star(star) {}
 bool Task::operator==(const Task& oth) const { return id == oth.id; }
 bool Task::operator<(const Task& oth) const {
     // If this is less than oth it will be higher in the list
@@ -36,7 +36,7 @@ QString Task::toSave() {
         escape(items)+';'+
         QString::number(import)+';'+
         qualsOut.join('-')+';'+
-        escape(reasons)
+        escape(goals)
     ;
 }
 Task* Task::fromSaved(QString saved) {
@@ -54,8 +54,8 @@ Task* Task::fromSaved(QString saved) {
         if (QString txt = deescape(q); qks.find(txt) != qks.end())
             quals.insert(txt);
     }
-    QString reasons = deescape(conts.at(4));
-    return new Task(nam, items, impt, quals, reasons, star);
+    QString goals = deescape(conts.at(4));
+    return new Task(nam, items, impt, quals, goals, star);
 }
 
 const QRegularExpression normlSpaces(R"(^\s*\n|\n\s*$|[ \t]+$|\s+(?=\n[ \t]*$))", QRegularExpression::MultilineOption);
@@ -71,8 +71,8 @@ QString normaliseSpaces(QString txt) {
     }
     return txt;
 }
-void Task::setReasons(QString newrs) {
-    reasons = normaliseSpaces(newrs);
+void Task::setGoals(QString newrs) {
+    goals = normaliseSpaces(newrs);
 }
 void Task::setItems(QString newits) {
     items = normaliseSpaces(newits);

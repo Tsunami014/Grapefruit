@@ -428,7 +428,7 @@ purposes:
         "motivated?happy, +committed":
           - "2*$GotThis!"
         # "juststarted":
-        #   - "$GotThis! %best_reason"
+        #   - "$GotThis! %best_goal"
       opts:
         - ["{Thanks/Thanks/Ok}{!/}", [], working]
         - ["$IHope#!justchecked", [], checkin]
@@ -509,14 +509,14 @@ purposes:
         - ["{Still no/$NoToTask}#resuggested", [unsure, -suggeststate], checkintask]
 
   whytask:
-    # User entered reason
+    # User entered goal
     - templates:
         "*":
-          - "3*%best_reason{2*./!/2*}"
-          - "2*%best_reason{. B/! B/, b}ut remember{,/} you {aren't forced/do{n't/ not} {need/have}} to do it if you don't want{ to/}{2*./!/2&}"
-          - "%best_reason{. B/! B/, b}ut remember{,/} {there's /}no pressure{3* to {finish/complete} anything{2*{ if/} you don't want{ to/}/}{2*./!/2&}"
-          - "%best_reason{. N/! N/ - n/, n}o pressure though{,/ -} you can always $StopWhenWant{2*./!/2*}"
-        "=": # In case the user didn't put a reason, redirect back to maybe
+          - "3*%best_goal{2*./!/2*}"
+          - "2*%best_goal{. B/! B/, b}ut remember{,/} you {aren't forced/do{n't/ not} {need/have}} to do it if you don't want{ to/}{2*./!/2&}"
+          - "%best_goal{. B/! B/, b}ut remember{,/} {there's /}no pressure{3* to {finish/complete} anything{2*{ if/} you don't want{ to/}/}{2*./!/2&}"
+          - "%best_goal{. N/! N/ - n/, n}o pressure though{,/ -} you can always $StopWhenWant{2*./!/2*}"
+        "=": # In case the user didn't put a goal, redirect back to maybe
           - "> maybe"
       opts:
         - ["$ChosenAlready", [-suggeststate, startedelse, $reset_best], goingwell]

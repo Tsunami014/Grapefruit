@@ -85,7 +85,7 @@ These are utilised the same way as regular context groups; with `%name`
 - `thistime` - e.g. "this morning", "this afternoon", "tonight"
 - `scene` - a randomly chosen name from the current scene (verb)
 - `best_name` - the name of the currently deemed 'best task' to do
-- `best_reason` - a random reason sentence why the user wants to to the best task
+- `best_goal` - a random goal the user entered for the best task
 
 ### External functions
 - `$reset_best` - reset the `best_name`

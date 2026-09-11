@@ -42,7 +42,7 @@ QString runExtern(std::string name) {
         return MG->house->curScnName();
     if (name == "best_name")
         return getBestTask()->name;
-    if (name == "best_reason")
+    if (name == "best_goal")
         return bestR;
     return {};
 }
@@ -56,12 +56,12 @@ bool evalExtern(std::string name, QString whole) {
     if (name == "best_name") {
         return getBestTask(whole.startsWith("@ ")) != nullptr;
     }
-    if (name == "best_reason") {
+    if (name == "best_goal") {
         if (!hasBR) {
             hasBR = true;
             auto bt = getBestTask();
             if (bt == nullptr) return false;
-            auto opts = bt->getReasons().split("\n", Qt::SkipEmptyParts);
+            auto opts = bt->getGoals().split("\n", Qt::SkipEmptyParts);
             if (opts.isEmpty()) return false;
             bestR = opts[QRandomGenerator::global()->bounded(opts.size())].trimmed();
             return true;
@@ -73,7 +73,7 @@ bool evalExtern(std::string name, QString whole) {
 }
 
 const std::unordered_set<std::string> externList = {
-    "time", "thistime", "scene", "best_name", "best_reason"
+    "time", "thistime", "scene", "best_name", "best_goal"
 };
 
 void externFunc(std::string name) {

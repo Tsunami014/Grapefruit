@@ -13,7 +13,7 @@ const QString TASK_HELP =
         "<p>Press outside the task popup to dismiss it.</p>"
         "<h3>Importance</h3>"
             "<p>A task's importance not only determines how high it is placed in the task list and also is used when determining which task to suggest you.</p>"
-        "<h3>Reasoning</h3>"
+        "<h3>Goals (not reasons ==TODO: Fix everything here==)</h3>"
             "<p>This is where you put reasoning as to why you want to do the task!</p>"
             "<p><i>Please phrase these as sentences about yourself in second person, i.e. 'You ...' and do not include punctuation at the end.</i></p>"
             "<p>The best way to use this is by having intrinsically motivating reasons - <b>What do you enjoy about doing the task?</b></p>"

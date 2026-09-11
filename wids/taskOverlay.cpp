@@ -241,16 +241,16 @@ TaskOverlay::TaskOverlay(
         mlay->addWidget(midwid, 2);
         auto* midlay = new QHBoxLayout(midwid);
         midlay->setContentsMargins(0,0,0,0);
-            reasonsWid = new QWidget(this);
-            reasonsWid->setContentsMargins(0,0,0,0);
-            midlay->addWidget(reasonsWid);
-            auto* reasonsLay = new QVBoxLayout(reasonsWid);
-                {auto* labl = new QLabel("Reasoning:", reasonsWid);
+            goalsWid = new QWidget(this);
+            goalsWid->setContentsMargins(0,0,0,0);
+            midlay->addWidget(goalsWid);
+            auto* goalsLay = new QVBoxLayout(goalsWid);
+                {auto* labl = new QLabel("Goals:", goalsWid);
                 resizeFont(labl, 1.2);
-                reasonsLay->addWidget(labl);}
+                goalsLay->addWidget(labl);}
 
-                reasons = new TxtEdit(task->getReasons(), reasonsWid);
-                reasonsLay->addWidget(reasons);
+                goals = new TxtEdit(task->getGoals(), goalsWid);
+                goalsLay->addWidget(goals);
             qualsWid = new QWidget(this);
             qualsWid->setContentsMargins(0,0,0,0);
             midlay->addWidget(qualsWid);
@@ -291,8 +291,8 @@ TaskOverlay::TaskOverlay(
         edit->highlight();
         saveTasks();
     });
-    connect(reasons, &QTextEdit::textChanged, [=](){
-        task->setReasons(reasons->toPlainText());
+    connect(goals, &QTextEdit::textChanged, [=](){
+        task->setGoals(goals->toPlainText());
         saveTasks();
     });
     connect(quals, &QTextEdit::textChanged, [=](){
@@ -356,12 +356,12 @@ void TaskOverlay::generateBot() {
     botScrl = nullptr;
 
     bool isedit = edit->hasFocus() || showingDate;
-    bool nofocus = !(isedit || reasons->hasFocus() || quals->hasFocus());
+    bool nofocus = !(isedit || goals->hasFocus() || quals->hasFocus());
 
     section = nofocus ? BotSection::Overview
             : isedit  ? BotSection::Edit
             : quals->hasFocus() ? BotSection::Quals
-            : BotSection::Reasons;
+            : BotSection::Goals;
 
     if (isedit) {
         auto labl = new QLabel(bbar);
@@ -427,7 +427,7 @@ void TaskOverlay::generateBot() {
         bits->setSpacing(8);
 
         bits->setSizeConstraint(QLayout::SetMinimumSize);
-        GenerateOpts(bitsWid, bits, isedit? edit:reasons, isedit);
+        GenerateOpts(bitsWid, bits, isedit? edit : goals, isedit);
         bitsWid->adjustSize();
 
         int sb = scrl->horizontalScrollBar()->sizeHint().height();
@@ -440,22 +440,22 @@ void TaskOverlay::generateBot() {
     if (nofocus) {
         for (auto* w : parts) w->show();
         editWid->show(); midwid->show();
-        qualsWid->show(); reasonsWid->show();
+        qualsWid->show(); goalsWid->show();
 
         // Update the text edits from formatting
         edit->setPlainText(task->getItems());
         edit->highlight();
-        reasons->setPlainText(task->getReasons());
+        goals->setPlainText(task->getGoals());
     } else {
         for (auto* w : parts) w->hide();
         if (isedit) {
             editWid->show(); midwid->hide();
         } else {
             editWid->hide(); midwid->show();
-            if (reasons->hasFocus()) {
-                qualsWid->hide(); reasonsWid->show();
+            if (goals->hasFocus()) {
+                qualsWid->hide(); goalsWid->show();
             } else {
-                qualsWid->show(); reasonsWid->hide();
+                qualsWid->show(); goalsWid->hide();
             }
         }
     }
