@@ -386,6 +386,7 @@ void TaskOverlay::generateBot() {
     scrl->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrl->horizontalScrollBar()->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     scrl->horizontalScrollBar()->setFocusPolicy(Qt::NoFocus);
+    scrl->setWidgetResizable(true);
     blay->addWidget(scrl);
 
     auto* drag = new DragScroll(scrl->viewport(), scrl->horizontalScrollBar());
@@ -397,7 +398,6 @@ void TaskOverlay::generateBot() {
         tbtxt->setContentsMargins(8,8,8,4);
         bitsWid = tbtxt;
         drag->installOn(tbtxt);
-        scrl->setWidgetResizable(true);
     } else if (quals->hasFocus()) {
         auto* container = new FlowContainer(bbar);
         bitsWid = container;
@@ -418,7 +418,10 @@ void TaskOverlay::generateBot() {
 
         // Calculate sizes! (both width AND height)
         bflow->activate();
-        container->setFixedSize(bflow->lastSize());
+        QSize natural = bflow->lastSize();
+        container->setMinimumWidth(natural.width());
+        container->setFixedHeight(natural.height());
+        container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         int sb = scrl->horizontalScrollBar()->sizeHint().height();
         scrl->setFixedHeight(bflow->lastSize().height() + sb);
         drag->installOn(bflow);

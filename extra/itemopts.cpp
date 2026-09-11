@@ -167,6 +167,7 @@ void GenerateOpts(QWidget* parent, QBoxLayout* lay, QTextEdit* edit, bool full) 
         btn->setIconSize(QSize(32, 32));
         btn->setFocusPolicy(Qt::NoFocus);
         parent->connect(btn, &QPushButton::clicked, edit, slot);
+        lay->addStretch();
         lay->addWidget(btn);
     };
 
