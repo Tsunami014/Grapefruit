@@ -1,12 +1,9 @@
 // Thanks in part to https://stackoverflow.com/a/37119983 !
 #include "secret.hpp"
-#include <QPropertyAnimation>
 #include <QPainter>
 #include <QStyleOptionToolButton>
 #include <QStyle>
-#include <QResizeEvent>
-
-const int animationDuration = 200;
+#include <QTimer>
 
 HeaderButton::HeaderButton(QWidget* parent) : QToolButton(parent) {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -43,86 +40,45 @@ Spoiler::Spoiler(const QString& title, QWidget* parent) : QWidget(parent) {
     toggleButton.setChecked(false);
 
     contentArea.setObjectName("contentArea");
-    contentArea.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    QSizePolicy p(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    p.setHeightForWidth(true);
+    contentArea.setSizePolicy(p);
     // start out collapsed
     contentArea.setMaximumHeight(0);
     contentArea.setMinimumHeight(0);
     setProperty("open", false);
-    auto* contentAnim = new QPropertyAnimation(&contentArea, "maximumHeight");
-    connect(contentAnim, &QPropertyAnimation::valueChanged, this, [this](const QVariant& value){
-        const bool open = value.toInt() > 0;
-        if (property("open").toBool() != open) {
-            setProperty("open", open);
-            toggleButton.style()->unpolish(&toggleButton);
-            toggleButton.style()->polish(&toggleButton);
-            // NOTE: We only have open-dependent styles on the button, so don't restyle *everything*
-            /*contentArea.style()->unpolish(&contentArea);
-            contentArea.style()->polish(&contentArea);*/
-        }
-        emit heightChanged();
-    });
-    toggleAnimation.addAnimation(contentAnim);
+
     // don't waste space
     mainLayout.setContentsMargins(0, 0, 0, 0);
     mainLayout.setSpacing(0);
-    int row = 0;
     mainLayout.addWidget(&toggleButton);
     mainLayout.addWidget(&contentArea);
     setLayout(&mainLayout);
     QObject::connect(&toggleButton, &QToolButton::clicked, [this](const bool checked) {
         toggleButton.setArrowType(checked ? Qt::ArrowType::DownArrow : Qt::ArrowType::RightArrow);
-        toggleAnimation.setDirection(checked ? QAbstractAnimation::Forward : QAbstractAnimation::Backward);
-        toggleAnimation.start();
+        setProperty("open", checked);
+        toggleButton.style()->unpolish(&toggleButton);
+        toggleButton.style()->polish(&toggleButton);
+
+        // Ensure everything is in place to prevent flickers
+        QWidget* top = window();
+        top->setUpdatesEnabled(false);
+
+        contentArea.setMaximumHeight(checked ? QWIDGETSIZE_MAX : 0);
+
+        for (QWidget* w = this; w; w = w->parentWidget()) {
+            if (QLayout* l = w->layout()) {
+                l->invalidate();
+                l->activate();
+            }
+        }
+
+        top->setUpdatesEnabled(true);
+        top->update();
     });
 }
 
-void Spoiler::setContentLayout(QLayout& contentLayout) {
+void Spoiler::setContentLayout(QLayout* ncont) {
     delete contentArea.layout();
-    contentArea.setLayout(&contentLayout);
-    const auto collapsedHeight = sizeHint().height() - contentArea.maximumHeight();
-    auto contentHeight = contentHeightFor(contentArea.width());
-    for (int i = 0; i < toggleAnimation.animationCount() - 1; ++i) {
-        QPropertyAnimation* spoilerAnimation = static_cast<QPropertyAnimation*>(toggleAnimation.animationAt(i));
-        spoilerAnimation->setDuration(animationDuration);
-        spoilerAnimation->setStartValue(collapsedHeight);
-        spoilerAnimation->setEndValue(collapsedHeight + contentHeight);
-    }
-    QPropertyAnimation* contentAnimation = static_cast<QPropertyAnimation*>(toggleAnimation.animationAt(toggleAnimation.animationCount() - 1));
-    contentAnimation->setDuration(animationDuration);
-    contentAnimation->setStartValue(0);
-    contentAnimation->setEndValue(contentHeight);
-}
-
-int Spoiler::contentHeightFor(int width) const {
-    QLayout* cl = contentArea.layout();
-    if (!cl) return 0;
-    if (width <= 0) width = contentArea.width();
-    return cl->hasHeightForWidth() ? cl->heightForWidth(width) : cl->sizeHint().height();
-}
-
-void Spoiler::resizeEvent(QResizeEvent* event) {
-    QWidget::resizeEvent(event);
-    if (event->oldSize().width() != event->size().width()) {
-        updateHeights(event->size().width());
-    }
-}
-
-void Spoiler::updateHeights(int forWidth) {
-    if (!contentArea.layout()) return;
-    contentArea.layout()->activate();
-
-    const int newhei = contentHeightFor(forWidth);
-    auto* anim = static_cast<QPropertyAnimation*>(
-        toggleAnimation.animationAt(toggleAnimation.animationCount() - 1)
-    );
-
-    const int oldhei = anim->endValue().toInt();
-    double t = oldhei > 0 ? double(contentArea.maximumHeight()) / oldhei : 0.0;
-
-    anim->setEndValue(newhei);
-    // Instantly set to the right height
-    contentArea.setMaximumHeight(qRound(t*newhei));
-
-    updateGeometry();
-    emit heightChanged();
+    contentArea.setLayout(ncont);
 }

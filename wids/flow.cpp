@@ -196,6 +196,7 @@ int FlowLayout::smartSpacing(QStyle::PixelMetric pm) const {
 
 void FlowContainer::resizeEvent(QResizeEvent* event) {
     QWidget::resizeEvent(event);
+    if (maximumHeight() <= 0) return; // collapsed on purpose - leave it alone
     if (auto* lay = layout()) {
         int h = lay->heightForWidth(event->size().width());
         if (h > 0 && h != minimumHeight()) {

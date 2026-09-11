@@ -226,10 +226,9 @@ void MainGame::generateSettings() {
                 styl();
                 opts->addWidget(btn);
             }
-        sp2->setContentLayout(*opts);
-        connect(sp2, &Spoiler::heightChanged, sp, [sp](){ sp->updateHeights(); });
+        sp2->setContentLayout(opts);
         lay->addWidget(sp2);}
-    sp->setContentLayout(*lay);
+    sp->setContentLayout(lay);
     mslay->addWidget(sp);}
 
     {auto sp = new Spoiler("Reset", this);
@@ -254,7 +253,7 @@ void MainGame::generateSettings() {
                 }
         });
         opts->addWidget(btn);}
-    sp->setContentLayout(*opts);
+    sp->setContentLayout(opts);
     mslay->addWidget(sp);}
 
     {auto sp = new Spoiler("Debug", this);
@@ -266,10 +265,9 @@ void MainGame::generateSettings() {
         {auto btn = addbtn("Reload task info", sp);
         btn->connect(btn, &QPushButton::clicked, labl, [=](){
             labl->setText(getAllTasksDebugInfo());
-            sp->updateHeights();
         });
         opts->addWidget(btn);}
-    sp->setContentLayout(*opts);
+    sp->setContentLayout(opts);
     mslay->addWidget(sp);}
 
     sdrag->installOn(mslay);
