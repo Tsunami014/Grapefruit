@@ -100,6 +100,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
             }
         };
 
+        int lastSpaceY = 0;
         for (QLayoutItem* item : std::as_const(itemList)) {
             QWidget* wid = item->widget();
             int spaceX = horizontalSpacing();
@@ -110,6 +111,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
             if (spaceY == -1)
                 spaceY = wid->style()->layoutSpacing(
                     QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
+            lastSpaceY = spaceY;
 
             int right = x + item->sizeHint().width();
             int nextX = right + spaceX;
@@ -127,7 +129,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
             lineHeight = qMax(lineHeight, item->sizeHint().height() + spaceY);
         }
         finishRow();
-        int hei = y + lineHeight + bottom;
+        int hei = y + lineHeight + bottom - lastSpaceY;
         _lastSze = QSize(rect.width(), hei);
         return hei;
     } else {
@@ -139,6 +141,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
             li.push_back({nullptr, 0, effectiveRect.x()});
             rowits.push_back(li);
         }
+        int lastSpaceY = 0;
         for (QLayoutItem* item : std::as_const(itemList)) {
             auto min = std::min_element(rowits.begin(), rowits.end(), [](const std::vector<layoutPart>& a, const std::vector<layoutPart>& b) {
                 return a.back().right < b.back().right;
@@ -154,6 +157,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
             if (spaceY == -1)
                 spaceY = wid->style()->layoutSpacing(
                     QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
+            lastSpaceY = spaceY;
 
             int x = min->back().right;
             rowits[idx].push_back({wid, x, x + item->sizeHint().width() + spaceX});
@@ -164,6 +168,7 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const {
             maxRight = qMax(maxRight, rowits[i].back().right);
         }
         int totalHeight = std::accumulate(heights.begin(), heights.end(), effectiveRect.y());
+        if (!itemList.isEmpty()) totalHeight -= lastSpaceY;
         _lastSze = QSize(maxRight + right, totalHeight + bottom);
 
         if (testOnly) return totalHeight;

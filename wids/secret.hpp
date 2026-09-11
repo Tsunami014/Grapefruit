@@ -1,6 +1,7 @@
 // Thanks in part to https://stackoverflow.com/a/37119983 !
 #include <QVBoxLayout>
 #include <QToolButton>
+#include "flow.hpp"
 
 class HeaderButton : public QToolButton {
     Q_OBJECT
@@ -25,7 +26,7 @@ class Spoiler : public QWidget {
 public:
     explicit Spoiler(const QString& title = "", QWidget* parent = 0);
     void setContentLayout(QLayout* ncont);
-    QWidget contentArea;
+    FlowContainer contentArea;
 
 protected:
     QVBoxLayout mainLayout;
