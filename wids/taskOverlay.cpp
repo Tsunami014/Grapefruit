@@ -22,7 +22,7 @@
 #include <QScroller>
 #include <QAbstractTextDocumentLayout>
 
-const QMargins innerMarg{24, 16, 64, 16};
+const QMargins innerMarg{44, 16, 44, 16};
 
 void HlTxtEdit::paintEvent(QPaintEvent* event) {
     // Paint done backgrounds manually
@@ -276,7 +276,7 @@ TaskOverlay::TaskOverlay(
     lay->addLayout(mlay);
 
     bbar = new QWidget(this);
-    bbar->setProperty("bg", true);
+    bbar->setObjectName("botbar");
     lay->addWidget(bbar);
     new QVBoxLayout(bbar);
     generateBot();

@@ -10,7 +10,7 @@ QPushButton:hover, QPushButton:pressed {
     border-radius: 9px;
 }
 
-*[bg=true] { background-color: $SurfContnrLow; }
+*[bg=true], #botbar { background-color: $SurfContnrLow; }
 #card { background-color: $SurfContnr; }
 #highcard { background-color: $SurfContnrHigh; }
 
