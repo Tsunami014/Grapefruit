@@ -27,20 +27,27 @@ public:
 
         // Weekday header row -> paint it ourselves
         if (index.row() == 0) {
+            const auto col = MG->styls[Cols::SurfaceContainerHigh];
             painter->save();
-            if (index.column() == 0) {
-                painter->setRenderHint(QPainter::Antialiasing);
+            painter->setRenderHint(QPainter::Antialiasing);
 
-                // Full-row rect
-                const auto* view = qobject_cast<const QAbstractItemView*>(option.widget);
-                const int fullWidth = view ? view->viewport()->width() : option.rect.width();
-                QRect rowRect(0, option.rect.y(), fullWidth, option.rect.height());
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(MG->styls[Cols::SurfaceContainerHigh]);
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(col);
+            if (index.column() == 0 || index.column() == 6) { // Round a corner
                 constexpr int rad = 12;
-                painter->drawRoundedRect(rowRect, rad,rad);
-                painter->fillRect(QRect{rowRect.topLeft(), QPoint{rowRect.right(), rowRect.top()+rad}},
-                    MG->styls[Cols::SurfaceContainerHigh]);
+                constexpr int rad2 = rad*2;
+                const int hwid = (option.rect.width()+1)/2;
+                painter->drawRoundedRect(QRect{
+                    option.rect.left() + (index.column() == 0? 0 : hwid), option.rect.bottom()-(rad2),
+                    hwid, rad2 + 2
+                }, rad,rad);
+                painter->fillRect(option.rect.adjusted(0, 0, 0, -rad), col);
+                painter->fillRect(QRect{
+                    option.rect.left() + (index.column() == 0? rad2 : 0), option.rect.bottom()-rad,
+                    option.rect.width()-rad, rad2 + 2
+                }, col);
+            } else {
+                painter->fillRect(option.rect.adjusted(0, 0, 1, 0), col);
             }
 
             painter->setPen(MG->styls[Cols::OnSurface]);
