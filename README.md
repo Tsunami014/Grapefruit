@@ -1,15 +1,20 @@
 # Grapefruit
 > Currently builds for: Only Android
 
-Grapefruit is a virtual friend who can try help you do your work! They have *non-ML based* conversations with you (made with a **LOT** of handcrafted sentences by me <3) and try to *intrinsically* motivate you to complete tasks, basically by reassuring you, suggesting different things based on your emotions (such as taking a break or doing a different task) and affirming that even starting work is ok, you don't have to finish if you don't want to (and many other different things similar in vibe). And never by pressuring you to do anything.
-Grapefruit will be chilling in their house all day, stop by whenever you don't feel like doing anything or when you don't know what to do! There is zero pressure, Grapefruit won't judge you or berate you for not getting stuff done. You can even have overdue tasks and it won't change anything.
+Grapefruit is a virtual friend who can try help you do your work! They have *non-ML based* conversations with you (made with a **LOT** of handcrafted sentences by me \<3) and try to *intrinsically* motivate you to complete tasks, basically by reassuring you, suggesting different things based on your emotions (such as taking a break or doing a different task) and affirming that even starting work is ok, you don't have to finish if you don't want to (and many other different things similar in vibe). And never by pressuring you to do anything.
 
-Tasks contain an importance rating (out of 5), a list of end goals of why you want to do the task in the first place, a list of qualities from a preset bank (e.g. "tiring") which also are used when recommending you tasks (e.g. it is less likely to recommend you a tiring task when you said you were tired) and a list of 'items', basically sub things that need doing for that task. Each item can have a *rough* estimated time and/or a due date.
-Tasks are sorted into categories for convenience too.
-Tasks can also be starred, which makes it more likely to be recommended and also allows you to see all the 'starred tasks' separately for more organisation.
-It uses a task recommendation system which uses complex maths to determine which tasks are best to do now based on many qualities of the task, your emotions and the conversation so far.
+Grapefruit will be chilling in their house all day, stop by whenever you don't feel like doing anything or when you don't know what to do or just want to organise your tasks! There is zero pressure, Grapefruit won't judge you or berate you for not getting stuff done. You can even have overdue tasks and it won't change anything.
+
+You can give each task an importance out of 5, a list of end goals you want this task to achieve, some qualities from a predefined list (e.g. 'interesting', 'obligation') and a list of 'task items' - basically, the place where you break the task into smaller pieces.
+Each task item can also have a due date, estimated time and you can tick them off too (or just delete them, whichever you prefer - they're both as easy to do), which are set by convenient buttons to make your life easier.
 
 It also contains an *extremely efficient* text editor for mobile, containing buttons in a bar at the bottom (directly above the keyboard) for e.g. moving whole lines of text around and inserting new lines. It also hides other elements when selecting one to make it easier to see while editing.
+
+Tasks are sorted into categories too, and you can star tasks for more organisation (I like using starred tasks as what I'll do today)
+
+It uses a task recommendation system when suggesting what task to give you in the conversation, which uses complex maths to determine which tasks are best to do now based on many qualities of the task, your emotions and the conversation so far.
+
+But overall, how you decide to use this app is completely up to you! Sample tasks are provided, but just as one example of how you can use this app to do whatever you need!
 
 **Also please note it autosaves constantly, don't worry about losing your work**.
 
